@@ -9,6 +9,14 @@ const TYPE_LABELS = {
   'pick-up': 'Pick-up',
 };
 
+function matchesOrderSearch(order, keyword) {
+  if (!keyword) return true;
+  const type = TYPE_LABELS[order.type] || order.type;
+  return `Order ${order.id} ${order.state} ${type} ${order.amount} ${order.customer || ''}`
+    .toLowerCase()
+    .includes(keyword);
+}
+
 export default {
   name: 'OrdersPage',
   components: { OrderDetailsPage },
@@ -37,15 +45,13 @@ export default {
       return this.orders.filter((order) => {
         if (order.state === 'Completed') return false;
         const matchesState = this.activeFilter === 'all' || order.state === this.activeFilter;
-        const type = TYPE_LABELS[order.type] || order.type;
-        const matchesSearch = !keyword
-          || `Order ${order.id} ${order.state} ${type} ${order.amount}`.toLowerCase().includes(keyword);
-        return matchesState && matchesSearch;
+        return matchesState && matchesOrderSearch(order, keyword);
       });
     },
 
     historyOrders() {
-      return this.orders.filter((order) => order.state === 'Completed');
+      const keyword = this.searchQuery.trim().toLowerCase();
+      return this.orders.filter((order) => order.state === 'Completed' && matchesOrderSearch(order, keyword));
     },
   },
 
