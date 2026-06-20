@@ -1,75 +1,13 @@
 import OrderDetailsPage from './order-details-page.js';
+import { loadOrders, updateOrderState, cancelOrder as cancelOrderRequest } from '../services/order-service.js';
 
 const ORDER_STATES = ['New', 'Preparing', 'Ready', 'Completed'];
 
-const TYPE_DETAILS = {
-  'dine-in': { label: 'Dine-in', icon: 'restaurant' },
-  delivery: { label: 'Delivery', icon: 'home' },
-  'pick-up': { label: 'Pick-up', icon: 'inventory_2' },
+const TYPE_LABELS = {
+  'dine-in': 'Dine-in',
+  delivery: 'Delivery',
+  'pick-up': 'Pick-up',
 };
-
-const ITEM_IMAGES = [
-  '../assets/images/No%20Menu%20Image.png',
-];
-
-function addOrderDetails(order) {
-  const total = Number(order.amount.replace('$', ''));
-  const fees = order.type === 'delivery'
-    ? [{ label: 'Service Fees', amount: 1.50 }, { label: 'Packaging Fee', amount: 1.00 }, { label: 'Delivery Fee', amount: 3.00 }]
-    : order.type === 'pick-up'
-      ? [{ label: 'Service Fees', amount: 1.00 }, { label: 'Packaging Fee', amount: 1.00 }]
-      : [{ label: 'Service Fees', amount: 2.50 }];
-  const subtotal = total - fees.reduce((sum, fee) => sum + fee.amount, 0);
-  const firstItemPrice = Number((subtotal * .72).toFixed(2));
-  const secondItemPrice = Number((subtotal - firstItemPrice).toFixed(2));
-
-  const fulfilment = order.type === 'delivery'
-    ? {
-      title: 'Delivery Details',
-      rows: [
-        { icon: 'storefront', title: 'Lanita Restaurant', subtitle: '123 Gourmet Way, Food City' },
-        { icon: 'location_on', title: 'Engineering Hall B-12', subtitle: 'Main Entrance Reception' },
-      ],
-    }
-    : order.type === 'pick-up'
-      ? {
-        title: 'Pick-up Details',
-        rows: [
-          { icon: 'storefront', title: 'Lanita Central Kitchen', subtitle: '123 Restaurant Street' },
-          { icon: 'schedule', title: 'Estimated Pick-up Time', subtitle: '1:15 PM' },
-        ],
-      }
-      : {
-        title: 'Table Details',
-        rows: [
-          { icon: 'table_restaurant', title: 'Table B-12', subtitle: 'Main Dining Hall' },
-        ],
-      };
-
-  return {
-    ...order,
-    customer: 'Aina Rahman',
-    items: [
-      { id: 1, name: 'Zesty Chicken Bowl', note: 'Extra dressing, no olives', quantity: 1, price: firstItemPrice, image: ITEM_IMAGES[0] },
-      { id: 2, name: 'Peach Iced Tea', note: 'Large, 50% ice', quantity: 1, price: secondItemPrice, image: ITEM_IMAGES[0] },
-    ],
-    subtotal,
-    fees,
-    total,
-    fulfilment,
-  };
-}
-
-function initialOrders() {
-  return [
-    { id: '#1235', type: 'pick-up', state: 'New', date: 'Oct 24, 2023', time: '1:05 PM', amount: '$10.80' },
-    { id: '#1234', type: 'dine-in', state: 'Preparing', date: 'Oct 24, 2023', time: '12:45 PM', amount: '$24.50' },
-    { id: '#1233', type: 'delivery', state: 'Ready', date: 'Oct 24, 2023', time: '11:30 AM', amount: '$18.20' },
-    { id: '#1230', type: 'delivery', state: 'Completed', date: 'Oct 24, 2023', time: '7:15 PM', amount: '$32.00' },
-    { id: '#1225', type: 'dine-in', state: 'Completed', date: 'Oct 20, 2023', time: '1:20 PM', amount: '$15.50' },
-    { id: '#1218', type: 'pick-up', state: 'Completed', date: 'Oct 18, 2023', time: '6:45 PM', amount: '$42.10' },
-  ].map(addOrderDetails);
-}
 
 export default {
   name: 'OrdersPage',
@@ -78,13 +16,19 @@ export default {
 
   data() {
     return {
-      orders: initialOrders(),
+      orders: [],
       searchQuery: '',
       activeFilter: 'all',
       filters: ['all', 'New', 'Preparing', 'Ready'],
       activeView: 'orders',
       selectedOrder: null,
+      loading: true,
+      errorMessage: '',
     };
+  },
+
+  async mounted() {
+    await this.refreshOrders();
   },
 
   computed: {
@@ -93,7 +37,7 @@ export default {
       return this.orders.filter((order) => {
         if (order.state === 'Completed') return false;
         const matchesState = this.activeFilter === 'all' || order.state === this.activeFilter;
-        const type = TYPE_DETAILS[order.type].label;
+        const type = TYPE_LABELS[order.type] || order.type;
         const matchesSearch = !keyword
           || `Order ${order.id} ${order.state} ${type} ${order.amount}`.toLowerCase().includes(keyword);
         return matchesState && matchesSearch;
@@ -106,19 +50,28 @@ export default {
   },
 
   methods: {
-    changeState(order, direction) {
+    async refreshOrders() {
+      this.loading = true;
+      try { this.orders = await loadOrders(); this.errorMessage = ''; }
+      catch (error) { this.errorMessage = error.message; }
+      finally { this.loading = false; }
+    },
+
+    async changeState(order, direction) {
       const currentIndex = ORDER_STATES.indexOf(order.state);
       const nextIndex = Math.max(0, Math.min(ORDER_STATES.length - 1, currentIndex + direction));
       if (nextIndex === currentIndex) return;
 
+      const previous = order.state;
       order.state = ORDER_STATES[nextIndex];
-      this.$emit('state-change', { orderId: order.id, state: order.state });
+      try { await updateOrderState(order.databaseId, order.state); }
+      catch (error) { order.state = previous; this.errorMessage = error.message; }
     },
 
-    cancelOrder(order) {
-      order.state = 'Completed';
-      order.cancelled = true;
-      this.$emit('state-change', { orderId: order.id, state: order.state, cancelled: true });
+    async cancelOrder(order) {
+      if (!window.confirm(`Cancel order ${order.id}?`)) return;
+      try { await cancelOrderRequest(order.databaseId); order.state = 'Completed'; order.cancelled = true; }
+      catch (error) { this.errorMessage = error.message; }
     },
 
     openOrder(order) {
@@ -131,16 +84,18 @@ export default {
       this.selectedOrder = null;
     },
 
-    setOrderState({ orderId, state }) {
+    async setOrderState({ orderId, state }) {
       const order = this.orders.find((entry) => entry.id === orderId);
       if (!order) return;
+      const previous = order.state;
       order.state = state;
-      this.$emit('state-change', { orderId, state });
+      try { await updateOrderState(order.databaseId, state); }
+      catch (error) { order.state = previous; this.errorMessage = error.message; }
     },
 
-    cancelSelectedOrder(order) {
-      this.cancelOrder(order);
-      this.closeOrderDetails();
+    async cancelSelectedOrder(order) {
+      await this.cancelOrder(order);
+      if (order.cancelled) this.closeOrderDetails();
     },
   },
 
@@ -186,6 +141,9 @@ export default {
             <h2>Active Orders</h2>
             <span>{{ activeOrders.length }} active</span>
           </div>
+
+          <div v-if="errorMessage" class="orders-empty" role="alert">{{ errorMessage }}</div>
+          <div v-if="loading" class="orders-empty">Loading orders...</div>
 
           <div v-if="activeOrders.length" class="orders-list active-orders-list">
             <order-card

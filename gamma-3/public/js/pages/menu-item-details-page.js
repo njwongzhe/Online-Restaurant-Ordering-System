@@ -14,6 +14,8 @@ export default {
   props: {
     item: { type: Object, default: () => ({}) },
     categoryName: { type: String, default: '' },
+    saving: { type: Boolean, default: false },
+    serverError: { type: String, default: '' },
   },
 
   emits: ['back', 'save', 'delete', 'navigate'],
@@ -41,6 +43,7 @@ export default {
       addonDraft: { name: '', price: '' },
       nextAddonNumber: sourceAddons.length + 1,
       validationMessage: '',
+      imageFile: null,
     };
   },
 
@@ -52,6 +55,11 @@ export default {
     pageTitle() {
       return this.isEditing ? 'Edit Item Details' : 'Add Item Details';
     },
+
+    canSubmit() {
+      const price = Number(this.form.basePrice);
+      return !this.saving && this.form.name.trim() !== '' && String(this.form.basePrice).trim() !== '' && Number.isFinite(price) && price >= 0;
+    },
   },
 
   methods: {
@@ -62,6 +70,8 @@ export default {
     handleImageUpload(event) {
       const [file] = event.target.files;
       if (!file) return;
+
+      this.imageFile = file;
 
       const reader = new FileReader();
       reader.addEventListener('load', () => {
@@ -121,9 +131,23 @@ export default {
 
     submitItem() {
       const price = Number(this.form.basePrice);
-      if (!this.form.name.trim() || !String(this.form.basePrice).trim() || Number.isNaN(price) || price < 0 || !this.form.description.trim()) {
-        this.validationMessage = 'Enter an item name, valid base price, and description.';
+      if (!this.form.name.trim() || !String(this.form.basePrice).trim() || Number.isNaN(price) || price < 0) {
+        this.validationMessage = 'Enter an item name and a non-negative base price.';
         return;
+      }
+
+      if (this.editingAddonId) {
+        this.validationMessage = 'Save or cancel the add-on currently being edited.';
+        return;
+      }
+      const addonNames = new Set();
+      for (const addon of this.addons) {
+        const name = addon.name.trim().toLowerCase();
+        if (!name || !Number.isFinite(Number(addon.price)) || Number(addon.price) < 0 || addonNames.has(name)) {
+          this.validationMessage = 'Each add-on needs a unique name and a non-negative price.';
+          return;
+        }
+        addonNames.add(name);
       }
 
       this.validationMessage = '';
@@ -131,8 +155,9 @@ export default {
         ...this.item,
         name: this.form.name.trim(),
         description: this.form.description.trim(),
-        price: `$${price.toFixed(2)}`,
+        price: price.toFixed(2),
         image: this.form.image,
+        imageFile: this.imageFile,
         isAvailable: this.form.isAvailable,
         addons: this.addons.map(({ id, name, price: addonPrice }) => ({ id, name, price: addonPrice })),
       });
@@ -212,14 +237,14 @@ export default {
                 <p v-if="addons.length === 0" class="addons-empty">No add-ons yet. Use the plus button to create one.</p>
               </div>
 
-              <p v-if="validationMessage" class="details-validation" role="alert">{{ validationMessage }}</p>
+              <p v-if="validationMessage || serverError" class="details-validation" role="alert">{{ validationMessage || serverError }}</p>
 
               <div class="details-actions">
                 <button v-if="isEditing" class="details-delete-button" type="button" @click="$emit('delete', item)">
                   <span class="material-symbols-outlined">delete</span>
                   <span>Delete Item</span>
                 </button>
-                <button class="details-save-button" type="submit">{{ isEditing ? 'Save Changes' : 'Add Item' }}</button>
+                <button class="details-save-button" type="submit" :disabled="!canSubmit">{{ saving ? 'Saving...' : (isEditing ? 'Save Changes' : 'Add Item') }}</button>
               </div>
             </form>
           </div>

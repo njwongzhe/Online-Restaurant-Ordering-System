@@ -1,37 +1,5 @@
-import referenceMenuItems from '../data/menu-data.js';
 import MenuItemDetailsPage from './menu-item-details-page.js';
-
-function createItem(item, index) {
-  return {
-    id: `menu-item-${index + 1}`,
-    section: item.section,
-    name: item.name,
-    description: item.desc,
-    price: item.price,
-    image: item.img,
-    isAvailable: true,
-    isEditing: false,
-  };
-}
-
-function createInitialCategories() {
-  const items = referenceMenuItems.map(createItem);
-
-  return [
-    {
-      id: 'food',
-      name: 'Food Selection',
-      isAvailable: true,
-      items: items.filter((item) => item.section === 'food'),
-    },
-    {
-      id: 'drink',
-      name: 'Drink Selection',
-      isAvailable: true,
-      items: items.filter((item) => item.section === 'drink'),
-    },
-  ];
-}
+import { loadMenu, createCategory, updateCategory, deleteCategory, createMenuItem, updateMenuItem, deleteMenuItem, setItemAvailability } from '../services/menu-service.js';
 
 export default {
   name: 'MenuPage',
@@ -52,14 +20,15 @@ export default {
     return {
       activeFilter: 'all',
       searchQuery: '',
-      categories: createInitialCategories(),
+      categories: [],
       editingCategoryId: null,
       categoryNameDraft: '',
-      nextCategoryNumber: 1,
-      nextItemNumber: referenceMenuItems.length + 1,
       activeView: 'menu',
       selectedCategoryId: null,
       selectedItem: {},
+      loading: true,
+      saving: false,
+      errorMessage: '',
     };
   },
 
@@ -68,7 +37,7 @@ export default {
       const keyword = this.searchQuery.trim().toLowerCase();
 
       return this.categories
-        .filter((category) => this.activeFilter === 'all' || category.id === this.activeFilter)
+        .filter((category) => this.activeFilter === 'all' || category.id === Number(this.activeFilter))
         .map((category) => ({
           ...category,
           visibleItems: category.items.filter((item) => {
@@ -85,20 +54,30 @@ export default {
     },
   },
 
+  async mounted() {
+    await this.refreshMenu();
+  },
+
   methods: {
+    async refreshMenu() {
+      this.loading = true;
+      try { this.categories = await loadMenu(); this.errorMessage = ''; }
+      catch (error) { this.errorMessage = error.message; }
+      finally { this.loading = false; }
+    },
     setFilter(filter) {
       this.activeFilter = filter;
     },
 
     addCategory() {
       const category = {
-        id: `custom-${this.nextCategoryNumber++}`,
+        id: `new-${Date.now()}`,
         name: '',
         isAvailable: true,
         items: [],
       };
 
-      this.categories.push(category);
+      this.categories.unshift(category);
       this.activeFilter = 'all';
       this.searchQuery = '';
       this.editingCategoryId = category.id;
@@ -120,29 +99,37 @@ export default {
       });
     },
 
-    saveCategoryName(category) {
+    async saveCategoryName(category) {
       if (this.editingCategoryId !== category.id) return;
 
       const storedCategory = this.categories.find((entry) => entry.id === category.id);
       if (!storedCategory) return;
 
-      const wasNew = !storedCategory.name;
-      const newName = this.categoryNameDraft.trim() || 'New Category';
-      storedCategory.name = newName;
-      this.editingCategoryId = null;
-      this.categoryNameDraft = '';
-      this.$emit(wasNew ? 'category-created' : 'category-updated', { ...storedCategory });
+      const wasNew = String(storedCategory.id).startsWith('new-');
+      const newName = this.categoryNameDraft.trim();
+      if (!newName) { this.errorMessage = 'Category name cannot be empty.'; this.$nextTick(() => document.querySelector(`[data-category-input="${category.id}"]`)?.focus()); return; }
+      try {
+        if (wasNew) await createCategory(newName);
+        else await updateCategory(storedCategory.id, { name: newName });
+        this.editingCategoryId = null;
+        this.categoryNameDraft = '';
+        await this.refreshMenu();
+      } catch (error) { this.errorMessage = error.message; this.$nextTick(() => document.querySelector(`[data-category-input="${category.id}"]`)?.focus()); }
     },
 
-    toggleCategory(category) {
+    async toggleCategory(category) {
       const storedCategory = this.categories.find((entry) => entry.id === category.id);
       if (!storedCategory) return;
 
       storedCategory.isAvailable = !storedCategory.isAvailable;
-      this.$emit('category-availability-change', {
-        categoryId: storedCategory.id,
-        isAvailable: storedCategory.isAvailable,
-      });
+      try { await updateCategory(storedCategory.id, { is_available: storedCategory.isAvailable }); }
+      catch (error) { storedCategory.isAvailable = !storedCategory.isAvailable; this.errorMessage = error.message; }
+    },
+
+    async removeCategory(category) {
+      if (!window.confirm(`Delete ${category.name} and all of its menu items?`)) return;
+      try { await deleteCategory(category.id); await this.refreshMenu(); }
+      catch (error) { this.errorMessage = error.message; }
     },
 
     addItem(category) {
@@ -172,42 +159,33 @@ export default {
       this.selectedItem = {};
     },
 
-    saveItemDetails(itemDetails) {
+    async saveItemDetails(itemDetails) {
       const category = this.categories.find((entry) => entry.id === this.selectedCategoryId);
       if (!category) return;
 
-      if (itemDetails.id) {
-        const item = category.items.find((entry) => entry.id === itemDetails.id);
-        if (item) Object.assign(item, itemDetails, { isEditing: false });
-        this.$emit('item-updated', { categoryId: category.id, item: { ...itemDetails } });
-      } else {
-        const item = {
-          ...itemDetails,
-          id: `menu-item-${this.nextItemNumber++}`,
-          section: category.id,
-          isEditing: false,
-        };
-        category.items.push(item);
-        this.$emit('item-created', { categoryId: category.id, item: { ...item } });
-      }
-
-      this.closeItemDetails();
+      this.saving = true;
+      this.errorMessage = '';
+      try {
+        if (itemDetails.id) await updateMenuItem(itemDetails.id, itemDetails);
+        else await createMenuItem(category.id, itemDetails);
+        await this.refreshMenu();
+        this.closeItemDetails();
+      } catch (error) { this.errorMessage = error.message; }
+      finally { this.saving = false; }
     },
 
-    deleteItem(itemToDelete) {
+    async deleteItem(itemToDelete) {
       const category = this.categories.find((entry) => entry.id === this.selectedCategoryId);
       if (!category) return;
-      category.items = category.items.filter((item) => item.id !== itemToDelete.id);
-      this.closeItemDetails();
+      if (!window.confirm(`Delete ${itemToDelete.name}?`)) return;
+      try { await deleteMenuItem(itemToDelete.id); await this.refreshMenu(); this.closeItemDetails(); }
+      catch (error) { this.errorMessage = error.message; }
     },
 
-    toggleItem(category, item) {
+    async toggleItem(category, item) {
       item.isAvailable = !item.isAvailable;
-      this.$emit('item-availability-change', {
-        categoryId: category.id,
-        itemId: item.id,
-        isAvailable: item.isAvailable,
-      });
+      try { await setItemAvailability(item.id, item.isAvailable); }
+      catch (error) { item.isAvailable = !item.isAvailable; this.errorMessage = error.message; }
     },
   },
 
@@ -216,6 +194,8 @@ export default {
       v-if="activeView === 'item-details'"
       :item="selectedItem"
       :category-name="selectedCategoryName"
+      :saving="saving"
+      :server-error="errorMessage"
       @back="closeItemDetails"
       @save="saveItemDetails"
       @delete="deleteItem"
@@ -244,9 +224,11 @@ export default {
           <span class="material-symbols-outlined">add</span>
         </button>
         <button class="filter-pill" :class="{ active: activeFilter === 'all' }" type="button" @click="setFilter('all')">All Items</button>
-        <button class="filter-pill" :class="{ active: activeFilter === 'food' }" type="button" data-filter="food" @click="setFilter('food')">Food</button>
-        <button class="filter-pill" :class="{ active: activeFilter === 'drink' }" type="button" data-filter="drink" @click="setFilter('drink')">Drink</button>
+        <button v-for="category in categories" :key="category.id" class="filter-pill" :class="{ active: activeFilter === category.id }" type="button" @click="setFilter(category.id)">{{ category.name }}</button>
           </div>
+
+          <p v-if="errorMessage" class="details-validation" role="alert">{{ errorMessage }}</p>
+          <p v-if="loading" class="empty-category">Loading menu...</p>
 
           <div class="menu-sections">
         <section v-for="category in visibleCategories" :key="category.id" class="category">
@@ -274,10 +256,13 @@ export default {
             <button class="section-edit" type="button" :title="'Edit ' + category.name" @click="editCategory(category)">
               <span class="material-symbols-outlined">edit</span>
             </button>
+            <button class="section-edit" type="button" :title="'Delete ' + category.name" @click="removeCategory(category)">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+            <span class="section-rule"></span>
             <button class="section-add" type="button" :title="'Add item to ' + category.name" @click="addItem(category)">
               <span class="material-symbols-outlined">add</span>
             </button>
-            <span class="section-rule"></span>
           </div>
 
           <div class="category-list">

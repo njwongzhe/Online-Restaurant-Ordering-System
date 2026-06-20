@@ -38,11 +38,11 @@ VALUES
   ('currency', 'MYR', 'string', 'ISO currency code.', 1, 1);
 
 INSERT INTO `categories`
-  (`category_id`, `name`, `slug`, `description`, `display_order`, `is_available`)
+  (`category_id`, `name`, `slug`, `description`, `is_available`)
 VALUES
-  (1, 'Food', 'food', 'Freshly prepared main dishes.', 1, 1),
-  (2, 'Drinks', 'drinks', 'Hot and cold beverages.', 2, 1),
-  (3, 'Desserts', 'desserts', 'Sweet finishes and light treats.', 3, 1);
+  (1, 'Food', 'food', 'Freshly prepared main dishes.', 1),
+  (2, 'Drinks', 'drinks', 'Hot and cold beverages.', 1),
+  (3, 'Desserts', 'desserts', 'Sweet finishes and light treats.', 1);
 
 INSERT INTO `menu_items`
   (`menu_item_id`, `category_id`, `name`, `slug`, `description`, `price`, `image_path`, `is_available`, `is_featured`, `display_order`)

@@ -78,14 +78,12 @@ CREATE TABLE `categories` (
   `name` VARCHAR(100) NOT NULL,
   `slug` VARCHAR(100) NOT NULL,
   `description` VARCHAR(255) NULL,
-  `display_order` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   `is_available` TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `uq_categories_name` (`name`),
-  UNIQUE KEY `uq_categories_slug` (`slug`),
-  KEY `idx_categories_visible_order` (`is_available`, `display_order`)
+  UNIQUE KEY `uq_categories_slug` (`slug`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE `menu_items` (
@@ -104,9 +102,9 @@ CREATE TABLE `menu_items` (
   PRIMARY KEY (`menu_item_id`),
   UNIQUE KEY `uq_menu_items_slug` (`slug`),
   KEY `idx_menu_items_category_visible` (`category_id`, `is_available`, `display_order`),
-  KEY `idx_menu_items_name` (`name`),
+  UNIQUE KEY `uq_menu_items_name` (`name`),
   CONSTRAINT `fk_menu_items_category`
-    FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE RESTRICT,
+    FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE,
   CONSTRAINT `chk_menu_items_price` CHECK (`price` >= 0)
 ) ENGINE=InnoDB;
 
