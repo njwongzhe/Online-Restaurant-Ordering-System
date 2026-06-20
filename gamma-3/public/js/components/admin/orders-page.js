@@ -10,7 +10,6 @@ const TYPE_DETAILS = {
 };
 
 const ITEM_IMAGES = [
-  '../assets/images/menu-item-details-hero.png',
   '../assets/images/No%20Menu%20Image.png',
 ];
 

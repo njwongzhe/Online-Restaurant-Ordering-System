@@ -1,6 +1,6 @@
 import AdminSidebar from './sidebar.js';
 
-const DEFAULT_IMAGE = '../assets/images/menu-item-details-hero.png';
+const DEFAULT_IMAGE = '../assets/images/No Menu Image.png';
 const DEFAULT_ADDONS = [
   { name: 'Grilled Chicken Breast', price: 4.50 },
   { name: 'Smoked Atlantic Salmon', price: 6.00 },
