@@ -1,7 +1,11 @@
-import MenuPage from './components/admin/menu-page.js';
-import OrdersPage from './components/admin/orders-page.js';
+import MenuPage from './pages/menu-page.js';
+import OrdersPage from './pages/orders-page.js';
 import AppHeader from './components/header.js';
 import BottomNavigation from './components/bottom-navigation.js';
+import AppSidebar from './components/sidebar.js';
+import MenuItemCard from './components/menu-item-card.js';
+import OrderCard from './components/order-card.js';
+import OrderTimeline from './components/order-timeline.js';
 
 const app = Vue.createApp({
   components: { MenuPage, OrdersPage },
@@ -24,4 +28,8 @@ const app = Vue.createApp({
 
 app.component('app-header', AppHeader);
 app.component('bottom-navigation', BottomNavigation);
+app.component('app-sidebar', AppSidebar);
+app.component('menu-item-card', MenuItemCard);
+app.component('order-card', OrderCard);
+app.component('order-timeline', OrderTimeline);
 app.mount('#app');

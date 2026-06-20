@@ -1,5 +1,4 @@
-import referenceMenuItems from '../../admin/data/menu-data.js';
-import AdminSidebar from './sidebar.js';
+import referenceMenuItems from '../data/menu-data.js';
 import MenuItemDetailsPage from './menu-item-details-page.js';
 
 function createItem(item, index) {
@@ -37,7 +36,7 @@ function createInitialCategories() {
 export default {
   name: 'MenuPage',
 
-  components: { AdminSidebar, MenuItemDetailsPage },
+  components: { MenuItemDetailsPage },
 
   emits: [
     'category-created',
@@ -224,7 +223,7 @@ export default {
     ></menu-item-details-page>
 
     <main v-else class="phone admin-shell" aria-label="Lanita Restaurant Admin menu page">
-      <admin-sidebar active="menu" @navigate="$emit('navigate', $event)"></admin-sidebar>
+      <app-sidebar active="menu" @navigate="$emit('navigate', $event)"></app-sidebar>
 
       <div class="admin-main">
         <app-header title="Lanita Restaurant (Admin)" show-logout></app-header>
@@ -282,33 +281,14 @@ export default {
           </div>
 
           <div class="category-list">
-            <article
+            <menu-item-card
               v-for="item in category.visibleItems"
               :key="item.id"
-              class="card"
-              :class="{ unavailable: !category.isAvailable || !item.isAvailable }"
-            >
-              <img class="card-image" :src="item.image" :alt="item.name || 'New menu item'" />
-              <div class="card-content">
-                <h3 class="item-name">{{ item.name }}</h3>
-                <p class="item-desc">{{ item.description }}</p>
-              </div>
-              <strong class="price">{{ item.price }}</strong>
-
-              <div class="item-actions">
-                <button
-                  class="item-toggle"
-                  :class="{ off: !item.isAvailable }"
-                  type="button"
-                  title="Toggle availability"
-                  :aria-pressed="item.isAvailable"
-                  @click="toggleItem(category, item)"
-                ></button>
-                <button class="edit-item" type="button" :title="'Edit ' + (item.name || 'item')" @click="editItem(category, item)">
-                  <span class="material-symbols-outlined">edit</span>
-                </button>
-              </div>
-            </article>
+              :item="item"
+              :category-available="category.isAvailable"
+              @toggle="toggleItem(category, item)"
+              @edit="editItem(category, item)"
+            ></menu-item-card>
             <p v-if="category.visibleItems.length === 0" class="empty-category">No menu items in this category.</p>
           </div>
         </section>

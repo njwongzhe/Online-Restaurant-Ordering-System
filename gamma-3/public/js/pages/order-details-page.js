@@ -1,5 +1,3 @@
-import AdminSidebar from './sidebar.js';
-
 const ORDER_STATES = ['New', 'Preparing', 'Ready', 'Completed'];
 
 const TIMELINES = {
@@ -25,8 +23,6 @@ const TIMELINES = {
 
 export default {
   name: 'OrderDetailsPage',
-  components: { AdminSidebar },
-
   props: {
     order: { type: Object, required: true },
   },
@@ -77,7 +73,7 @@ export default {
 
   template: `
     <main class="order-details-page admin-shell" aria-label="Order details">
-      <admin-sidebar active="orders" @navigate="handleNavigation"></admin-sidebar>
+      <app-sidebar active="orders" @navigate="handleNavigation"></app-sidebar>
 
       <div class="admin-main order-details-main">
         <app-header title="Order Status" variant="page" show-back @back="$emit('back')"></app-header>
@@ -89,17 +85,7 @@ export default {
             <span>{{ order.date }} &middot; {{ order.time }} &middot; {{ typeLabel }}</span>
           </section>
 
-          <section class="order-detail-card order-timeline-card" aria-label="Order progress">
-            <div v-for="(step, index) in timeline" :key="step.state" class="order-timeline-row" :class="{ pending: step.pending }">
-              <div class="order-step-icon" :class="{ circle: index === 0 }">
-                <span class="material-symbols-outlined">{{ step.icon }}</span>
-              </div>
-              <div>
-                <h2>{{ step.title }}</h2>
-                <p>{{ step.subtitle }}</p>
-              </div>
-            </div>
-          </section>
+          <order-timeline :steps="timeline"></order-timeline>
 
           <section class="order-summary-section">
             <h2 class="order-detail-section-title">Order Summary</h2>

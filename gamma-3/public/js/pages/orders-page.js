@@ -1,4 +1,3 @@
-import AdminSidebar from './sidebar.js';
 import OrderDetailsPage from './order-details-page.js';
 
 const ORDER_STATES = ['New', 'Preparing', 'Ready', 'Completed'];
@@ -52,7 +51,7 @@ function addOrderDetails(order) {
     customer: 'Aina Rahman',
     items: [
       { id: 1, name: 'Zesty Chicken Bowl', note: 'Extra dressing, no olives', quantity: 1, price: firstItemPrice, image: ITEM_IMAGES[0] },
-      { id: 2, name: 'Peach Iced Tea', note: 'Large, 50% ice', quantity: 1, price: secondItemPrice, image: ITEM_IMAGES[1] },
+      { id: 2, name: 'Peach Iced Tea', note: 'Large, 50% ice', quantity: 1, price: secondItemPrice, image: ITEM_IMAGES[0] },
     ],
     subtotal,
     fees,
@@ -74,7 +73,7 @@ function initialOrders() {
 
 export default {
   name: 'OrdersPage',
-  components: { AdminSidebar, OrderDetailsPage },
+  components: { OrderDetailsPage },
   emits: ['navigate', 'state-change'],
 
   data() {
@@ -107,10 +106,6 @@ export default {
   },
 
   methods: {
-    typeDetails(type) {
-      return TYPE_DETAILS[type];
-    },
-
     changeState(order, direction) {
       const currentIndex = ORDER_STATES.indexOf(order.state);
       const nextIndex = Math.max(0, Math.min(ORDER_STATES.length - 1, currentIndex + direction));
@@ -160,7 +155,7 @@ export default {
     ></order-details-page>
 
     <main v-else class="orders-page admin-shell" aria-label="Live orders">
-      <admin-sidebar active="orders" @navigate="$emit('navigate', $event)"></admin-sidebar>
+      <app-sidebar active="orders" @navigate="$emit('navigate', $event)"></app-sidebar>
 
       <div class="admin-main orders-main">
         <app-header title="Live Orders" show-logout></app-header>
@@ -193,31 +188,14 @@ export default {
           </div>
 
           <div v-if="activeOrders.length" class="orders-list active-orders-list">
-            <article v-for="order in activeOrders" :key="order.id" class="order-card active-order-card">
-              <div class="order-card-main">
-                <div class="order-type-icon"><span class="material-symbols-outlined">{{ typeDetails(order.type).icon }}</span></div>
-                <div class="order-copy">
-                  <h3>Order {{ order.id }}</h3>
-                  <div class="order-status">{{ order.state }} <span>&middot; {{ typeDetails(order.type).label }}</span></div>
-                  <time>{{ order.date }}<br>{{ order.time }}</time>
-                </div>
-                <strong class="order-amount">{{ order.amount }}</strong>
-                <button class="order-open" type="button" :aria-label="'Open order ' + order.id" @click="openOrder(order)"><span class="material-symbols-outlined">chevron_right</span></button>
-              </div>
-
-              <div class="order-actions">
-                <button class="order-cancel" type="button" @click="cancelOrder(order)">Cancel</button>
-                <div class="state-control" :aria-label="'Change state for order ' + order.id">
-                  <button type="button" aria-label="Previous state" :disabled="order.state === 'New'" @click="changeState(order, -1)">
-                    <span class="material-symbols-outlined">chevron_left</span>
-                  </button>
-                  <span>{{ order.state }}</span>
-                  <button type="button" aria-label="Next state" @click="changeState(order, 1)">
-                    <span class="material-symbols-outlined">chevron_right</span>
-                  </button>
-                </div>
-              </div>
-            </article>
+            <order-card
+              v-for="order in activeOrders"
+              :key="order.id"
+              :order="order"
+              @open="openOrder(order)"
+              @cancel="cancelOrder(order)"
+              @state-change="changeState(order, $event)"
+            ></order-card>
           </div>
           <div v-else class="orders-empty">No active orders found</div>
 
@@ -227,18 +205,13 @@ export default {
           </div>
 
           <div class="orders-list history-orders-list">
-            <article v-for="order in historyOrders" :key="order.id" class="order-card history-order-card">
-              <div class="order-card-main">
-                <div class="order-type-icon muted"><span class="material-symbols-outlined">{{ typeDetails(order.type).icon }}</span></div>
-                <div class="order-copy">
-                  <h3>Order {{ order.id }}</h3>
-                  <div class="order-status muted">{{ order.cancelled ? 'Cancelled' : 'Completed' }} <span>&middot; {{ typeDetails(order.type).label }}</span></div>
-                  <time>{{ order.date }}<br>{{ order.time }}</time>
-                </div>
-                <strong class="order-amount">{{ order.amount }}</strong>
-                <button class="order-open" type="button" :aria-label="'Open order ' + order.id" @click="openOrder(order)"><span class="material-symbols-outlined">chevron_right</span></button>
-              </div>
-            </article>
+            <order-card
+              v-for="order in historyOrders"
+              :key="order.id"
+              :order="order"
+              history
+              @open="openOrder(order)"
+            ></order-card>
           </div>
         </div>
       </div>

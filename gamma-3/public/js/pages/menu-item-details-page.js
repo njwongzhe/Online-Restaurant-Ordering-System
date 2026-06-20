@@ -1,5 +1,3 @@
-import AdminSidebar from './sidebar.js';
-
 const DEFAULT_IMAGE = '../assets/images/No Menu Image.png';
 const DEFAULT_ADDONS = [
   { name: 'Grilled Chicken Breast', price: 4.50 },
@@ -13,8 +11,6 @@ function numericPrice(value) {
 
 export default {
   name: 'MenuItemDetailsPage',
-  components: { AdminSidebar },
-
   props: {
     item: { type: Object, default: () => ({}) },
     categoryName: { type: String, default: '' },
@@ -145,7 +141,7 @@ export default {
 
   template: `
     <main class="item-details-page admin-shell" :aria-label="pageTitle">
-      <admin-sidebar active="menu" @navigate="handleNavigation"></admin-sidebar>
+      <app-sidebar active="menu" @navigate="handleNavigation"></app-sidebar>
 
       <div class="item-details-main">
         <app-header :title="pageTitle" variant="page" show-back @back="$emit('back')"></app-header>

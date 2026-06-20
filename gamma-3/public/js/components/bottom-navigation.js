@@ -3,20 +3,18 @@ export default {
 
   props: {
     active: { type: String, default: 'menu' },
-  },
-
-  emits: ['navigate'],
-
-  data() {
-    return {
-      destinations: [
+    destinations: {
+      type: Array,
+      default: () => [
         { id: 'menu', label: 'Menu', icon: 'lunch_dining' },
         { id: 'orders', label: 'Orders', icon: 'receipt_long' },
         { id: 'admin', label: 'Admin', icon: 'admin_panel_settings' },
         { id: 'profile', label: 'Profile', icon: 'person' },
       ],
-    };
+    },
   },
+
+  emits: ['navigate'],
 
   template: `
     <nav class="global-bottom-nav" aria-label="Main navigation">
