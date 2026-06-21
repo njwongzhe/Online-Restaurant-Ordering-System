@@ -20,8 +20,6 @@ DROP TABLE IF EXISTS `cart_items`;
 DROP TABLE IF EXISTS `carts`;
 DROP TABLE IF EXISTS `menu_item_addons`;
 DROP TABLE IF EXISTS `addons`;
-DROP TABLE IF EXISTS `menu_item_tags`;
-DROP TABLE IF EXISTS `tags`;
 DROP TABLE IF EXISTS `menu_items`;
 DROP TABLE IF EXISTS `categories`;
 DROP TABLE IF EXISTS `restaurant_settings`;
@@ -95,42 +93,20 @@ CREATE TABLE `menu_items` (
   `price` DECIMAL(10,2) UNSIGNED NOT NULL,
   `image_path` VARCHAR(500) NULL,
   `is_available` TINYINT(1) NOT NULL DEFAULT 1,
-  `is_featured` TINYINT(1) NOT NULL DEFAULT 0,
-  `display_order` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`menu_item_id`),
   UNIQUE KEY `uq_menu_items_slug` (`slug`),
-  KEY `idx_menu_items_category_visible` (`category_id`, `is_available`, `display_order`),
+  KEY `idx_menu_items_category_visible` (`category_id`, `is_available`),
   UNIQUE KEY `uq_menu_items_name` (`name`),
   CONSTRAINT `fk_menu_items_category`
     FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE,
   CONSTRAINT `chk_menu_items_price` CHECK (`price` >= 0)
 ) ENGINE=InnoDB;
 
-CREATE TABLE `tags` (
-  `tag_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(50) NOT NULL,
-  `slug` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`tag_id`),
-  UNIQUE KEY `uq_tags_name` (`name`),
-  UNIQUE KEY `uq_tags_slug` (`slug`)
-) ENGINE=InnoDB;
-
-CREATE TABLE `menu_item_tags` (
-  `menu_item_id` BIGINT UNSIGNED NOT NULL,
-  `tag_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`menu_item_id`, `tag_id`),
-  CONSTRAINT `fk_menu_item_tags_item`
-    FOREIGN KEY (`menu_item_id`) REFERENCES `menu_items` (`menu_item_id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_menu_item_tags_tag`
-    FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
 CREATE TABLE `addons` (
   `addon_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
-  `description` VARCHAR(255) NULL,
   `price` DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00,
   `is_available` TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -262,7 +238,6 @@ CREATE TABLE `order_status_history` (
   `history_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `order_id` BIGINT UNSIGNED NOT NULL,
   `status` ENUM('pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'completed', 'cancelled') NOT NULL,
-  `note` VARCHAR(255) NULL,
   `changed_by` BIGINT UNSIGNED NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`history_id`),

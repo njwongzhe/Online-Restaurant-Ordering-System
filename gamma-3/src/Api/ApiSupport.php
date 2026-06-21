@@ -6,23 +6,27 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 const DEFAULT_MENU_IMAGE = 'assets/images/No Menu Image.png';
 
+// Utility functions for API endpoints
 function apiJson(Response $response, mixed $data, int $status = 200): Response
 {
     $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
 }
 
+// Converts various truthy/falsy values to a boolean, treating null as false
 function apiBool(mixed $value): bool
 {
     return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
 }
 
+// Generates a URL-friendly slug from a string, ensuring it is not empty, defaulting to 'entry' if it is
 function apiSlug(string $value): string
 {
     $slug = strtolower(trim((string) preg_replace('/[^A-Za-z0-9]+/', '-', $value), '-'));
     return $slug !== '' ? $slug : 'entry';
 }
 
+// Generates a unique slug for a given value within a specified database table and column, optionally excluding a specific ID
 function apiUniqueSlug(PDO $pdo, string $table, string $column, string $value, string $idColumn, ?int $excludeId = null): string
 {
     $base = apiSlug($value);
@@ -39,6 +43,7 @@ function apiUniqueSlug(PDO $pdo, string $table, string $column, string $value, s
     } while (true);
 }
 
+// Validates category data, ensuring the name is not empty, does not exceed 100 characters, and is unique (case-insensitive), optionally excluding a specific category ID
 function apiValidateCategory(PDO $pdo, mixed $name, ?int $excludeId = null): string
 {
     $name = trim((string) $name);

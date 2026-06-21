@@ -35,7 +35,7 @@ function registerApiRoutes(App $app, PDO $pdo): void
 
     $app->get('/api/menu', function (Request $request, Response $response) use ($pdo) {
         $categories = $pdo->query('SELECT category_id, name, is_available FROM categories ORDER BY name ASC, category_id ASC')->fetchAll(PDO::FETCH_ASSOC);
-        $itemStatement = $pdo->prepare('SELECT menu_item_id, name, description, price, image_path, is_available FROM menu_items WHERE category_id = ? ORDER BY display_order, menu_item_id');
+        $itemStatement = $pdo->prepare('SELECT menu_item_id, name, description, price, image_path, is_available FROM menu_items WHERE category_id = ? ORDER BY name ASC, menu_item_id ASC');
         $addonStatement = $pdo->prepare('SELECT a.addon_id, a.name, a.price FROM menu_item_addons mia JOIN addons a ON a.addon_id = mia.addon_id WHERE mia.menu_item_id = ? ORDER BY mia.display_order, a.addon_id');
         foreach ($categories as &$category) {
             $itemStatement->execute([$category['category_id']]);
@@ -189,7 +189,7 @@ function registerApiRoutes(App $app, PDO $pdo): void
                 $check->execute([$id]);
                 if (!$check->fetchColumn()) throw new InvalidArgumentException('Order not found.');
             }
-            $pdo->prepare('INSERT INTO order_status_history (order_id, status, note) VALUES (?, ?, ?)')->execute([$id, $status, $forcedStatus ? 'Cancelled by admin' : 'State changed by admin']);
+            $pdo->prepare('INSERT INTO order_status_history (order_id, status) VALUES (?, ?)')->execute([$id, $status]);
             $pdo->commit();
             return apiJson($response, ['success' => true, 'status' => $status]);
         } catch (Throwable $exception) {
