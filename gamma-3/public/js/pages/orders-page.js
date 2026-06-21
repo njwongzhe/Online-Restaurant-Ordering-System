@@ -20,7 +20,7 @@ function matchesOrderSearch(order, keyword) {
 export default {
   name: 'OrdersPage',
   components: { OrderDetailsPage },
-  emits: ['navigate', 'state-change'],
+  emits: ['navigate', 'state-change', 'logout'],
 
   data() {
     return {
@@ -116,10 +116,10 @@ export default {
     ></order-details-page>
 
     <main v-else class="orders-page admin-shell" aria-label="Live orders">
-      <app-sidebar active="orders" @navigate="$emit('navigate', $event)"></app-sidebar>
+      <app-sidebar active="orders" @navigate="$emit('navigate', $event)" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main orders-main">
-        <app-header title="Live Orders" show-logout></app-header>
+        <app-header title="Live Orders" show-logout @logout="$emit('logout')"></app-header>
 
         <div class="orders-container">
           <section class="orders-heading">
