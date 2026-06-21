@@ -19,30 +19,6 @@ function apiBool(mixed $value): bool
     return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
 }
 
-// Generates a URL-friendly slug from a string, ensuring it is not empty, defaulting to 'entry' if it is
-function apiSlug(string $value): string
-{
-    $slug = strtolower(trim((string) preg_replace('/[^A-Za-z0-9]+/', '-', $value), '-'));
-    return $slug !== '' ? $slug : 'entry';
-}
-
-// Generates a unique slug for a given value within a specified database table and column, optionally excluding a specific ID
-function apiUniqueSlug(PDO $pdo, string $table, string $column, string $value, string $idColumn, ?int $excludeId = null): string
-{
-    $base = apiSlug($value);
-    $slug = $base;
-    $suffix = 2;
-    do {
-        $sql = "SELECT COUNT(*) FROM {$table} WHERE {$column} = ?" . ($excludeId ? " AND {$idColumn} <> ?" : '');
-        $statement = $pdo->prepare($sql);
-        $parameters = [$slug];
-        if ($excludeId) $parameters[] = $excludeId;
-        $statement->execute($parameters);
-        if ((int) $statement->fetchColumn() === 0) return $slug;
-        $slug = $base . '-' . $suffix++;
-    } while (true);
-}
-
 // Validates category data, ensuring the name is not empty, does not exceed 100 characters, and is unique (case-insensitive), optionally excluding a specific category ID
 function apiValidateCategory(PDO $pdo, mixed $name, ?int $excludeId = null): string
 {

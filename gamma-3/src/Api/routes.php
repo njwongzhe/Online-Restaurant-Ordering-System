@@ -53,8 +53,8 @@ function registerApiRoutes(App $app, PDO $pdo): void
         try {
             $data = (array) $request->getParsedBody();
             $name = apiValidateCategory($pdo, $data['name'] ?? '');
-            $statement = $pdo->prepare('INSERT INTO categories (name, slug, is_available) VALUES (?, ?, 1)');
-            $statement->execute([$name, apiUniqueSlug($pdo, 'categories', 'slug', $name, 'category_id')]);
+            $statement = $pdo->prepare('INSERT INTO categories (name, is_available) VALUES (?, 1)');
+            $statement->execute([$name]);
             $id = (int) $pdo->lastInsertId();
             return apiJson($response, ['category' => ['category_id' => $id, 'name' => $name, 'is_available' => 1, 'items' => []]], 201);
         } catch (Throwable $exception) {
@@ -71,7 +71,7 @@ function registerApiRoutes(App $app, PDO $pdo): void
             if (!$exists->fetchColumn()) return apiJson($response, ['error' => 'Category not found.'], 404);
             if (array_key_exists('name', $data)) {
                 $name = apiValidateCategory($pdo, $data['name'], $id);
-                $pdo->prepare('UPDATE categories SET name = ?, slug = ? WHERE category_id = ?')->execute([$name, apiUniqueSlug($pdo, 'categories', 'slug', $name, 'category_id', $id), $id]);
+                $pdo->prepare('UPDATE categories SET name = ? WHERE category_id = ?')->execute([$name, $id]);
             }
             if (array_key_exists('is_available', $data)) {
                 $pdo->prepare('UPDATE categories SET is_available = ? WHERE category_id = ?')->execute([apiBool($data['is_available']) ? 1 : 0, $id]);
@@ -115,14 +115,14 @@ function registerApiRoutes(App $app, PDO $pdo): void
                 $oldImage = $find->fetchColumn();
                 if ($oldImage === false) throw new InvalidArgumentException('Menu item not found.');
                 $imagePath = $newImage ?: $oldImage ?: DEFAULT_MENU_IMAGE;
-                $pdo->prepare('UPDATE menu_items SET name = ?, slug = ?, description = ?, price = ?, image_path = ?, is_available = ? WHERE menu_item_id = ?')->execute([$validated['name'], apiUniqueSlug($pdo, 'menu_items', 'slug', $validated['name'], 'menu_item_id', $id), $validated['description'], $validated['price'], $imagePath, $validated['is_available'] ? 1 : 0, $id]);
+                $pdo->prepare('UPDATE menu_items SET name = ?, description = ?, price = ?, image_path = ?, is_available = ? WHERE menu_item_id = ?')->execute([$validated['name'], $validated['description'], $validated['price'], $imagePath, $validated['is_available'] ? 1 : 0, $id]);
             } else {
                 $categoryId = (int) $args['categoryId'];
                 $category = $pdo->prepare('SELECT category_id FROM categories WHERE category_id = ?');
                 $category->execute([$categoryId]);
                 if (!$category->fetchColumn()) throw new InvalidArgumentException('Category not found.');
                 $imagePath = $newImage ?: DEFAULT_MENU_IMAGE;
-                $pdo->prepare('INSERT INTO menu_items (category_id, name, slug, description, price, image_path, is_available) VALUES (?, ?, ?, ?, ?, ?, ?)')->execute([$categoryId, $validated['name'], apiUniqueSlug($pdo, 'menu_items', 'slug', $validated['name'], 'menu_item_id'), $validated['description'], $validated['price'], $imagePath, $validated['is_available'] ? 1 : 0]);
+                $pdo->prepare('INSERT INTO menu_items (category_id, name, description, price, image_path, is_available) VALUES (?, ?, ?, ?, ?, ?)')->execute([$categoryId, $validated['name'], $validated['description'], $validated['price'], $imagePath, $validated['is_available'] ? 1 : 0]);
                 $id = (int) $pdo->lastInsertId();
             }
             saveItemAddons($pdo, $id, $validated['addons']);

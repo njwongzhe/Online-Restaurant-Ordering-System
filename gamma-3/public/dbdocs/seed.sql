@@ -42,25 +42,25 @@ VALUES
   ('currency', 'MYR', 'string', 'ISO currency code.', 1, 1);
 
 INSERT INTO `categories`
-  (`category_id`, `name`, `slug`, `description`, `is_available`)
+  (`category_id`, `name`, `description`, `is_available`)
 VALUES
-  (1, 'Food', 'food', 'Freshly prepared main dishes.', 1),
-  (2, 'Drinks', 'drinks', 'Hot and cold beverages.', 1),
-  (3, 'Desserts', 'desserts', 'Sweet finishes and light treats.', 1);
+  (1, 'Food', 'Freshly prepared main dishes.', 1),
+  (2, 'Drinks', 'Hot and cold beverages.', 1),
+  (3, 'Desserts', 'Sweet finishes and light treats.', 1);
 
 INSERT INTO `menu_items`
-  (`menu_item_id`, `category_id`, `name`, `slug`, `description`, `price`, `image_path`, `is_available`)
+  (`menu_item_id`, `category_id`, `name`, `description`, `price`, `image_path`, `is_available`)
 VALUES
-  (1, 1, 'Avocado Power Bowl', 'avocado-power-bowl', 'Quinoa, roasted chickpeas, avocado and citrus dressing.', 12.50, NULL, 1),
-  (2, 1, 'Lanita Signature Burger', 'lanita-signature-burger', 'Beef patty, smoked cheese, caramelised onion and house sauce.', 14.00, NULL, 1),
-  (3, 1, 'Truffle Mushroom Pasta', 'truffle-mushroom-pasta', 'Fettuccine with wild mushrooms and light truffle cream.', 16.50, NULL, 1),
-  (4, 1, 'Nasi Goreng Kampung', 'nasi-goreng-kampung', 'Traditional fried rice with chicken, anchovies and vegetables.', 12.00, NULL, 1),
-  (5, 1, 'Maggi Goreng Special', 'maggi-goreng-special', 'Wok-fried noodles with vegetables, egg and sambal.', 7.50, NULL, 0),
-  (6, 2, 'Artisanal Latte', 'artisanal-latte', 'Single-origin espresso with silky steamed milk.', 4.50, NULL, 1),
-  (7, 2, 'Minty Lemonade', 'minty-lemonade', 'Fresh lemon, mint and sparkling water.', 3.75, NULL, 1),
-  (8, 2, 'Ceremonial Matcha', 'ceremonial-matcha', 'Premium matcha whisked with oat milk.', 5.25, NULL, 1),
-  (9, 2, 'Cold Brew Reserve', 'cold-brew-reserve', 'Coffee steeped slowly for 24 hours.', 4.00, NULL, 1),
-  (10, 3, 'Pandan Crème Brûlée', 'pandan-creme-brulee', 'Silky pandan custard with caramelised sugar.', 8.00, NULL, 1);
+  (1, 1, 'Avocado Power Bowl', 'Quinoa, roasted chickpeas, avocado and citrus dressing.', 12.50, NULL, 1),
+  (2, 1, 'Lanita Signature Burger', 'Beef patty, smoked cheese, caramelised onion and house sauce.', 14.00, NULL, 1),
+  (3, 1, 'Truffle Mushroom Pasta', 'Fettuccine with wild mushrooms and light truffle cream.', 16.50, NULL, 1),
+  (4, 1, 'Nasi Goreng Kampung', 'Traditional fried rice with chicken, anchovies and vegetables.', 12.00, NULL, 1),
+  (5, 1, 'Maggi Goreng Special', 'Wok-fried noodles with vegetables, egg and sambal.', 7.50, NULL, 0),
+  (6, 2, 'Artisanal Latte', 'Single-origin espresso with silky steamed milk.', 4.50, NULL, 1),
+  (7, 2, 'Minty Lemonade', 'Fresh lemon, mint and sparkling water.', 3.75, NULL, 1),
+  (8, 2, 'Ceremonial Matcha', 'Premium matcha whisked with oat milk.', 5.25, NULL, 1),
+  (9, 2, 'Cold Brew Reserve', 'Coffee steeped slowly for 24 hours.', 4.00, NULL, 1),
+  (10, 3, 'Pandan Crème Brûlée', 'Silky pandan custard with caramelised sugar.', 8.00, NULL, 1);
 
 INSERT INTO `addons` (`addon_id`, `name`, `price`, `is_available`) VALUES
   (1, 'Extra Egg', 1.00, 1),

@@ -78,21 +78,18 @@ CREATE TABLE `restaurant_settings` (
 CREATE TABLE `categories` (
   `category_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
-  `slug` VARCHAR(100) NOT NULL,
   `description` VARCHAR(255) NULL,
   `is_available` TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`category_id`),
-  UNIQUE KEY `uq_categories_name` (`name`),
-  UNIQUE KEY `uq_categories_slug` (`slug`)
+  UNIQUE KEY `uq_categories_name` (`name`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE `menu_items` (
   `menu_item_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `category_id` INT UNSIGNED NOT NULL,
   `name` VARCHAR(120) NOT NULL,
-  `slug` VARCHAR(140) NOT NULL,
   `description` TEXT NULL,
   `price` DECIMAL(10,2) UNSIGNED NOT NULL,
   `image_path` VARCHAR(500) NULL,
@@ -100,7 +97,6 @@ CREATE TABLE `menu_items` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`menu_item_id`),
-  UNIQUE KEY `uq_menu_items_slug` (`slug`),
   KEY `idx_menu_items_category_visible` (`category_id`, `is_available`),
   UNIQUE KEY `uq_menu_items_name` (`name`),
   CONSTRAINT `fk_menu_items_category`
