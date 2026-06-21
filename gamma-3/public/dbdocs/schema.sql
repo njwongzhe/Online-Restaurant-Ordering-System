@@ -6,6 +6,10 @@ CREATE DATABASE IF NOT EXISTS `cpad_03_gamma`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
+CREATE USER 'cpad'@'localhost' IDENTIFIED BY 'cpadPassword';
+GRANT ALL PRIVILEGES ON cpad_03_gamma.* TO 'cpad'@'localhost';
+FLUSH PRIVILEGES;
+
 USE `cpad_03_gamma`;
 
 SET NAMES utf8mb4;
