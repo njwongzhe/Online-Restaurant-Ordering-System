@@ -10,7 +10,7 @@ export default {
 
   emits: ['back', 'logout'],
 
-  template: `
+  template: /*html*/ `
     <header class="global-header" :class="'global-header--' + variant">
       <div class="global-header-inner">
         <button v-if="showBack" class="global-header-action" type="button" aria-label="Back" @click="$emit('back')">

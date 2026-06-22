@@ -20,7 +20,7 @@ export default {
 
   emits: ['navigate'],
 
-  template: `
+  template: /*html*/ `
     <aside class="desktop-sidebar" aria-label="Admin sidebar">
       <div class="sidebar-brand">
         <span class="material-symbols-outlined">restaurant</span>

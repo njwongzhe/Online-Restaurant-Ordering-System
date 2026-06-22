@@ -71,7 +71,7 @@ export default {
     },
   },
 
-  template: `
+  template: /*html*/ `
     <main class="order-details-page admin-shell" aria-label="Order details">
       <app-sidebar active="orders" @navigate="handleNavigation"></app-sidebar>
 

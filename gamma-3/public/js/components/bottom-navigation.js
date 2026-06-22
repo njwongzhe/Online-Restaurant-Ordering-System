@@ -16,7 +16,7 @@ export default {
 
   emits: ['navigate'],
 
-  template: `
+  template: /*html*/ `
     <nav class="global-bottom-nav" aria-label="Main navigation">
       <button
         v-for="destination in destinations"

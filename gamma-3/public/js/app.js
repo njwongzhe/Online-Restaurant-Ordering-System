@@ -20,7 +20,7 @@ const app = Vue.createApp({
     },
   },
 
-  template: `
+  template:/*html*/ `
     <menu-page v-if="currentPage === 'menu'" @navigate="navigate"></menu-page>
     <orders-page v-else-if="currentPage === 'orders'" @navigate="navigate"></orders-page>
   `,

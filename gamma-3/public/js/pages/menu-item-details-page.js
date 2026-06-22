@@ -1,9 +1,4 @@
 const DEFAULT_IMAGE = '../assets/images/No Menu Image.png';
-const DEFAULT_ADDONS = [
-  { name: 'Grilled Chicken Breast', price: 4.50 },
-  { name: 'Smoked Atlantic Salmon', price: 6.00 },
-  { name: 'Organic Tempeh', price: 3.50 },
-];
 
 function numericPrice(value) {
   return String(value ?? '').replace(/[^0-9.]/g, '');
@@ -21,10 +16,9 @@ export default {
   emits: ['back', 'save', 'delete', 'navigate'],
 
   data() {
-    const isEditing = Boolean(this.item?.id);
     const sourceAddons = Array.isArray(this.item?.addons)
       ? this.item.addons
-      : (isEditing ? DEFAULT_ADDONS : []);
+      : [];
 
     return {
       form: {
@@ -164,7 +158,7 @@ export default {
     },
   },
 
-  template: `
+  template: /* html*/ `
     <main class="item-details-page admin-shell" :aria-label="pageTitle">
       <app-sidebar active="menu" @navigate="handleNavigation"></app-sidebar>
 
