@@ -7,27 +7,30 @@ SET NAMES utf8mb4;
 START TRANSACTION;
 
 -- All sample accounts use: Password123!
+-- Initial admin account: phone_number = 'Admin', password = 'adminPass' (hash generated using PHP password_hash PASSWORD_DEFAULT)
 INSERT INTO `users`
   (`user_id`, `phone_number`, `password_hash`, `display_name`, `role`, `is_active`)
 VALUES
-  (1, '0111000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Aina Rahman', 'admin', 1),
-  (2, '0111000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Daniel Lee', 'admin', 1),
-  (3, '0122000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Ali Ahmad', 'customer', 1),
-  (4, '0122000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Siti Aminah', 'customer', 1),
-  (5, '0122000003', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Muthu Raj', 'customer', 1),
-  (6, '0122000004', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Nur Izzati', 'customer', 1),
-  (7, '0122000005', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Jason Wong', 'customer', 1);
+  (1, 'Admin', '$2y$10$t0aq7AMKak5xJBiy9LddNeEu0AJCcd5ji3AiS9CU8F/WMoqrWHyZa', 'Admin', 'admin', 1),
+  (2, '0111000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Aina Rahman', 'admin', 1),
+  (3, '0111000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Daniel Lee', 'admin', 1),
+  (4, '0122000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Ali Ahmad', 'customer', 1),
+  (5, '0122000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Siti Aminah', 'customer', 1),
+  (6, '0122000003', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Muthu Raj', 'customer', 1),
+  (7, '0122000004', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Nur Izzati', 'customer', 1),
+  (8, '0122000005', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Jason Wong', 'customer', 1);
 
 INSERT INTO `admin_profiles` (`user_id`, `position`) VALUES
-  (1, 'Restaurant Manager'),
-  (2, 'Kitchen Supervisor');
+  (1, 'Initial Admin'),
+  (2, 'Restaurant Manager'),
+  (3, 'Kitchen Supervisor');
 
 INSERT INTO `customer_profiles` (`user_id`, `default_address`, `default_payment_method`) VALUES
-  (3, 'Kolej Tun Dr Ismail, UTM', 'cash'),
-  (4, 'Kolej Datin Seri Endon, UTM', 'e_wallet'),
-  (5, 'Kolej Rahman Putra, UTM', 'online_banking'),
-  (6, 'Kolej Tun Fatimah, UTM', 'e_wallet'),
-  (7, 'Kolej Perdana, UTM', 'cash');
+  (4, 'Kolej Tun Dr Ismail, UTM', 'cash'),
+  (5, 'Kolej Datin Seri Endon, UTM', 'e_wallet'),
+  (6, 'Kolej Rahman Putra, UTM', 'online_banking'),
+  (7, 'Kolej Tun Fatimah, UTM', 'e_wallet'),
+  (8, 'Kolej Perdana, UTM', 'cash');
 
 INSERT INTO `restaurant_settings`
   (`setting_key`, `setting_value`, `value_type`, `description`, `is_public`, `updated_by`)
