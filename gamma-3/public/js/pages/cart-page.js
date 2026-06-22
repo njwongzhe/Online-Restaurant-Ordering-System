@@ -6,9 +6,6 @@ export default {
   emits: ['navigate', 'logout'],
 
   data() {
-    const defaultTime = new Date(Date.now() + 25 * 60 * 1000);
-    const hh = String(defaultTime.getHours()).padStart(2, '0');
-    const min = String(defaultTime.getMinutes()).padStart(2, '0');
     return {
       cartItems: [],
       loading: true,
@@ -19,7 +16,15 @@ export default {
       tableNumber: '',
       deliveryAddress: '',
       customerNote: '',
-      pickupTime: `${hh}:${min}`,
+      pickupTime: '',
+      profileLoaded: false,
+      showPaymentDropdown: false,
+      settings: {
+        service_fee: 10.0,
+        delivery_fee: 5.00,
+        packaging_fee_takeaway: 0.50,
+        packaging_fee_delivery: 0.50,
+      },
     };
   },
 
@@ -42,19 +47,23 @@ export default {
     },
 
     computedServiceFee() {
-      return this.subtotal * 0.10; // 10% service fee
+      const rate = (this.settings.service_fee || 0) / 100.0;
+      return this.subtotal * rate;
     },
 
     computedPackagingFee() {
-      if (this.orderType === 'takeaway' || this.orderType === 'delivery') {
-        return this.totalQuantity * 0.50; // $0.50 packaging fee per item
+      if (this.orderType === 'takeaway') {
+        return this.totalQuantity * (this.settings.packaging_fee_takeaway || 0);
+      }
+      if (this.orderType === 'delivery') {
+        return this.totalQuantity * (this.settings.packaging_fee_delivery || 0);
       }
       return 0.0;
     },
 
     computedDeliveryFee() {
       if (this.orderType === 'delivery') {
-        return 5.00; // flat $5.00 delivery fee
+        return this.settings.delivery_fee || 0;
       }
       return 0.0;
     },
@@ -67,6 +76,21 @@ export default {
       if (this.paymentMethod === 'cash') return 'payments';
       if (this.paymentMethod === 'e_wallet') return 'account_balance_wallet';
       return 'credit_card';
+    },
+
+    paymentLabel() {
+      if (this.paymentMethod === 'cash') return 'Cash';
+      if (this.paymentMethod === 'e_wallet') return 'E-Wallet';
+      if (this.paymentMethod === 'online_banking') return 'Online Banking';
+      return '';
+    },
+
+    paymentOptions() {
+      return [
+        { value: 'cash', label: 'Cash', icon: 'payments' },
+        { value: 'e_wallet', label: 'E-Wallet', icon: 'account_balance_wallet' },
+        { value: 'online_banking', label: 'Online Banking', icon: 'credit_card' }
+      ];
     },
 
     canCheckout() {
@@ -88,9 +112,24 @@ export default {
 
   async mounted() {
     await this.loadCart();
+    document.addEventListener('click', this.closePaymentDropdownOutside);
+  },
+
+  beforeUnmount() {
+    document.removeEventListener('click', this.closePaymentDropdownOutside);
   },
 
   methods: {
+    closePaymentDropdownOutside(e) {
+      if (this.$refs.paymentDropdownContainer && !this.$refs.paymentDropdownContainer.contains(e.target)) {
+        this.showPaymentDropdown = false;
+      }
+    },
+
+    selectPaymentMethod(val) {
+      this.paymentMethod = val;
+      this.showPaymentDropdown = false;
+    },
     formatImageUrl(path) {
       if (!path) return '../assets/images/No Menu Image.png';
       if (path.startsWith('data:') || path.startsWith('blob:')) return path;
@@ -124,6 +163,23 @@ export default {
       try {
         const response = await getCart();
         this.cartItems = response.items || [];
+        if (response.settings) {
+          this.settings = {
+            service_fee: Number(response.settings.service_fee ?? 10.0),
+            delivery_fee: Number(response.settings.delivery_fee ?? response.settings.delivery_fee_flat ?? 5.00),
+            packaging_fee_takeaway: Number(response.settings.packaging_fee_takeaway ?? response.settings.packaging_fee ?? response.settings.packaging_fee_per_item ?? 0.50),
+            packaging_fee_delivery: Number(response.settings.packaging_fee_delivery ?? response.settings.packaging_fee ?? response.settings.packaging_fee_per_item ?? 0.50),
+          };
+        }
+        if (response.profile && !this.profileLoaded) {
+          if (response.profile.default_address && !this.deliveryAddress) {
+            this.deliveryAddress = response.profile.default_address;
+          }
+          if (response.profile.default_payment_method) {
+            this.paymentMethod = response.profile.default_payment_method;
+          }
+          this.profileLoaded = true;
+        }
         localStorage.setItem('cartCount', response.total_quantity ?? 0);
       } catch (error) {
         this.errorMessage = error.message;
@@ -248,7 +304,7 @@ export default {
           <!-- Right Section: Form Options & Totals -->
           <div class="cart-form-section">
             <!-- Pickup Method -->
-            <div class="cart-section-title">Pickup Method</div>
+            <label class="cart-section-title" style="font-weight: 500; font-size: 12px; color: #5B4138; text-transform: none; display: block;">Pickup Method</label>
             <div class="cart-segmented-control">
               <button class="cart-segment-btn" :class="{ active: orderType === 'dine_in' }" type="button" @click="orderType = 'dine_in'">Dine In</button>
               <button class="cart-segment-btn" :class="{ active: orderType === 'takeaway' }" type="button" @click="orderType = 'takeaway'">Take Away</button>
@@ -256,32 +312,58 @@ export default {
             </div>
 
             <!-- Table Number or Address Input or Pickup Time Input -->
-            <div v-if="orderType === 'dine_in'" style="margin-bottom: 20px;">
-              <input class="cart-input-field" v-model="tableNumber" type="text" placeholder="Enter Table Number (e.g., A12)" />
+            <div v-if="orderType === 'dine_in'" style="position: relative; margin-bottom: 20px;">
+              <span class="material-symbols-outlined" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none; font-size: 22px; color: var(--muted);">table_restaurant</span>
+              <input class="cart-input-field" style="padding-left: 48px;" v-model="tableNumber" type="text" placeholder="Enter Table Number (e.g. A12)" />
             </div>
-            <div v-if="orderType === 'takeaway'" style="margin-bottom: 20px;">
-              <label class="cart-section-title" style="margin-top: 0; margin-bottom: 6px; display: block; font-size: 11px;">Estimate Pickup Time</label>
-              <input class="cart-input-field" v-model="pickupTime" type="time" required />
+            <div v-if="orderType === 'takeaway'" style="position: relative; margin-bottom: 20px;">
+              <span class="material-symbols-outlined" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none; font-size: 22px; color: var(--muted);">schedule</span>
+              <input class="cart-input-field" style="padding-left: 48px;" v-model="pickupTime" type="text" placeholder="Enter Estimate Pickup Time (e.g. 6:30 PM)" required />
             </div>
-            <div v-if="orderType === 'delivery'" style="margin-bottom: 20px;">
-              <input class="cart-input-field" v-model="deliveryAddress" type="text" placeholder="Enter Delivery Address" />
+            <div v-if="orderType === 'delivery'" style="position: relative; margin-bottom: 20px;">
+              <span class="material-symbols-outlined" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none; font-size: 22px; color: var(--muted);">location_on</span>
+              <input class="cart-input-field" style="padding-left: 48px;" v-model="deliveryAddress" type="text" placeholder="Enter Delivery Address (e.g. N28)" />
             </div>
 
             <!-- Customer Note -->
-            <div style="margin-bottom: 20px;">
-              <input class="cart-input-field" v-model="customerNote" type="text" placeholder="Add a note (e.g., less spicy, extra napkins)" />
+            <label class="cart-section-title" style="font-weight: 500; font-size: 12px; color: #5B4138; text-transform: none; display: block;">Additional Note</label>
+            <div style="position: relative; margin-bottom: 20px;">
+              <span class="material-symbols-outlined" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none; font-size: 22px; color: var(--muted);">edit_note</span>
+              <input class="cart-input-field" style="padding-left: 48px;" v-model="customerNote" type="text" placeholder="Add a Note (e.g. Need Tableware)" />
             </div>
 
             <!-- Payment Method -->
-            <div class="cart-section-title">Payment Method</div>
-            <div class="cart-select-wrapper" style="margin-bottom: 24px;">
-              <span class="material-symbols-outlined cart-select-icon">{{ paymentIcon }}</span>
-              <select class="cart-select-field" v-model="paymentMethod">
-                <option value="cash">Cash</option>
-                <option value="e_wallet">E-Wallet</option>
-                <option value="online_banking">Online Banking</option>
-              </select>
-              <span class="material-symbols-outlined cart-select-arrow">keyboard_arrow_down</span>
+            <label class="cart-section-title" style="font-weight: 500; font-size: 12px; color: #5B4138; text-transform: none; display: block;">Payment Method</label>
+            <div class="cart-select-wrapper" style="margin-bottom: 24px; position: relative;" ref="paymentDropdownContainer">
+              <button 
+                class="cart-select-field" 
+                type="button" 
+                @click="showPaymentDropdown = !showPaymentDropdown"
+                style="display: flex; align-items: center; justify-content: space-between; text-align: left; padding: 12px 16px 12px 48px;"
+              >
+                <span class="material-symbols-outlined cart-select-icon">{{ paymentIcon }}</span>
+                <span>{{ paymentLabel }}</span>
+                <span class="material-symbols-outlined" style="color: var(--muted); font-size: 20px; transition: transform 0.2s;" :style="{ transform: showPaymentDropdown ? 'rotate(180deg)' : 'none' }">keyboard_arrow_down</span>
+              </button>
+              
+              <!-- Custom Dropdown Menu -->
+              <div 
+                v-if="showPaymentDropdown" 
+                class="cart-dropdown-menu"
+              >
+                <button 
+                  v-for="opt in paymentOptions" 
+                  :key="opt.value" 
+                  class="cart-dropdown-item" 
+                  :class="{ active: paymentMethod === opt.value }"
+                  type="button"
+                  @click="selectPaymentMethod(opt.value)"
+                >
+                  <span class="material-symbols-outlined cart-dropdown-item-icon">{{ opt.icon }}</span>
+                  <span class="cart-dropdown-item-text">{{ opt.label }}</span>
+                  <span v-if="paymentMethod === opt.value" class="material-symbols-outlined cart-dropdown-item-check">check</span>
+                </button>
+              </div>
             </div>
 
             <!-- Summary Totals -->
@@ -291,15 +373,15 @@ export default {
                 <span>{{ formatPrice(subtotal + addonsTotal) }}</span>
               </div>
               <div v-if="computedServiceFee > 0" class="cart-total-row">
-                <span>Service Fee (10%)</span>
+                <span>Service Fee ({{ settings.service_fee }}%)</span>
                 <span>{{ formatPrice(computedServiceFee) }}</span>
               </div>
               <div v-if="computedPackagingFee > 0" class="cart-total-row">
-                <span>Packaging Fee</span>
+                <span>Packaging Fee ({{ formatPrice(orderType === 'takeaway' ? settings.packaging_fee_takeaway : settings.packaging_fee_delivery) }}/item)</span>
                 <span>{{ formatPrice(computedPackagingFee) }}</span>
               </div>
               <div v-if="computedDeliveryFee > 0" class="cart-total-row">
-                <span>Delivery Fee</span>
+                <span>Delivery Fee ({{ formatPrice(settings.delivery_fee) }})</span>
                 <span>{{ formatPrice(computedDeliveryFee) }}</span>
               </div>
               <div class="cart-total-row grand-total">

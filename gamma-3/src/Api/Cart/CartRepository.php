@@ -149,6 +149,39 @@ final class CartRepository
         return $items;
     }
 
+    /**
+     * Fetch public settings from the restaurant_settings table, safely catching exceptions (e.g. in tests).
+     *
+     * @return array<string, mixed>
+     */
+    public function getPublicSettings(): array
+    {
+        try {
+            $stmt = $this->pdo->prepare('SELECT setting_key, setting_value FROM restaurant_settings WHERE is_public = 1');
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Fetch the default address and payment method from the customer profile.
+     *
+     * @return array{default_address:string|null, default_payment_method:string|null}|null
+     */
+    public function getCustomerProfile(int $userId): ?array
+    {
+        try {
+            $stmt = $this->pdo->prepare('SELECT default_address, default_payment_method FROM customer_profiles WHERE user_id = ?');
+            $stmt->execute([$userId]);
+            $profile = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $profile ?: null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     public function updateItemQuantity(int $cartItemId, int $quantity): void
     {
         if ($quantity <= 0) {
@@ -209,18 +242,20 @@ final class CartRepository
             $stmt->execute();
             $settingsRows = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
 
-            $dineInServiceChargePercent = (float)($settingsRows['dine_in_service_charge'] ?? 10.0);
-            $deliveryFeeFlat = (float)($settingsRows['delivery_fee_flat'] ?? 5.00);
-            $packagingFeePerItem = (float)($settingsRows['packaging_fee_per_item'] ?? 0.50);
+            $serviceFeePercent = (float)($settingsRows['service_fee'] ?? $settingsRows['dine_in_service_charge'] ?? 10.0);
+            $deliveryFeeFlat = (float)($settingsRows['delivery_fee'] ?? $settingsRows['delivery_fee_flat'] ?? 5.00);
+            
+            $packagingFeeTakeaway = (float)($settingsRows['packaging_fee_takeaway'] ?? $settingsRows['packaging_fee'] ?? $settingsRows['packaging_fee_per_item'] ?? 0.50);
+            $packagingFeeDelivery = (float)($settingsRows['packaging_fee_delivery'] ?? $settingsRows['packaging_fee'] ?? $settingsRows['packaging_fee_per_item'] ?? 0.50);
 
-            $serviceFee = $subtotal * ($dineInServiceChargePercent / 100.0);
+            $serviceFee = $subtotal * ($serviceFeePercent / 100.0);
             $packagingFee = 0.0;
             $deliveryFee = 0.0;
 
             if ($orderType === 'takeaway') {
-                $packagingFee = $packagingFeePerItem * $totalQuantity;
+                $packagingFee = $packagingFeeTakeaway * $totalQuantity;
             } elseif ($orderType === 'delivery') {
-                $packagingFee = $packagingFeePerItem * $totalQuantity;
+                $packagingFee = $packagingFeeDelivery * $totalQuantity;
                 $deliveryFee = $deliveryFeeFlat;
             }
 
@@ -238,14 +273,14 @@ final class CartRepository
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ');
             $orderStmt->execute([
-                $orderNumber, $userId, $orderType, $paymentMethod, 'unpaid', 'pending',
+                $orderNumber, $userId, $orderType, $paymentMethod, 'unpaid', 'new',
                 $subtotal, $packagingFee, $deliveryFee, $serviceFee, $totalAmount,
                 $tableNumber, $deliveryAddress, $customerNote, $pickupAt
             ]);
             $orderId = (int)$this->pdo->lastInsertId();
 
             // Insert status history
-            $this->pdo->prepare("INSERT INTO order_status_history (order_id, status) VALUES (?, 'pending')")->execute([$orderId]);
+            $this->pdo->prepare("INSERT INTO order_status_history (order_id, status) VALUES (?, 'new')")->execute([$orderId]);
 
             // Insert order items and their addons
             foreach ($cartItems as $item) {

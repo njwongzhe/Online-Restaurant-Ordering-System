@@ -44,10 +44,8 @@
 }
 
 #login-logo {
-    color: white;
-    background-color: #AB3600;
-    border-radius: 15%;
-    padding: 16px;
+    width: 72px;
+    height: 72px;
 }
 
 .login-logo-title {

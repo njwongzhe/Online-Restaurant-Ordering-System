@@ -62,7 +62,7 @@ export default {
         <div class="register-page-wrapper">
             <main class="register-layout">
                 <div class="register-logo-container">
-                    <span id="register-logo" class="material-symbols-outlined login-logo-icon">restaurant</span>
+                    <img id="register-logo" src="../assets/logo.svg" alt="Lanita Restaurant Logo" />
                     <p class="register-logo-title">Lanita Restaurant</p>
                 </div>
 
@@ -79,7 +79,7 @@ export default {
                         </div>
                         <div class="input-field">
                             <label class="input-box-label" for="phoneNumber">Phone Number</label>
-                            <input class="input-box" id="phoneNumber" v-model="phoneNumber" type="text" placeholder="012-3456789" />
+                            <input class="input-box" id="phoneNumber" v-model="phoneNumber" type="text" placeholder="0123456789" />
                         </div>
                         <div class="input-field">
                             <label class="input-box-label" for="password">Password</label>

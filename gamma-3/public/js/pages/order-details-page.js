@@ -52,6 +52,10 @@ export default {
       if (this.order.type === 'pick-up') return 'Pick-up';
       return 'Delivery';
     },
+
+    isAdmin() {
+      return (localStorage.getItem('role') || 'customer') === 'admin';
+    },
   },
 
   methods: {
@@ -125,9 +129,9 @@ export default {
             </div>
           </section>
 
-          <section v-if="order.state !== 'Completed' && order.state !== 'Cancelled'" class="order-detail-actions" aria-label="Order actions">
+          <section v-if="order.state !== 'Completed' && order.state !== 'Cancelled' && (isAdmin || order.state === 'New')" class="order-detail-actions" aria-label="Order actions">
             <button class="order-detail-cancel" type="button" @click="$emit('cancel', order)">Cancel</button>
-            <div class="order-detail-state-control">
+            <div v-if="isAdmin" class="order-detail-state-control">
               <button type="button" aria-label="Previous state" :disabled="stateIndex === 0" @click="changeState(-1)">
                 <span class="material-symbols-outlined">chevron_left</span>
               </button>

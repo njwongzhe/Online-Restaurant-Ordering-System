@@ -115,4 +115,35 @@
             return null;
         }
     }
+
+    // Helper function to get the full authenticated user details from JWT.
+    function getAuthenticatedUser(): ?array {
+        $jwt = null;
+        if (isset($_COOKIE['jwt'])) {
+            $jwt = $_COOKIE['jwt'];
+        } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+            if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+                $jwt = $matches[1];
+            }
+        } elseif (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            if (isset($headers['Authorization'])) {
+                if (preg_match('/Bearer\s+(.*)$/i', $headers['Authorization'], $matches)) {
+                    $jwt = $matches[1];
+                }
+            }
+        }
+
+        if (!$jwt) {
+            return null;
+        }
+
+        try {
+            $decoded = Firebase\JWT\JWT::decode($jwt, new Firebase\JWT\Key(JWT_KEY, ALGORITHM));
+            return (array)$decoded;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 ?>

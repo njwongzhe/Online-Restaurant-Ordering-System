@@ -34,10 +34,10 @@
   white-space: nowrap;
 }
 
-.global-header-brand-icon {
+.global-header-brand-logo {
   flex: 0 0 auto;
-  color: var(--orange);
-  font-size: 25px;
+  width: 32px;
+  height: 32px;
 }
 
 .global-header-action {

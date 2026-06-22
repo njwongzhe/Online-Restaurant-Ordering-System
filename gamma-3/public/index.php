@@ -23,7 +23,7 @@ $app = AppFactory::create();
 
 // Explicitly set the base path to match your Apache Alias exactly
 if (PHP_SAPI !== 'cli-server') {
-    $app->setBasePath('/cpad-project/gamma-3');
+    $app->setBasePath('/gamma-3');
 }
 
 // Add routing middleware
@@ -34,7 +34,9 @@ $app->addBodyParsingMiddleware();
 $app->addErrorMiddleware(true, true, true); 
 
 $app->get('/', function (Request $request, Response $response, $args) use ($app) {
-    return $response->withHeader('Location', $app->getBasePath() . '/mobile/');
+    return $response
+        ->withHeader('Location', $app->getBasePath() . '/mobile/')
+        ->withStatus(302);
 });
 
 registerApiRoutes($app, $pdo);
