@@ -483,6 +483,94 @@
   font-weight: 600;
 }
 
+.cancel-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  background: rgba(50, 34, 29, .58);
+  backdrop-filter: blur(4px);
+}
+
+.cancel-dialog {
+  width: min(100%, 420px);
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 64px rgba(50, 34, 29, .28);
+}
+
+.cancel-dialog-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.cancel-dialog-icon {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #ffd9cf;
+  color: var(--orange);
+}
+
+.cancel-dialog-icon .material-symbols-outlined { font-size: 26px; }
+.cancel-dialog-heading > div:last-child { min-width: 0; }
+.cancel-dialog-heading > div:last-child > span { color: var(--orange); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.cancel-dialog h2 { margin: 3px 0 0; color: #322b28; font-family: "Inter", Arial, sans-serif; font-size: 20px; line-height: 1.25; }
+.cancel-dialog > p { margin: 15px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+
+.cancel-dialog-field { margin-top: 17px; display: block; }
+.cancel-dialog-field > span { display: block; margin-bottom: 7px; color: #5b4138; font-size: 12px; font-weight: 800; }
+.cancel-dialog-field > span small { margin-left: 5px; color: var(--muted); font-size: 10px; font-weight: 600; }
+
+.cancel-dialog-field textarea {
+  width: 100%;
+  min-height: 104px;
+  padding: 12px 14px;
+  resize: vertical;
+  border: 1px solid #e6d7d2;
+  border-radius: 12px;
+  outline: 0;
+  background: var(--pill);
+  color: #322b28;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.cancel-dialog-field textarea:focus { border-color: var(--orange); background: #fff; box-shadow: 0 0 0 3px rgba(255, 90, 31, .11); }
+.cancel-dialog-field > small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; text-align: right; }
+
+.cancel-dialog-actions {
+  margin-top: 17px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.cancel-dialog-actions button {
+  height: 40px;
+  border: 1px solid #9c7a70;
+  border-radius: 9px;
+  background: #fff;
+  color: #5b4138;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cancel-dialog-actions .confirm { border-color: var(--orange); background: var(--orange); color: #fff; }
+.cancel-dialog-actions button:disabled { opacity: .55; cursor: wait; }
+
 @media (max-width: 374px) {
   .orders-container { width: calc(100% - 24px); }
   .order-card { padding-inline: 12px; }

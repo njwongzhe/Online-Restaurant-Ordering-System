@@ -25,12 +25,12 @@ final class OrderRepository
         return $orders;
     }
 
-    public function changeStatus(int $id, string $status): void
+    public function changeStatus(int $id, string $status, ?string $cancellationReason = null): void
     {
         $this->pdo->beginTransaction();
         try {
-            $statement = $this->pdo->prepare("UPDATE orders SET order_status = ?, completed_at = CASE WHEN ? IN ('completed', 'cancelled') THEN NOW() ELSE NULL END WHERE order_id = ?");
-            $statement->execute([$status, $status, $id]);
+            $statement = $this->pdo->prepare("UPDATE orders SET order_status = ?, completed_at = CASE WHEN ? IN ('completed', 'cancelled') THEN NOW() ELSE NULL END, cancellation_reason = CASE WHEN ? = 'cancelled' THEN ? ELSE NULL END WHERE order_id = ?");
+            $statement->execute([$status, $status, $status, $cancellationReason, $id]);
             if ($statement->rowCount() === 0 && !$this->exists($id)) {
                 throw new InvalidArgumentException('Order not found.');
             }

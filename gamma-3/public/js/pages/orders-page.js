@@ -1,4 +1,5 @@
 import OrderDetailsPage from './order-details-page.js';
+import CancelOrderDialog from '../components/cancel-order-dialog.js';
 import { loadOrders, updateOrderState, cancelOrder as cancelOrderRequest } from '../services/order-service.js';
 
 const ORDER_STATES = ['New', 'Preparing', 'Ready', 'Completed'];
@@ -19,9 +20,13 @@ function matchesOrderSearch(order, keyword) {
 
 function matchesOrderFilter(order, filter) {
   if (filter === 'all') return true;
-  if (filter === 'Cancelled') return order.cancelled;
+  if (filter === 'Cancelled') return order.state === 'Cancelled';
   if (filter === 'Completed') return order.state === 'Completed' && !order.cancelled;
   return order.state === filter && !order.cancelled;
+}
+
+function isHistoryOrder(order) {
+  return order.state === 'Completed' || order.state === 'Cancelled';
 }
 
 function dateKey(date) {
@@ -33,7 +38,7 @@ function dateKey(date) {
 
 export default {
   name: 'OrdersPage',
-  components: { OrderDetailsPage },
+  components: { OrderDetailsPage, CancelOrderDialog },
   emits: ['navigate', 'state-change', 'logout'],
 
   data() {
@@ -44,6 +49,8 @@ export default {
       filters: ['all', 'New', 'Preparing', 'Ready', 'Completed', 'Cancelled'],
       activeView: 'orders',
       selectedOrder: null,
+      cancellationOrder: null,
+      cancellingOrder: false,
       loading: true,
       errorMessage: '',
       activeExpanded: true,
@@ -63,7 +70,7 @@ export default {
     activeOrders() {
       const keyword = this.searchQuery.trim().toLowerCase();
       return this.orders.filter((order) => {
-        if (order.state === 'Completed') return false;
+        if (isHistoryOrder(order)) return false;
         return matchesOrderFilter(order, this.activeFilter) && matchesOrderSearch(order, keyword);
       });
     },
@@ -71,7 +78,7 @@ export default {
     historyOrders() {
       const keyword = this.searchQuery.trim().toLowerCase();
       return this.orders.filter((order) => {
-        if (order.state !== 'Completed'
+        if (!isHistoryOrder(order)
           || !matchesOrderFilter(order, this.activeFilter)
           || !matchesOrderSearch(order, keyword)) return false;
         if (!this.historyStartDate) return true;
@@ -125,10 +132,29 @@ export default {
       catch (error) { order.state = previous; this.errorMessage = error.message; }
     },
 
-    async cancelOrder(order) {
-      if (!window.confirm(`Cancel order ${order.id}?`)) return;
-      try { await cancelOrderRequest(order.databaseId); order.state = 'Completed'; order.cancelled = true; }
-      catch (error) { this.errorMessage = error.message; }
+    requestCancel(order) {
+      this.cancellationOrder = order;
+    },
+
+    closeCancelDialog() {
+      if (!this.cancellingOrder) this.cancellationOrder = null;
+    },
+
+    async confirmCancellation(reason) {
+      const order = this.cancellationOrder;
+      if (!order) return;
+      this.cancellingOrder = true;
+      try {
+        await cancelOrderRequest(order.databaseId, reason);
+        order.state = 'Cancelled';
+        order.cancelled = true;
+        order.cancellationReason = reason;
+        this.cancellationOrder = null;
+      } catch (error) {
+        this.errorMessage = error.message;
+      } finally {
+        this.cancellingOrder = false;
+      }
     },
 
     openOrder(order) {
@@ -150,9 +176,8 @@ export default {
       catch (error) { order.state = previous; this.errorMessage = error.message; }
     },
 
-    async cancelSelectedOrder(order) {
-      await this.cancelOrder(order);
-      if (order.cancelled) this.closeOrderDetails();
+    cancelSelectedOrder(order) {
+      this.requestCancel(order);
     },
 
     changeCalendarMonth(offset) {
@@ -269,7 +294,7 @@ export default {
               :key="order.id"
               :order="order"
               @open="openOrder(order)"
-              @cancel="cancelOrder(order)"
+              @cancel="requestCancel(order)"
               @state-change="changeState(order, $event)"
             ></order-card>
           </div>
@@ -375,5 +400,13 @@ export default {
 
       <bottom-navigation active="orders" @navigate="$emit('navigate', $event)"></bottom-navigation>
     </main>
+
+    <cancel-order-dialog
+      v-if="cancellationOrder"
+      :order="cancellationOrder"
+      :submitting="cancellingOrder"
+      @close="closeCancelDialog"
+      @confirm="confirmCancellation"
+    ></cancel-order-dialog>
   `,
 };

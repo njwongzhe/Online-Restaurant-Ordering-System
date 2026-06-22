@@ -6,7 +6,7 @@ CREATE DATABASE IF NOT EXISTS `cpad_03_gamma`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-CREATE USER 'cpad'@'localhost' IDENTIFIED BY 'cpadPassword';
+CREATE USER IF NOT EXISTS 'cpad'@'localhost' IDENTIFIED BY 'cpadPassword';
 GRANT ALL PRIVILEGES ON cpad_03_gamma.* TO 'cpad'@'localhost';
 FLUSH PRIVILEGES;
 
@@ -175,7 +175,7 @@ CREATE TABLE `orders` (
   `order_type` ENUM('dine_in', 'takeaway', 'delivery') NOT NULL,
   `payment_method` ENUM('cash', 'e_wallet', 'online_banking') NOT NULL,
   `payment_status` ENUM('unpaid', 'paid', 'refunded') NOT NULL DEFAULT 'unpaid',
-  `order_status` ENUM('pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
+  `order_status` ENUM('new', 'preparing', 'ready', 'out_for_delivery', 'completed', 'cancelled') NOT NULL DEFAULT 'new',
   `subtotal` DECIMAL(10,2) UNSIGNED NOT NULL,
   `packaging_fee` DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00,
   `delivery_fee` DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00,
@@ -185,6 +185,7 @@ CREATE TABLE `orders` (
   `pickup_at` DATETIME NULL,
   `delivery_address` VARCHAR(500) NULL,
   `customer_note` VARCHAR(500) NULL,
+  `cancellation_reason` VARCHAR(500) NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `completed_at` DATETIME NULL,
@@ -237,7 +238,7 @@ CREATE TABLE `order_item_addons` (
 CREATE TABLE `order_status_history` (
   `history_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `order_id` BIGINT UNSIGNED NOT NULL,
-  `status` ENUM('pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'completed', 'cancelled') NOT NULL,
+  `status` ENUM('new', 'preparing', 'ready', 'out_for_delivery', 'completed', 'cancelled') NOT NULL,
   `changed_by` BIGINT UNSIGNED NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`history_id`),
