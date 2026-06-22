@@ -1,11 +1,8 @@
 <div align="center">
 
-<<<<<<< HEAD
 <<<<<<< Updated upstream
 If you are in section 1 and you group name is Alpha the rename it to 'aplha-1'.
 =======
-=======
->>>>>>> a2a6f5a776a6fd30955b176ba8f3b1159023c219
 <img src="gamma-3/public/assets/logo.svg" alt="Lanita Restaurant Logo" width="120" height="120" />
 
 # Online Restaurant Ordering System
@@ -299,19 +296,11 @@ To run the Slim 4 project properly under an Apache web server (XAMPP), you need 
 ```
 
 ##### Configuration Example:
-<<<<<<< HEAD
 If your project is saved in `C:/cpad-project`, the configuration would look like:
 ```apache
 Alias /cpad-project/gamma-3 C:/cpad-project/gamma-3/public
 
 <Directory "C:/cpad-project/gamma-3/public">
-=======
-If your project is saved in `D:/cpad-project`, the configuration would look like:
-```apache
-Alias /gamma-3 D:/cpad-project/gamma-3/public
-
-<Directory "D:/cpad-project/gamma-3/public">
->>>>>>> a2a6f5a776a6fd30955b176ba8f3b1159023c219
     Options Indexes FollowSymLinks Includes ExecCGI
     AllowOverride All
     Require all granted
@@ -345,7 +334,4 @@ The project contains modular testing suites verifying API route handling and car
 
 > [!NOTE]
 > Since this project is still in active development, details regarding production hosting (e.g., container deployments, cloud database integrations, SSL configuration) will be added here once deployment targets are finalized. Refer to the local setup instructions above for current testing procedures.
-<<<<<<< HEAD
 >>>>>>> Stashed changes
-=======
->>>>>>> a2a6f5a776a6fd30955b176ba8f3b1159023c219
