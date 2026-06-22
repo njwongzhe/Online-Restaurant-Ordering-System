@@ -29,10 +29,18 @@ final class CartRoutes
                 // Compute total quantity across all items for the badge count.
                 $totalQuantity = array_sum(array_column($items, 'quantity'));
 
+                // Fetch public settings for fees formatting and calculation
+                $settings = $repository->getPublicSettings();
+
+                // Fetch customer profile defaults
+                $profile = $repository->getCustomerProfile($userId);
+
                 return ApiResponse::json($response, [
                     'success' => true,
                     'items'   => $items,
                     'total_quantity' => $totalQuantity,
+                    'settings' => $settings,
+                    'profile' => $profile,
                 ]);
             } catch (Throwable $exception) {
                 return ApiResponse::error($response, $exception);

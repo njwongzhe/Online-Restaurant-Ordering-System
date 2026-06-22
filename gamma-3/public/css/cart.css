@@ -178,11 +178,12 @@
   color: var(--text);
   background: #ffffff;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .cart-input-field:focus {
   border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(182, 58, 0, 0.12);
 }
 
 /* Beautiful Payment Dropdown */
@@ -196,7 +197,7 @@
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text);
+  color: var(--muted);
   z-index: 1;
   pointer-events: none;
   font-size: 22px;
@@ -220,15 +221,29 @@
   border-radius: 8px;
   padding: 12px 16px 12px 48px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text);
   background: #ffffff;
   outline: none;
   cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cart-select-field:hover {
+  border-color: var(--orange);
 }
 
 .cart-select-field:focus {
   border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(182, 58, 0, 0.12);
+}
+
+.cart-select-field option {
+  background: #ffffff;
+  color: var(--text);
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  padding: 8px;
 }
 
 /* ==================== Order Summary / Totals ==================== */
@@ -353,4 +368,73 @@
     border: none;
     padding: 0;
   }
+}
+
+/* Custom Dropdown Menu container */
+.cart-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 50;
+  overflow: hidden;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Custom Dropdown Option row */
+.cart-dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cart-dropdown-item:hover {
+  background: #f3f5f6;
+}
+
+.cart-dropdown-item.active {
+  background: rgba(182, 58, 0, 0.06);
+  color: var(--orange);
+}
+
+.cart-dropdown-item-icon {
+  font-size: 20px;
+  color: var(--muted);
+}
+
+.cart-dropdown-item.active .cart-dropdown-item-icon {
+  color: var(--orange);
+}
+
+.cart-dropdown-item-text {
+  flex: 1;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.cart-dropdown-item.active .cart-dropdown-item-text {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.cart-dropdown-item-check {
+  font-size: 18px;
+  color: var(--orange);
 }
