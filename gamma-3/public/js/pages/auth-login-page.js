@@ -64,7 +64,7 @@ export default {
                     <div class="input-field-container">
                         <div class="input-field">
                             <label class="input-box-label" for="phoneNumber">Phone Number</label>
-                            <input class="input-box" id="phoneNumber" v-model="phoneNumber" type="text" placeholder="012-3456789" />
+                            <input class="input-box" id="phoneNumber" v-model="phoneNumber" type="text" placeholder="0123456789" />
                         </div>
                         <div class="input-field">
                             <label class="input-box-label" for="password">Password</label>
