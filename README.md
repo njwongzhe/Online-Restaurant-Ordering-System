@@ -1,8 +1,5 @@
 <div align="center">
 
-<<<<<<< Updated upstream
-If you are in section 1 and you group name is Alpha the rename it to 'aplha-1'.
-=======
 <img src="gamma-3/public/assets/logo.svg" alt="Lanita Restaurant Logo" width="120" height="120" />
 
 # Online Restaurant Ordering System
@@ -334,4 +331,3 @@ The project contains modular testing suites verifying API route handling and car
 
 > [!NOTE]
 > Since this project is still in active development, details regarding production hosting (e.g., container deployments, cloud database integrations, SSL configuration) will be added here once deployment targets are finalized. Refer to the local setup instructions above for current testing procedures.
->>>>>>> Stashed changes
