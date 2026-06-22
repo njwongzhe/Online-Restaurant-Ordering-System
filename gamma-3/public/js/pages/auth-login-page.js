@@ -51,7 +51,7 @@ export default {
         <div class="login-page-wrapper">
             <main class="login-layout">
                 <div class="login-logo-container">
-                    <span id="login-logo" class="material-symbols-outlined login-logo-icon">restaurant</span>
+                    <img id="login-logo" src="../assets/logo.svg" alt="Lanita Restaurant Logo" />
                     <p class="login-logo-title">Lanita Restaurant</p>
                 </div>
 

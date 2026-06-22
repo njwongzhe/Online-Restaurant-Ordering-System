@@ -62,7 +62,7 @@ export default {
         <div class="register-page-wrapper">
             <main class="register-layout">
                 <div class="register-logo-container">
-                    <span id="register-logo" class="material-symbols-outlined login-logo-icon">restaurant</span>
+                    <img id="register-logo" src="../assets/logo.svg" alt="Lanita Restaurant Logo" />
                     <p class="register-logo-title">Lanita Restaurant</p>
                 </div>
 
