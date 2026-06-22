@@ -6,6 +6,8 @@ use App\Api\Auth\AuthRoutes;
 use App\Api\Menu\MenuRepository;
 use App\Api\Menu\MenuRoutes;
 use App\Api\Menu\MenuValidator;
+use App\Api\Cart\CartRepository;
+use App\Api\Cart\CartRoutes;
 use App\Api\Orders\OrderRepository;
 use App\Api\Orders\OrderRoutes;
 use App\Api\Shared\ImageStorage;
@@ -18,5 +20,6 @@ function registerApiRoutes(App $app, PDO $pdo): void
 
     AuthRoutes::register($app);
     MenuRoutes::register($app, $menuRepository, new MenuValidator($menuRepository), $imageStorage);
+    CartRoutes::register($app, new CartRepository($pdo));
     OrderRoutes::register($app, new OrderRepository($pdo));
 }

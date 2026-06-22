@@ -12,7 +12,7 @@ export default {
     computedDestinations() {
       if (this.destinations && this.destinations.length > 0) return this.destinations;
       
-      const role = localStorage.getItem('role') || 'admin';
+      const role = localStorage.getItem('role') || 'customer';
       const items = [
         { id: 'menu', label: 'Menu', icon: 'lunch_dining' },
         { id: 'orders', label: 'Orders', icon: 'receipt_long' },

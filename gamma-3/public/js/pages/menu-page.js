@@ -1,5 +1,6 @@
 import MenuItemDetailsPage from './menu-item-details-page.js';
 import { loadMenu, createCategory, updateCategory, deleteCategory, createMenuItem, updateMenuItem, deleteMenuItem, setItemAvailability } from '../services/menu-service.js';
+import { addToCart, getCart } from '../services/cart-service.js';
 
 export default {
   name: 'MenuPage',
@@ -30,10 +31,16 @@ export default {
       loading: true,
       saving: false,
       errorMessage: '',
+      cartCount: Number(localStorage.getItem('cartCount') || 0),
     };
   },
 
   computed: {
+    isAdmin() {
+      const role = localStorage.getItem('role') || 'customer';
+      return role === 'admin';
+    },
+
     visibleCategories() {
       const keyword = this.searchQuery.trim().toLowerCase();
 
@@ -57,6 +64,9 @@ export default {
 
   async mounted() {
     await this.refreshMenu();
+    if (!this.isAdmin) {
+      await this.syncCartCount();
+    }
   },
 
   methods: {
@@ -65,6 +75,18 @@ export default {
       try { this.categories = await loadMenu(); this.errorMessage = ''; }
       catch (error) { this.errorMessage = error.message; }
       finally { this.loading = false; }
+    },
+
+    // Sync the cart badge count from the server so it's always accurate.
+    async syncCartCount() {
+      try {
+        const data = await getCart();
+        const count = data.total_quantity ?? 0;
+        this.cartCount = count;
+        localStorage.setItem('cartCount', count);
+      } catch {
+        // Keep the cached localStorage value on network failure.
+      }
     },
     setFilter(filter) {
       this.activeFilter = filter;
@@ -161,6 +183,27 @@ export default {
     },
 
     async saveItemDetails(itemDetails) {
+      if (!this.isAdmin) {
+        this.saving = true;
+        this.errorMessage = '';
+        try {
+          await addToCart(
+            itemDetails.menuItemId,
+            itemDetails.quantity,
+            itemDetails.specialInstructions,
+            itemDetails.addons
+          );
+          this.cartCount += Number(itemDetails.quantity);
+          localStorage.setItem('cartCount', this.cartCount);
+          this.closeItemDetails();
+        } catch (error) {
+          this.errorMessage = error.message;
+        } finally {
+          this.saving = false;
+        }
+        return;
+      }
+
       const category = this.categories.find((entry) => entry.id === this.selectedCategoryId);
       if (!category) return;
 
@@ -188,9 +231,13 @@ export default {
       try { await setItemAvailability(item.id, item.isAvailable); }
       catch (error) { item.isAvailable = !item.isAvailable; this.errorMessage = error.message; }
     },
+
+    handleCartClick() {
+      this.$emit('navigate', 'cart');
+    },
   },
 
-  template: /*HTML*/ `
+  template: /*HTML*/`
     <menu-item-details-page
       v-if="activeView === 'item-details'"
       :item="selectedItem"
@@ -207,7 +254,7 @@ export default {
       <app-sidebar active="menu" @navigate="$emit('navigate', $event)" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main">
-        <app-header title="Lanita Restaurant (Admin)" show-logout @logout="$emit('logout')"></app-header>
+        <app-header :title="isAdmin ? 'Lanita Restaurant (Admin)' : 'Lanita Restaurant'" show-logout @logout="$emit('logout')"></app-header>
 
         <div class="page-container">
           <section class="hero">
@@ -221,67 +268,71 @@ export default {
           </label>
 
           <div class="filters" aria-label="Menu filters">
-        <button class="add-main" type="button" title="Add category" aria-label="Add category" @click="addCategory">
-          <span class="material-symbols-outlined">add</span>
-        </button>
-        <button class="filter-pill" :class="{ active: activeFilter === 'all' }" type="button" @click="setFilter('all')">All Items</button>
-        <button v-for="category in categories" :key="category.id" class="filter-pill" :class="{ active: activeFilter === category.id }" type="button" @click="setFilter(category.id)">{{ category.name }}</button>
+            <button v-if="isAdmin" class="add-main" type="button" title="Add category" aria-label="Add category" @click="addCategory">
+              <span class="material-symbols-outlined">add</span>
+            </button>
+            <button class="filter-pill" :class="{ active: activeFilter === 'all' }" type="button" @click="setFilter('all')">All Items</button>
+            <button v-for="category in categories" :key="category.id" class="filter-pill" :class="{ active: activeFilter === category.id }" type="button" @click="setFilter(category.id)">{{ category.name }}</button>
           </div>
 
           <p v-if="errorMessage" class="details-validation" role="alert">{{ errorMessage }}</p>
           <p v-if="loading" class="empty-category">Loading menu...</p>
 
           <div class="menu-sections">
-        <section v-for="category in visibleCategories" :key="category.id" class="category">
-          <div class="category-head" :aria-label="category.name + ' controls'">
-            <input
-              v-if="editingCategoryId === category.id"
-              v-model="categoryNameDraft"
-              class="section-title category-name-input"
-              :data-category-input="category.id"
-              type="text"
-              aria-label="Category name"
-              placeholder="Category name"
-              @blur="saveCategoryName(category)"
-              @keydown.enter.prevent="$event.target.blur()"
-            />
-            <h2 v-else class="section-title">{{ category.name }}</h2>
-            <button
-              class="mini-toggle"
-              :class="{ off: !category.isAvailable }"
-              type="button"
-              :title="category.name + (category.isAvailable ? ' available' : ' unavailable')"
-              :aria-pressed="category.isAvailable"
-              @click="toggleCategory(category)"
-            ></button>
-            <button class="section-edit" type="button" :title="'Edit ' + category.name" @click="editCategory(category)">
-              <span class="material-symbols-outlined">edit</span>
-            </button>
-            <button class="section-edit" type="button" :title="'Delete ' + category.name" @click="removeCategory(category)">
-              <span class="material-symbols-outlined">delete</span>
-            </button>
-            <span class="section-rule"></span>
-            <button class="section-add" type="button" :title="'Add item to ' + category.name" @click="addItem(category)">
-              <span class="material-symbols-outlined">add</span>
-            </button>
-          </div>
+            <section v-for="category in visibleCategories" :key="category.id" class="category">
+              <div class="category-head" :aria-label="category.name + ' controls'">
+                <input
+                  v-if="editingCategoryId === category.id"
+                  v-model="categoryNameDraft"
+                  class="section-title category-name-input"
+                  :data-category-input="category.id"
+                  type="text"
+                  aria-label="Category name"
+                  placeholder="Category name"
+                  @blur="saveCategoryName(category)"
+                  @keydown.enter.prevent="$event.target.blur()"
+                />
+                <h2 v-else class="section-title">{{ category.name }}</h2>
+                <template v-if="isAdmin">
+                  <button
+                    class="mini-toggle"
+                    :class="{ off: !category.isAvailable }"
+                    type="button"
+                    :title="category.name + (category.isAvailable ? ' available' : ' unavailable')"
+                    :aria-pressed="category.isAvailable"
+                    @click="toggleCategory(category)"
+                  ></button>
+                  <button class="section-edit" type="button" :title="'Edit ' + category.name" @click="editCategory(category)">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="section-edit" type="button" :title="'Delete ' + category.name" @click="removeCategory(category)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </template>
+                <span class="section-rule"></span>
+                <button v-if="isAdmin" class="section-add" type="button" :title="'Add item to ' + category.name" @click="addItem(category)">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+              </div>
 
-          <div class="category-list">
-            <menu-item-card
-              v-for="item in category.visibleItems"
-              :key="item.id"
-              :item="item"
-              :category-available="category.isAvailable"
-              @toggle="toggleItem(category, item)"
-              @edit="editItem(category, item)"
-            ></menu-item-card>
-            <p v-if="category.visibleItems.length === 0" class="empty-category">No menu items in this category.</p>
-          </div>
-        </section>
+              <div class="category-list">
+                <menu-item-card
+                  v-for="item in category.visibleItems"
+                  :key="item.id"
+                  :item="item"
+                  :category-available="category.isAvailable"
+                  :is-admin="isAdmin"
+                  @toggle="toggleItem(category, item)"
+                  @edit="editItem(category, item)"
+                ></menu-item-card>
+                <p v-if="category.visibleItems.length === 0" class="empty-category">No menu items in this category.</p>
+              </div>
+            </section>
           </div>
         </div>
       </div>
 
+      <cart-button v-if="!isAdmin" :count="cartCount" @click="handleCartClick"></cart-button>
       <bottom-navigation active="menu" @navigate="$emit('navigate', $event)"></bottom-navigation>
     </main>
   `,

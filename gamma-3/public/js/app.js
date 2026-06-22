@@ -2,16 +2,18 @@ import AuthLoginPage from './pages/auth-login-page.js';
 import AuthRegisterPage from './pages/auth-register-page.js';
 import MenuPage from './pages/menu-page.js';
 import OrdersPage from './pages/orders-page.js';
+import CartPage from './pages/cart-page.js';
 import AppHeader from './components/header.js';
 import BottomNavigation from './components/bottom-navigation.js';
 import AppSidebar from './components/sidebar.js';
 import MenuItemCard from './components/menu-item-card.js';
 import OrderCard from './components/order-card.js';
 import OrderTimeline from './components/order-timeline.js';
+import CartButton from './components/cart-button.js';
 import { logout } from './services/auth-service.js';
 
 const app = Vue.createApp({
-  components: { AuthLoginPage, AuthRegisterPage, MenuPage, OrdersPage },
+  components: { AuthLoginPage, AuthRegisterPage, MenuPage, OrdersPage, CartPage },
 
   data() {
     const hasToken = !!localStorage.getItem('jwtToken');
@@ -20,7 +22,7 @@ const app = Vue.createApp({
 
   methods: {
     navigate(destination) {
-      if (destination === 'menu' || destination === 'orders' || destination === 'login' || destination === 'register') {
+      if (destination === 'menu' || destination === 'orders' || destination === 'login' || destination === 'register' || destination === 'cart') {
         this.currentPage = destination;
       }
     },
@@ -43,6 +45,7 @@ const app = Vue.createApp({
     <auth-register-page v-else-if="currentPage === 'register'" @navigate="navigate"></auth-register-page>
     <menu-page v-else-if="currentPage === 'menu'" @navigate="navigate" @logout="logout"></menu-page>
     <orders-page v-else-if="currentPage === 'orders'" @navigate="navigate" @logout="logout"></orders-page>
+    <cart-page v-else-if="currentPage === 'cart'" @navigate="navigate" @logout="logout"></cart-page>
   `,
 });
 
@@ -52,4 +55,5 @@ app.component('app-sidebar', AppSidebar);
 app.component('menu-item-card', MenuItemCard);
 app.component('order-card', OrderCard);
 app.component('order-timeline', OrderTimeline);
+app.component('cart-button', CartButton);
 app.mount('#app');
