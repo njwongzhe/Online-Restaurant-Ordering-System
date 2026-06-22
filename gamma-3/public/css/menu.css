@@ -305,6 +305,10 @@
     .section-edit { margin-left: 13px; }
     .section-add { margin-left: 10px; }
 
+    #order-add-button-icon {
+      color: #AB3600;
+    }
+
     .section-edit .material-symbols-outlined,
     .section-add .material-symbols-outlined {
       font-size: 24px;
@@ -790,7 +794,7 @@ body {
     place-items: center;
     border: 0;
     background: transparent;
-    color: var(--orange);
+    color: #AB3600;
     cursor: pointer;
   }
 }

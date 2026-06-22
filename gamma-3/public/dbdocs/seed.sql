@@ -7,27 +7,30 @@ SET NAMES utf8mb4;
 START TRANSACTION;
 
 -- All sample accounts use: Password123!
+-- Initial admin account: phone_number = '0111000000', password = 'adminPass' (hash generated using PHP password_hash PASSWORD_DEFAULT)
 INSERT INTO `users`
   (`user_id`, `phone_number`, `password_hash`, `display_name`, `role`, `is_active`)
 VALUES
-  (1, '0111000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Aina Rahman', 'admin', 1),
-  (2, '0111000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Daniel Lee', 'admin', 1),
-  (3, '0122000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Ali Ahmad', 'customer', 1),
-  (4, '0122000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Siti Aminah', 'customer', 1),
-  (5, '0122000003', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Muthu Raj', 'customer', 1),
-  (6, '0122000004', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Nur Izzati', 'customer', 1),
-  (7, '0122000005', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Jason Wong', 'customer', 1);
+  (1, '0111000000', '$2y$10$t0aq7AMKak5xJBiy9LddNeEu0AJCcd5ji3AiS9CU8F/WMoqrWHyZa', 'Admin', 'admin', 1),
+  (2, '0111000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Aina Rahman', 'admin', 1),
+  (3, '0111000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Daniel Lee', 'admin', 1),
+  (4, '0122000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Ali Ahmad', 'customer', 1),
+  (5, '0122000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Siti Aminah', 'customer', 1),
+  (6, '0122000003', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Muthu Raj', 'customer', 1),
+  (7, '0122000004', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Nur Izzati', 'customer', 1),
+  (8, '0122000005', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Jason Wong', 'customer', 1);
 
 INSERT INTO `admin_profiles` (`user_id`, `position`) VALUES
-  (1, 'Restaurant Manager'),
-  (2, 'Kitchen Supervisor');
+  (1, 'Initial Admin'),
+  (2, 'Restaurant Manager'),
+  (3, 'Kitchen Supervisor');
 
 INSERT INTO `customer_profiles` (`user_id`, `default_address`, `default_payment_method`) VALUES
-  (3, 'Kolej Tun Dr Ismail, UTM', 'cash'),
-  (4, 'Kolej Datin Seri Endon, UTM', 'e_wallet'),
-  (5, 'Kolej Rahman Putra, UTM', 'online_banking'),
-  (6, 'Kolej Tun Fatimah, UTM', 'e_wallet'),
-  (7, 'Kolej Perdana, UTM', 'cash');
+  (4, 'Kolej Tun Dr Ismail, UTM', 'cash'),
+  (5, 'Kolej Datin Seri Endon, UTM', 'e_wallet'),
+  (6, 'Kolej Rahman Putra, UTM', 'online_banking'),
+  (7, 'Kolej Tun Fatimah, UTM', 'e_wallet'),
+  (8, 'Kolej Perdana, UTM', 'cash');
 
 INSERT INTO `restaurant_settings`
   (`setting_key`, `setting_value`, `value_type`, `description`, `is_public`, `updated_by`)
@@ -60,7 +63,7 @@ VALUES
   (7, 2, 'Minty Lemonade', 'Fresh lemon, mint and sparkling water.', 3.75, NULL, 1),
   (8, 2, 'Ceremonial Matcha', 'Premium matcha whisked with oat milk.', 5.25, NULL, 1),
   (9, 2, 'Cold Brew Reserve', 'Coffee steeped slowly for 24 hours.', 4.00, NULL, 1),
-  (10, 3, 'Pandan Crème Brûlée', 'Silky pandan custard with caramelised sugar.', 8.00, NULL, 1);
+  (10, 3, 'Pandan Creme Brulee', 'Silky pandan custard with caramelised sugar.', 8.00, NULL, 1);
 
 INSERT INTO `addons` (`addon_id`, `name`, `price`, `is_available`) VALUES
   (1, 'Extra Egg', 1.00, 1),
@@ -147,7 +150,7 @@ VALUES
   (10, 8, 7, 'Minty Lemonade', 3.75, 1, NULL, 3.75),
   (11, 9, 8, 'Ceremonial Matcha', 5.25, 1, NULL, 5.25),
   (12, 10, 9, 'Cold Brew Reserve', 4.00, 1, 'Less ice', 4.00),
-  (13, 11, 10, 'Pandan Crème Brûlée', 8.00, 1, NULL, 8.00),
+  (13, 11, 10, 'Pandan Creme Brulee', 8.00, 1, NULL, 8.00),
   (14, 12, 2, 'Lanita Signature Burger', 14.00, 1, NULL, 14.00),
   (15, 12, 5, 'Maggi Goreng Special', 7.50, 1, NULL, 7.50),
   (16, 13, 1, 'Avocado Power Bowl', 12.50, 1, NULL, 12.50),
@@ -157,7 +160,7 @@ VALUES
   (20, 17, 7, 'Minty Lemonade', 3.75, 1, NULL, 3.75),
   (21, 18, 8, 'Ceremonial Matcha', 5.25, 1, NULL, 5.25),
   (22, 19, 9, 'Cold Brew Reserve', 4.00, 1, 'No straw', 4.00),
-  (23, 20, 10, 'Pandan Crème Brûlée', 8.00, 1, NULL, 8.00);
+  (23, 20, 10, 'Pandan Creme Brulee', 8.00, 1, NULL, 8.00);
 
 INSERT INTO `order_item_addons`
   (`order_item_addon_id`, `order_item_id`, `addon_id`, `addon_name`, `unit_price`, `quantity`)

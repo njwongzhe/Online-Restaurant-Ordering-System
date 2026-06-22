@@ -31,7 +31,7 @@ final class AuthRoutes
                 
                 // Create JWT token and set the cookie.
                 $expiry = 3600 * 24; // 24 hours.
-                $token = createJWTCookie($user['phone_number'], $user['display_name'], $user['role'], $expiry, $user['position'] ?? null);
+                $token = createJWTCookie((int)$user['user_id'], $user['phone_number'], $user['display_name'], $user['role'], $expiry, $user['position'] ?? null);
 
                 return ApiResponse::json($response, [
                     'success' => true,

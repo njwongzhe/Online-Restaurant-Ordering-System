@@ -33,9 +33,8 @@ $app->addBodyParsingMiddleware();
 // Add error middleware LAST
 $app->addErrorMiddleware(true, true, true); 
 
-$app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("<h3>CPAD - Project REST Service</h3>");
-    return $response;
+$app->get('/', function (Request $request, Response $response, $args) use ($app) {
+    return $response->withHeader('Location', $app->getBasePath() . '/mobile/');
 });
 
 registerApiRoutes($app, $pdo);
