@@ -123,9 +123,201 @@
   background: var(--surface, #fff);
 }
 
-.details-field { margin-bottom: 21px; }
+/* ============================================================= */
+/* Base / Customer View Styles                                   */
+/* ============================================================= */
 
-.details-field label {
+.customer-item-details {
+  display: flex; 
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customer-item-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0px;
+}
+
+.customer-item-price {
+  font-size: 14px;
+  font-weight: bold;
+  color: #C64700;
+  margin: 0px;
+}
+
+.customer-item-description {
+  font-size: 16px;
+  color: grey;
+  margin: 8px 0px 0px 0px;
+}
+
+.customer-details-divider {
+  width: 100%;
+  height: 1px;
+  margin: 30px 0 0;
+  border: 0;
+  background: var(--line);
+}
+
+.customer-item-addons-heading {
+  margin-top: 36px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.customer-item-addons-heading h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+}
+
+.customer-item-addons-heading p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.customer-details-addons {
+  margin-top: 23px;
+  display: grid;
+  gap: 13px;
+}
+
+.customer-details-addon-row {
+  min-width: 0;
+  min-height: 64px;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--details-field);
+}
+
+.customer-addon-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.customer-addon-quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 2px 4px;
+}
+
+.customer-quantity-btn {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--orange, #b63a00);
+  cursor: pointer;
+  padding: 0;
+}
+
+.customer-quantity-btn:disabled {
+  color: var(--line);
+  cursor: not-allowed;
+}
+
+.customer-quantity-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.customer-quantity-value {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 14px;
+  text-align: center;
+  color: var(--text);
+}
+
+.customer-addon-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.customer-addon-price {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.customer-addons-empty {
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.customer-instructions-field {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.customer-instructions-label {
+  display: block;
+  color: var(--muted, grey);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.customer-instructions-textarea {
+  width: 100%;
+  height: 80px;
+  min-height: 80px;
+  padding: 12px 16px;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--details-field, #f8f9fa);
+  color: var(--text);
+  outline: 0;
+  font-size: 16px;
+  line-height: 1.45;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.customer-instructions-textarea:focus {
+  border-color: var(--details-brand, #ab3600);
+}
+
+/* ============================================================= */
+/* Admin View Styles                                             */
+/* ============================================================= */
+
+.admin-details-field { margin-bottom: 21px; } 
+
+.admin-details-field label {
   display: block;
   margin-bottom: 13px;
   color: var(--muted);
@@ -136,8 +328,8 @@
   text-transform: uppercase;
 }
 
-.details-field input,
-.details-field textarea {
+.admin-details-field input,
+.admin-details-field textarea {
   width: 100%;
   display: block;
   border: 1px solid var(--line);
@@ -148,21 +340,21 @@
   font-size: 18px;
 }
 
-.details-field input { height: 57px; padding: 0 16px; }
+.admin-details-field input { height: 57px; padding: 0 16px; }
 
-.details-field textarea {
+.admin-details-field textarea {
   min-height: 139px;
   padding: 18px 16px;
   line-height: 1.45;
   resize: vertical;
 }
 
-.details-field input:focus,
-.details-field textarea:focus,
-.addon-name-input:focus,
-.addon-price-input-wrap:focus-within { border-color: var(--details-brand); }
+.admin-details-field input:focus,
+.admin-details-field textarea:focus,
+.admin-addon-name-input:focus,
+.admin-addon-price-input-wrap:focus-within { border-color: var(--details-brand); }
 
-.details-divider {
+.admin-details-divider {
   width: 100%;
   height: 1px;
   margin: 30px 0 0;
@@ -170,7 +362,7 @@
   background: var(--line);
 }
 
-.addons-heading {
+.admin-addons-heading {
   margin-top: 36px;
   display: flex;
   align-items: flex-start;
@@ -178,7 +370,7 @@
   gap: 16px;
 }
 
-.addons-heading h2 {
+.admin-addons-heading h2 {
   margin: 0;
   font-size: 20px;
   line-height: 28px;
@@ -186,14 +378,14 @@
   letter-spacing: -.03em;
 }
 
-.addons-heading p {
+.admin-addons-heading p {
   margin: 5px 0 0;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.4;
 }
 
-.addon-add-button {
+.admin-addon-add-button {
   width: 28px;
   height: 28px;
   display: grid;
@@ -206,11 +398,11 @@
   cursor: pointer;
 }
 
-.addon-add-button .material-symbols-outlined { font-size: 28px; }
+.admin-addon-add-button .material-symbols-outlined { font-size: 28px; }
 
-.details-addons { margin-top: 23px; display: grid; gap: 13px; }
+.admin-details-addons { margin-top: 23px; display: grid; gap: 13px; }
 
-.details-addon-row {
+.admin-details-addon-row {
   min-width: 0;
   min-height: 57px;
   padding: 9px 12px;
@@ -223,9 +415,9 @@
   background: var(--details-field);
 }
 
-.addon-edit-button,
-.addon-remove-button,
-.addon-edit-actions button {
+.admin-addon-edit-button,
+.admin-addon-remove-button,
+.admin-addon-edit-actions button {
   width: 26px;
   height: 26px;
   display: grid;
@@ -237,13 +429,13 @@
   cursor: pointer;
 }
 
-.addon-edit-button .material-symbols-outlined,
-.addon-remove-button .material-symbols-outlined,
-.addon-edit-actions .material-symbols-outlined { font-size: 20px; }
+.admin-addon-edit-button .material-symbols-outlined,
+.admin-addon-remove-button .material-symbols-outlined,
+.admin-addon-edit-actions .material-symbols-outlined { font-size: 20px; }
 
-.addon-remove-button { color: var(--details-danger); }
+.admin-addon-remove-button { color: var(--details-danger); }
 
-.addon-name {
+.admin-addon-name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -251,18 +443,18 @@
   font-size: 16px;
 }
 
-.addon-price {
+.admin-addon-price {
   color: var(--muted);
   font-size: 16px;
   white-space: nowrap;
 }
 
-.details-addon-row.editing {
+.admin-details-addon-row.admin-editing {
   grid-template-columns: minmax(0, 1fr) 88px auto;
 }
 
-.addon-name-input,
-.addon-price-input-wrap {
+.admin-addon-name-input,
+.admin-addon-price-input-wrap {
   min-width: 0;
   height: 38px;
   border: 1px solid var(--line);
@@ -270,16 +462,16 @@
   background: #fff;
 }
 
-.addon-name-input { width: 100%; padding: 0 9px; outline: 0; }
+.admin-addon-name-input { width: 100%; padding: 0 9px; outline: 0; }
 
-.addon-price-input-wrap {
+.admin-addon-price-input-wrap {
   padding: 0 7px;
   display: flex;
   align-items: center;
   color: var(--muted);
 }
 
-.addon-price-input-wrap input {
+.admin-addon-price-input-wrap input {
   width: 100%;
   min-width: 0;
   border: 0;
@@ -287,10 +479,10 @@
   background: transparent;
 }
 
-.addon-edit-actions { display: flex; }
-.addon-edit-actions button:first-child { color: var(--details-brand); }
+.admin-addon-edit-actions { display: flex; }
+.admin-addon-edit-actions button:first-child { color: var(--details-brand); }
 
-.addons-empty {
+.admin-addons-empty {
   margin: 0;
   padding: 18px;
   border: 1px dashed var(--line);
@@ -299,6 +491,10 @@
   font-size: 13px;
   text-align: center;
 }
+
+/* ============================================================= */
+/* Common Actions & Navigation                                   */
+/* ============================================================= */
 
 .details-validation {
   margin: 18px 0 0;
@@ -391,6 +587,6 @@
 @media (max-width: 374px) {
   .details-card { width: calc(100% - 24px); padding-inline: 18px; }
   .details-actions { margin-inline: -18px; padding-inline: 18px; }
-  .details-addon-row { gap: 7px; padding-inline: 9px; }
-  .details-addon-row.editing { grid-template-columns: minmax(0, 1fr) 78px auto; }
+  .details-addon-row, .admin-details-addon-row, .customer-details-addon-row { gap: 7px; padding-inline: 9px; }
+  .details-addon-row.editing, .admin-details-addon-row.admin-editing { grid-template-columns: minmax(0, 1fr) 78px auto; }
 }

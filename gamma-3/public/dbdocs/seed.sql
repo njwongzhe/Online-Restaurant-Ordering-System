@@ -7,11 +7,11 @@ SET NAMES utf8mb4;
 START TRANSACTION;
 
 -- All sample accounts use: Password123!
--- Initial admin account: phone_number = 'Admin', password = 'adminPass' (hash generated using PHP password_hash PASSWORD_DEFAULT)
+-- Initial admin account: phone_number = '0111000000', password = 'adminPass' (hash generated using PHP password_hash PASSWORD_DEFAULT)
 INSERT INTO `users`
   (`user_id`, `phone_number`, `password_hash`, `display_name`, `role`, `is_active`)
 VALUES
-  (1, 'Admin', '$2y$10$t0aq7AMKak5xJBiy9LddNeEu0AJCcd5ji3AiS9CU8F/WMoqrWHyZa', 'Admin', 'admin', 1),
+  (1, '0111000000', '$2y$10$t0aq7AMKak5xJBiy9LddNeEu0AJCcd5ji3AiS9CU8F/WMoqrWHyZa', 'Admin', 'admin', 1),
   (2, '0111000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Aina Rahman', 'admin', 1),
   (3, '0111000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Daniel Lee', 'admin', 1),
   (4, '0122000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Ali Ahmad', 'customer', 1),
@@ -63,7 +63,7 @@ VALUES
   (7, 2, 'Minty Lemonade', 'Fresh lemon, mint and sparkling water.', 3.75, NULL, 1),
   (8, 2, 'Ceremonial Matcha', 'Premium matcha whisked with oat milk.', 5.25, NULL, 1),
   (9, 2, 'Cold Brew Reserve', 'Coffee steeped slowly for 24 hours.', 4.00, NULL, 1),
-  (10, 3, 'Pandan Crème Brûlée', 'Silky pandan custard with caramelised sugar.', 8.00, NULL, 1);
+  (10, 3, 'Pandan Creme Brulee', 'Silky pandan custard with caramelised sugar.', 8.00, NULL, 1);
 
 INSERT INTO `addons` (`addon_id`, `name`, `price`, `is_available`) VALUES
   (1, 'Extra Egg', 1.00, 1),
@@ -150,7 +150,7 @@ VALUES
   (10, 8, 7, 'Minty Lemonade', 3.75, 1, NULL, 3.75),
   (11, 9, 8, 'Ceremonial Matcha', 5.25, 1, NULL, 5.25),
   (12, 10, 9, 'Cold Brew Reserve', 4.00, 1, 'Less ice', 4.00),
-  (13, 11, 10, 'Pandan Crème Brûlée', 8.00, 1, NULL, 8.00),
+  (13, 11, 10, 'Pandan Creme Brulee', 8.00, 1, NULL, 8.00),
   (14, 12, 2, 'Lanita Signature Burger', 14.00, 1, NULL, 14.00),
   (15, 12, 5, 'Maggi Goreng Special', 7.50, 1, NULL, 7.50),
   (16, 13, 1, 'Avocado Power Bowl', 12.50, 1, NULL, 12.50),
@@ -160,7 +160,7 @@ VALUES
   (20, 17, 7, 'Minty Lemonade', 3.75, 1, NULL, 3.75),
   (21, 18, 8, 'Ceremonial Matcha', 5.25, 1, NULL, 5.25),
   (22, 19, 9, 'Cold Brew Reserve', 4.00, 1, 'No straw', 4.00),
-  (23, 20, 10, 'Pandan Crème Brûlée', 8.00, 1, NULL, 8.00);
+  (23, 20, 10, 'Pandan Creme Brulee', 8.00, 1, NULL, 8.00);
 
 INSERT INTO `order_item_addons`
   (`order_item_addon_id`, `order_item_id`, `addon_id`, `addon_name`, `unit_price`, `quantity`)
