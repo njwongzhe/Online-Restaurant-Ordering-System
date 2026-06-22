@@ -58,7 +58,7 @@ export default {
   template: /*HTML*/`
     <aside class="desktop-sidebar" aria-label="Admin sidebar">
       <div class="sidebar-brand">
-        <span class="material-symbols-outlined">restaurant</span>
+        <img src="../assets/logo.svg" alt="Lanita Restaurant Logo" class="sidebar-brand-logo" />
         <span>Lanita Restaurant</span>
       </div>
 

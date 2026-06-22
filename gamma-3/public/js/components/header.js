@@ -16,7 +16,7 @@ export default {
         <button v-if="showBack" class="global-header-action" type="button" aria-label="Back" @click="$emit('back')">
           <span class="material-symbols-outlined">arrow_back</span>
         </button>
-        <span v-else class="material-symbols-outlined global-header-brand-icon">restaurant</span>
+        <img v-else src="../assets/logo.svg" alt="Lanita Restaurant Logo" class="global-header-brand-logo" />
 
         <h1 class="global-header-title">{{ title }}</h1>
 
