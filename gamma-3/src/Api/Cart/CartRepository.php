@@ -273,14 +273,14 @@ final class CartRepository
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ');
             $orderStmt->execute([
-                $orderNumber, $userId, $orderType, $paymentMethod, 'unpaid', 'pending',
+                $orderNumber, $userId, $orderType, $paymentMethod, 'unpaid', 'new',
                 $subtotal, $packagingFee, $deliveryFee, $serviceFee, $totalAmount,
                 $tableNumber, $deliveryAddress, $customerNote, $pickupAt
             ]);
             $orderId = (int)$this->pdo->lastInsertId();
 
             // Insert status history
-            $this->pdo->prepare("INSERT INTO order_status_history (order_id, status) VALUES (?, 'pending')")->execute([$orderId]);
+            $this->pdo->prepare("INSERT INTO order_status_history (order_id, status) VALUES (?, 'new')")->execute([$orderId]);
 
             // Insert order items and their addons
             foreach ($cartItems as $item) {

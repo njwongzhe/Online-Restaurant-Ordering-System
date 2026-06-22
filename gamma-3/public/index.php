@@ -23,7 +23,7 @@ $app = AppFactory::create();
 
 // Explicitly set the base path to match your Apache Alias exactly
 if (PHP_SAPI !== 'cli-server') {
-    $app->setBasePath('/cpad-project/gamma-3');
+    $app->setBasePath('/cpad-project/gamma-3/public');
 }
 
 // Add routing middleware
