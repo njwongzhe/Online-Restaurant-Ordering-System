@@ -14,6 +14,7 @@ export default {
     'item-updated',
     'item-availability-change',
     'navigate',
+    'logout',
   ],
 
   data() {
@@ -203,10 +204,10 @@ export default {
     ></menu-item-details-page>
 
     <main v-else class="phone admin-shell" aria-label="Lanita Restaurant Admin menu page">
-      <app-sidebar active="menu" @navigate="$emit('navigate', $event)"></app-sidebar>
+      <app-sidebar active="menu" @navigate="$emit('navigate', $event)" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main">
-        <app-header title="Lanita Restaurant (Admin)" show-logout></app-header>
+        <app-header title="Lanita Restaurant (Admin)" show-logout @logout="$emit('logout')"></app-header>
 
         <div class="page-container">
           <section class="hero">
