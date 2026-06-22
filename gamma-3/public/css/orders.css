@@ -265,6 +265,7 @@
 .state-control .material-symbols-outlined { font-size: 22px; }
 
 .history-section-head { margin-top: 39px; }
+.history-section-controls { position: relative; }
 .history-period-control {
   position: relative;
   width: min(52vw, 310px);
@@ -309,12 +310,12 @@
 .history-period .material-symbols-outlined { flex: 0 0 auto; font-size: 19px; }
 
 .history-period-picker {
-  position: relative;
+  position: absolute;
   z-index: 20;
-  top: auto;
-  right: auto;
+  top: calc(100% + 9px);
+  right: 0;
   width: min(310px, calc(100vw - 32px));
-  margin: 9px 0 0 auto;
+  margin: 0;
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -481,6 +482,20 @@
   color: var(--muted);
   font-size: 14px;
   font-weight: 600;
+}
+
+@media (max-width: 899px) {
+  .history-period-picker {
+    position: fixed;
+    z-index: 60;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    width: min(310px, calc(100vw - 32px));
+    max-height: calc(100dvh - 152px);
+    overflow-y: auto;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .cancel-dialog-backdrop {
