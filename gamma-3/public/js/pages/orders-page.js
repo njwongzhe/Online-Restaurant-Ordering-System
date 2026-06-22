@@ -300,6 +300,7 @@ export default {
           </div>
           <div v-else-if="activeExpanded" id="active-orders-section" class="orders-empty">No active orders found</div>
 
+          <div class="history-section-controls">
           <div class="orders-section-head history-section-head">
             <div class="orders-section-title-group">
               <button
@@ -383,6 +384,7 @@ export default {
                   <button type="button" @click="clearHistoryPeriod">Clear</button>
                   <button class="apply" type="button" :disabled="!historyStartDate" @click="periodOpen = false">Apply</button>
                 </div>
+          </div>
           </div>
 
           <div v-if="historyExpanded && historyOrders.length" id="history-orders-section" class="orders-list history-orders-list">
