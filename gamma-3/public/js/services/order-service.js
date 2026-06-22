@@ -24,6 +24,7 @@ function mapOrder(order) {
   return {
     databaseId: Number(order.order_id), id: `#${order.order_number}`, type,
     state: STATUS_TO_UI[order.order_status], cancelled: order.order_status === 'cancelled',
+    createdDate: order.created_at.slice(0, 10),
     date: created.toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' }),
     time: created.toLocaleTimeString('en-MY', { hour: 'numeric', minute: '2-digit' }),
     amount: `$${Number(order.total_amount).toFixed(2)}`, customer: order.display_name,
