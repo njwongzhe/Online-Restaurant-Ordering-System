@@ -38,10 +38,9 @@ VALUES
   ('restaurant_name', 'Lanita Restaurant', 'string', 'Name shown to customers.', 1, 1),
   ('restaurant_address', 'Arked Lestari, UTM Johor Bahru', 'string', 'Pickup and delivery origin.', 1, 1),
   ('restaurant_open', 'true', 'boolean', 'Controls whether new orders are accepted.', 1, 1),
-  ('service_fee', '0.00', 'number', 'Service fee per order.', 1, 1),
-  ('delivery_fee', '3.00', 'number', 'Standard local delivery fee.', 1, 1),
-  ('packaging_fee_delivery', '1.00', 'number', 'Packaging fee for delivery orders.', 1, 1),
-  ('packaging_fee_takeaway', '0.50', 'number', 'Packaging fee for takeaway orders.', 1, 1),
+  ('service_fee', '6', 'number', 'Service fee % per total price of the order.', 1, 1),
+  ('delivery_fee', '0.60', 'number', 'Standard local delivery fee per km.', 1, 1),
+  ('packaging_fee', '1.00', 'number', 'Packaging fee for all orders (per item).', 1, 1),
   ('currency', 'MYR', 'string', 'ISO currency code.', 1, 1);
 
 INSERT INTO `categories`
