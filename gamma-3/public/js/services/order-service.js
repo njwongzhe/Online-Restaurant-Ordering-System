@@ -1,7 +1,7 @@
 import { apiRequest } from './api-client.js';
 
-const STATUS_TO_UI = { pending: 'New', confirmed: 'New', preparing: 'Preparing', ready: 'Ready', out_for_delivery: 'Ready', completed: 'Completed', cancelled: 'Completed' };
-const UI_TO_STATUS = { New: 'confirmed', Preparing: 'preparing', Ready: 'ready', Completed: 'completed' };
+const STATUS_TO_UI = { new: 'New', preparing: 'Preparing', ready: 'Ready', out_for_delivery: 'Ready', completed: 'Completed', cancelled: 'Cancelled' };
+const UI_TO_STATUS = { New: 'new', Preparing: 'preparing', Ready: 'ready', Completed: 'completed' };
 const TYPE_TO_UI = { dine_in: 'dine-in', takeaway: 'pick-up', delivery: 'delivery' };
 
 function imageUrl(path) {
@@ -24,6 +24,8 @@ function mapOrder(order) {
   return {
     databaseId: Number(order.order_id), id: `#${order.order_number}`, type,
     state: STATUS_TO_UI[order.order_status], cancelled: order.order_status === 'cancelled',
+    cancellationReason: order.cancellation_reason || '',
+    createdDate: order.created_at.slice(0, 10),
     date: created.toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' }),
     time: created.toLocaleTimeString('en-MY', { hour: 'numeric', minute: '2-digit' }),
     amount: `$${Number(order.total_amount).toFixed(2)}`, customer: order.display_name,
@@ -37,4 +39,4 @@ export async function loadOrders() {
   return orders.map(mapOrder);
 }
 export const updateOrderState = (id, state) => apiRequest(`/orders/${id}/state`, { method: 'PATCH', body: JSON.stringify({ status: UI_TO_STATUS[state] }) });
-export const cancelOrder = (id) => apiRequest(`/orders/${id}/cancel`, { method: 'POST', body: JSON.stringify({}) });
+export const cancelOrder = (id, reason = '') => apiRequest(`/orders/${id}/cancel`, { method: 'POST', body: JSON.stringify({ reason }) });

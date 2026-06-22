@@ -71,7 +71,7 @@ export default {
     },
   },
 
-  template: `
+  template: /*HTML*/ `
     <main class="order-details-page admin-shell" aria-label="Order details">
       <app-sidebar active="orders" @navigate="handleNavigation"></app-sidebar>
 
@@ -85,7 +85,15 @@ export default {
             <span>{{ order.date }} &middot; {{ order.time }} &middot; {{ typeLabel }}</span>
           </section>
 
-          <order-timeline :steps="timeline"></order-timeline>
+          <section v-if="order.cancelled" class="order-detail-card order-cancellation-card" aria-label="Cancellation reason">
+            <span class="material-symbols-outlined">cancel</span>
+            <div>
+              <h2>Cancellation Reason</h2>
+              <p>{{ order.cancellationReason || 'No cancellation reason was provided.' }}</p>
+            </div>
+          </section>
+
+          <order-timeline v-else :steps="timeline"></order-timeline>
 
           <section class="order-summary-section">
             <h2 class="order-detail-section-title">Order Summary</h2>
@@ -117,7 +125,7 @@ export default {
             </div>
           </section>
 
-          <section class="order-detail-actions" aria-label="Order actions">
+          <section v-if="order.state !== 'Completed' && order.state !== 'Cancelled'" class="order-detail-actions" aria-label="Order actions">
             <button class="order-detail-cancel" type="button" @click="$emit('cancel', order)">Cancel</button>
             <div class="order-detail-state-control">
               <button type="button" aria-label="Previous state" :disabled="stateIndex === 0" @click="changeState(-1)">

@@ -61,6 +61,47 @@
 
 .order-timeline-card { margin-bottom: 30px; padding: 19px 20px 18px; }
 
+.order-cancellation-card {
+  margin-bottom: 30px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border-color: #f1c7ba;
+  border-radius: 14px;
+  background: #fff7f4;
+}
+
+.order-cancellation-card > .material-symbols-outlined {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #ffd9cf;
+  color: var(--orange);
+  font-size: 23px;
+}
+
+.order-cancellation-card h2 {
+  margin: 1px 0 5px;
+  color: #5b4138;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.order-cancellation-card p {
+  margin: 0;
+  color: #795c52;
+  font-size: 14px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
 .order-timeline-row {
   position: relative;
   min-height: 56px;
@@ -265,6 +306,7 @@
   }
   .order-details-hero { grid-area: hero; }
   .order-timeline-card { grid-area: timeline; }
+  .order-cancellation-card { grid-area: timeline; }
   .order-summary-section { grid-area: summary; }
   .order-fulfilment-section { grid-area: fulfilment; }
   .order-detail-actions { grid-area: actions; }

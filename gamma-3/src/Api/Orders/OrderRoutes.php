@@ -13,7 +13,7 @@ use Throwable;
 
 final class OrderRoutes
 {
-    private const ALLOWED_STATUSES = ['confirmed', 'preparing', 'ready', 'completed', 'cancelled'];
+    private const ALLOWED_STATUSES = ['new', 'preparing', 'ready', 'completed', 'cancelled'];
 
     public static function register(App $app, OrderRepository $repository): void
     {
@@ -26,7 +26,13 @@ final class OrderRoutes
                 if (!in_array($status, self::ALLOWED_STATUSES, true)) {
                     throw new InvalidArgumentException('Invalid order state.');
                 }
-                $repository->changeStatus((int) $args['id'], $status);
+                $reason = null;
+                if ($status === 'cancelled') {
+                    $reason = trim((string) (((array) $request->getParsedBody())['reason'] ?? ''));
+                    if (strlen($reason) > 500) throw new InvalidArgumentException('Cancellation reason cannot exceed 500 characters.');
+                    $reason = $reason !== '' ? $reason : null;
+                }
+                $repository->changeStatus((int) $args['id'], $status, $reason);
                 return ApiResponse::json($response, ['success' => true, 'status' => $status]);
             } catch (Throwable $exception) {
                 return ApiResponse::error($response, $exception);

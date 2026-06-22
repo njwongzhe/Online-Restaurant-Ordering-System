@@ -5,7 +5,7 @@ export default {
     steps: { type: Array, required: true },
   },
 
-  template: `
+  template: /*HTML*/ `
     <section class="order-detail-card order-timeline-card" aria-label="Order progress">
       <div v-for="(step, index) in steps" :key="step.state" class="order-timeline-row" :class="{ pending: step.pending }">
         <div class="order-step-icon" :class="{ circle: index === 0 }">

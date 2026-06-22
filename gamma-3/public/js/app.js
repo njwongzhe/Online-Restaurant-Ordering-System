@@ -40,7 +40,7 @@ const app = Vue.createApp({
     }
   },
 
-  template: `
+  template:/*html*/ `
     <auth-login-page v-if="currentPage === 'login'" @navigate="navigate"></auth-login-page>
     <auth-register-page v-else-if="currentPage === 'register'" @navigate="navigate"></auth-register-page>
     <menu-page v-else-if="currentPage === 'menu'" @navigate="navigate" @logout="logout"></menu-page>
