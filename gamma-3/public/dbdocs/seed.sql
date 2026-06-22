@@ -7,18 +7,19 @@ SET NAMES utf8mb4;
 START TRANSACTION;
 
 -- All sample accounts use: Password123!
--- Initial admin account: phone_number = '0111000000', password = 'adminPass' (hash generated using PHP password_hash PASSWORD_DEFAULT)
+-- Initial Admin Account: phone_number = '0111000000', password = 'adminPass' (Hash generated using PHP password_hash PASSWORD_DEFAULT.)
+-- Other admin and customer account is for demo purposes, all demo admin account and all demo customer account has same password. (adminPass and customerPass)
 INSERT INTO `users`
   (`user_id`, `phone_number`, `password_hash`, `display_name`, `role`, `is_active`)
 VALUES
   (1, '0111000000', '$2y$10$t0aq7AMKak5xJBiy9LddNeEu0AJCcd5ji3AiS9CU8F/WMoqrWHyZa', 'Admin', 'admin', 1),
-  (2, '0111000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Aina Rahman', 'admin', 1),
-  (3, '0111000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Daniel Lee', 'admin', 1),
-  (4, '0122000001', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Ali Ahmad', 'customer', 1),
-  (5, '0122000002', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Siti Aminah', 'customer', 1),
-  (6, '0122000003', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Muthu Raj', 'customer', 1),
-  (7, '0122000004', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Nur Izzati', 'customer', 1),
-  (8, '0122000005', '$2y$10$W9bSIz/BM6Os6mFPHdzy1ObMs6LImppR/BrflBoC20sv/b0lwV5Du', 'Jason Wong', 'customer', 1);
+  (2, '0111000001', '$2y$10$t0aq7AMKak5xJBiy9LddNeEu0AJCcd5ji3AiS9CU8F/WMoqrWHyZa', 'Aina Rahman', 'admin', 1),
+  (3, '0111000002', '$2y$10$t0aq7AMKak5xJBiy9LddNeEu0AJCcd5ji3AiS9CU8F/WMoqrWHyZa', 'Daniel Lee', 'admin', 1),
+  (4, '0122000001', '$2y$10$eImiTXuWV51cHeDFm7a9M0cZ9Y1C8O9N4F2E7D3C1B0A9Z8Y7X6W5', 'Ali Ahmad', 'customer', 1),
+  (5, '0122000002', '$2y$10$eImiTXuWV51cHeDFm7a9M0cZ9Y1C8O9N4F2E7D3C1B0A9Z8Y7X6W5', 'Siti Aminah', 'customer', 1),
+  (6, '0122000003', '$2y$10$eImiTXuWV51cHeDFm7a9M0cZ9Y1C8O9N4F2E7D3C1B0A9Z8Y7X6W5', 'Muthu Raj', 'customer', 1),
+  (7, '0122000004', '$2y$10$eImiTXuWV51cHeDFm7a9M0cZ9Y1C8O9N4F2E7D3C1B0A9Z8Y7X6W5', 'Nur Izzati', 'customer', 1),
+  (8, '0122000005', '$2y$10$eImiTXuWV51cHeDFm7a9M0cZ9Y1C8O9N4F2E7D3C1B0A9Z8Y7X6W5', 'Jason Wong', 'customer', 1);
 
 INSERT INTO `admin_profiles` (`user_id`, `position`) VALUES
   (1, 'Initial Admin'),
@@ -39,7 +40,7 @@ VALUES
   ('restaurant_address', 'Arked Lestari, UTM Johor Bahru', 'string', 'Pickup and delivery origin.', 1, 1),
   ('restaurant_open', 'true', 'boolean', 'Controls whether new orders are accepted.', 1, 1),
   ('service_fee', '6', 'number', 'Service fee % per total price of the order.', 1, 1),
-  ('delivery_fee', '0.60', 'number', 'Standard local delivery fee per km.', 1, 1),
+  ('delivery_fee', '3.00', 'number', 'Standard local delivery fee per order.', 1, 1),
   ('packaging_fee', '1.00', 'number', 'Packaging fee for all orders (per item).', 1, 1),
   ('currency', 'MYR', 'string', 'ISO currency code.', 1, 1);
 

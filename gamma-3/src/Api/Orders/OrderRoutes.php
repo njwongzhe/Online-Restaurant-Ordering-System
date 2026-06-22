@@ -17,8 +17,28 @@ final class OrderRoutes
 
     public static function register(App $app, OrderRepository $repository): void
     {
-        $app->get('/api/orders', fn (Request $request, Response $response) =>
-            ApiResponse::json($response, ['orders' => $repository->fetchAll()]));
+        $app->get('/api/orders', function (Request $request, Response $response) use ($repository) {
+            try {
+                require_once __DIR__ . '/../Auth/JwtUtils.php';
+                $user = getAuthenticatedUser();
+                if (!$user) {
+                    return ApiResponse::json($response, ['error' => 'Unauthorized.'], 401);
+                }
+
+                $userId = (int)($user['userId'] ?? $user['user_id'] ?? 0);
+                $role = $user['role'] ?? 'customer';
+
+                if ($role === 'admin') {
+                    $orders = $repository->fetchAll();
+                } else {
+                    $orders = $repository->fetchByUserId($userId);
+                }
+
+                return ApiResponse::json($response, ['orders' => $orders]);
+            } catch (Throwable $exception) {
+                return ApiResponse::error($response, $exception);
+            }
+        });
 
         $changeStatus = function (Request $request, Response $response, array $args, ?string $forcedStatus = null) use ($repository) {
             try {
