@@ -20,7 +20,7 @@ export default {
     },
   },
 
-  template: /*html*/ `
+  template: /*HTML*/ `
     <article class="order-card" :class="history ? 'history-order-card' : 'active-order-card'">
       <div class="order-card-main">
         <div class="order-type-icon" :class="{ muted: history }">

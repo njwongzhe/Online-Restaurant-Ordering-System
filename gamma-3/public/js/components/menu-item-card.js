@@ -8,7 +8,7 @@ export default {
 
   emits: ['toggle', 'edit'],
 
-  template: /*html*/ `
+  template: /*HTML*/ `
     <article class="card" :class="{ unavailable: !categoryAvailable || !item.isAvailable }">
       <img class="card-image" :src="item.image" :alt="item.name || 'New menu item'" />
       <div class="card-content">

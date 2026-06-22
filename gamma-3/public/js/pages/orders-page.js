@@ -105,7 +105,7 @@ export default {
     },
   },
 
-  template: /*html*/ `
+  template: /*HTML*/ `
     <order-details-page
       v-if="activeView === 'details' && selectedOrder"
       :order="selectedOrder"

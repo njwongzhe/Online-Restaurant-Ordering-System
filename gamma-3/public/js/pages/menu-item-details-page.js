@@ -158,7 +158,7 @@ export default {
     },
   },
 
-  template: /* html*/ `
+  template: /*HTML*/ `
     <main class="item-details-page admin-shell" :aria-label="pageTitle">
       <app-sidebar active="menu" @navigate="handleNavigation"></app-sidebar>
 

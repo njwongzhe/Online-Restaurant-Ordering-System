@@ -190,7 +190,7 @@ export default {
     },
   },
 
-  template: /*html*/ `
+  template: /*HTML*/ `
     <menu-item-details-page
       v-if="activeView === 'item-details'"
       :item="selectedItem"
