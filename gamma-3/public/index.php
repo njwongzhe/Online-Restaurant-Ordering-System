@@ -34,7 +34,9 @@ $app->addBodyParsingMiddleware();
 $app->addErrorMiddleware(true, true, true); 
 
 $app->get('/', function (Request $request, Response $response, $args) use ($app) {
-    return $response->withHeader('Location', $app->getBasePath() . '/mobile/');
+    return $response
+        ->withHeader('Location', $app->getBasePath() . '/mobile/')
+        ->withStatus(302);
 });
 
 registerApiRoutes($app, $pdo);
