@@ -17,6 +17,13 @@ function matchesOrderSearch(order, keyword) {
     .includes(keyword);
 }
 
+function matchesOrderFilter(order, filter) {
+  if (filter === 'all') return true;
+  if (filter === 'Cancelled') return order.cancelled;
+  if (filter === 'Completed') return order.state === 'Completed' && !order.cancelled;
+  return order.state === filter && !order.cancelled;
+}
+
 function dateKey(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -34,7 +41,7 @@ export default {
       orders: [],
       searchQuery: '',
       activeFilter: 'all',
-      filters: ['all', 'New', 'Preparing', 'Ready'],
+      filters: ['all', 'New', 'Preparing', 'Ready', 'Completed', 'Cancelled'],
       activeView: 'orders',
       selectedOrder: null,
       loading: true,
@@ -57,15 +64,16 @@ export default {
       const keyword = this.searchQuery.trim().toLowerCase();
       return this.orders.filter((order) => {
         if (order.state === 'Completed') return false;
-        const matchesState = this.activeFilter === 'all' || order.state === this.activeFilter;
-        return matchesState && matchesOrderSearch(order, keyword);
+        return matchesOrderFilter(order, this.activeFilter) && matchesOrderSearch(order, keyword);
       });
     },
 
     historyOrders() {
       const keyword = this.searchQuery.trim().toLowerCase();
       return this.orders.filter((order) => {
-        if (order.state !== 'Completed' || !matchesOrderSearch(order, keyword)) return false;
+        if (order.state !== 'Completed'
+          || !matchesOrderFilter(order, this.activeFilter)
+          || !matchesOrderSearch(order, keyword)) return false;
         if (!this.historyStartDate) return true;
         if (!this.historyEndDate) return order.createdDate === this.historyStartDate;
         return order.createdDate >= this.historyStartDate && order.createdDate <= this.historyEndDate;
