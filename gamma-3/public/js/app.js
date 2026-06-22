@@ -10,10 +10,11 @@ import MenuItemCard from './components/menu-item-card.js';
 import OrderCard from './components/order-card.js';
 import OrderTimeline from './components/order-timeline.js';
 import CartButton from './components/cart-button.js';
+import ProfilePage from './pages/profile-page.js';
 import { logout } from './services/auth-service.js';
 
 const app = Vue.createApp({
-  components: { AuthLoginPage, AuthRegisterPage, MenuPage, OrdersPage, CartPage },
+  components: { AuthLoginPage, AuthRegisterPage, MenuPage, OrdersPage, CartPage, ProfilePage },
 
   data() {
     const hasToken = !!localStorage.getItem('jwtToken');
@@ -22,7 +23,7 @@ const app = Vue.createApp({
 
   methods: {
     navigate(destination) {
-      if (destination === 'menu' || destination === 'orders' || destination === 'login' || destination === 'register' || destination === 'cart') {
+      if (destination === 'menu' || destination === 'orders' || destination === 'login' || destination === 'register' || destination === 'cart' || destination === 'profile') {
         this.currentPage = destination;
       }
     },
@@ -46,6 +47,7 @@ const app = Vue.createApp({
     <menu-page v-else-if="currentPage === 'menu'" @navigate="navigate" @logout="logout"></menu-page>
     <orders-page v-else-if="currentPage === 'orders'" @navigate="navigate" @logout="logout"></orders-page>
     <cart-page v-else-if="currentPage === 'cart'" @navigate="navigate" @logout="logout"></cart-page>
+    <profile-page v-else-if="currentPage === 'profile'" @navigate="navigate" @logout="logout"></profile-page>
   `,
 });
 
@@ -56,4 +58,5 @@ app.component('menu-item-card', MenuItemCard);
 app.component('order-card', OrderCard);
 app.component('order-timeline', OrderTimeline);
 app.component('cart-button', CartButton);
+app.component('profile-page', ProfilePage);
 app.mount('#app');

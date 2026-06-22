@@ -11,6 +11,7 @@ use App\Api\Cart\CartRoutes;
 use App\Api\Orders\OrderRepository;
 use App\Api\Orders\OrderRoutes;
 use App\Api\Shared\ImageStorage;
+use App\Api\User\UserRoutes;
 use Slim\App;
 
 function registerApiRoutes(App $app, PDO $pdo): void
@@ -22,4 +23,5 @@ function registerApiRoutes(App $app, PDO $pdo): void
     MenuRoutes::register($app, $menuRepository, new MenuValidator($menuRepository), $imageStorage);
     CartRoutes::register($app, new CartRepository($pdo));
     OrderRoutes::register($app, new OrderRepository($pdo));
+    UserRoutes::register($app);
 }
