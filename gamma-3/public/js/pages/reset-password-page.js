@@ -97,11 +97,12 @@ export default {
 
             <div v-else class="profile-layout">
                 <div class="profile-settings">
-                    <div class="menu-section">
+                    <form @submit.prevent="savePassword" class="menu-section">
                         <p style="color: var(--muted, #888); margin-bottom: 24px; font-size: 15px; font-weight: 500;">Change your password to secure your account.</p>
                         
                         <button 
                             v-if="!isExpanded"
+                            type="button"
                             @click="isExpanded = true" 
                             style="width: 100%; padding: 16px; border-radius: 12px; background: #d32f2f; color: white; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: background-color 0.2s;"
                         >
@@ -137,7 +138,7 @@ export default {
                             </div>
 
                             <button 
-                                @click="savePassword" 
+                                type="submit" 
                                 :disabled="isSaving"
                                 style="width: 100%; padding: 16px; border-radius: 12px; background: var(--orange, #f25c05); color: white; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: opacity 0.2s;"
                                 :style="{ opacity: isSaving ? 0.7 : 1 }"
@@ -145,7 +146,7 @@ export default {
                                 {{ isSaving ? 'Saving...' : 'Save Changes' }}
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
