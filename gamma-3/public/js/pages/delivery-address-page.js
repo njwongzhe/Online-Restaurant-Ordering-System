@@ -135,7 +135,7 @@ export default {
 
             <div v-else class="profile-layout">
                 <div class="profile-settings">
-                    <div class="menu-section">
+                    <form @submit.prevent="saveAddress" class="menu-section">
                         <p style="color: var(--muted, #888); margin-bottom: 24px; font-size: 15px; font-weight: 500;">Enter your default delivery address for orders.</p>
                         
                         <div class="input-field" style="margin-bottom: 24px;">
@@ -188,14 +188,14 @@ export default {
                         <p v-if="successMessage" style="color: #2e7d32; text-align: center; font-weight: 600; margin-bottom: 16px;">{{ successMessage }}</p>
 
                         <button 
-                            @click="saveAddress" 
+                            type="submit" 
                             :disabled="isSaving"
                             style="width: 100%; padding: 16px; border-radius: 12px; background: var(--orange, #f25c05); color: white; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: opacity 0.2s;"
                             :style="{ opacity: isSaving ? 0.7 : 1 }"
                         >
                             {{ isSaving ? 'Saving...' : 'Save Changes' }}
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
