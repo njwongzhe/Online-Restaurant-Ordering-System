@@ -19,6 +19,8 @@ export default {
       pickupTime: '',
       profileLoaded: false,
       showPaymentDropdown: false,
+      showAddressDropdown: false,
+      addressHistory: [],
       settings: {
         service_fee: 10.0,
         delivery_fee: 5.00,
@@ -112,18 +114,26 @@ export default {
 
   async mounted() {
     await this.loadCart();
-    document.addEventListener('click', this.closePaymentDropdownOutside);
+    document.addEventListener('click', this.closeDropdownsOutside);
   },
 
   beforeUnmount() {
-    document.removeEventListener('click', this.closePaymentDropdownOutside);
+    document.removeEventListener('click', this.closeDropdownsOutside);
   },
 
   methods: {
-    closePaymentDropdownOutside(e) {
+    closeDropdownsOutside(e) {
       if (this.$refs.paymentDropdownContainer && !this.$refs.paymentDropdownContainer.contains(e.target)) {
         this.showPaymentDropdown = false;
       }
+      if (this.$refs.addressDropdownContainer && !this.$refs.addressDropdownContainer.contains(e.target)) {
+        this.showAddressDropdown = false;
+      }
+    },
+
+    selectAddress(addr) {
+      this.deliveryAddress = addr;
+      this.showAddressDropdown = false;
     },
 
     selectPaymentMethod(val) {
@@ -179,6 +189,24 @@ export default {
             this.paymentMethod = response.profile.default_payment_method;
           }
           this.profileLoaded = true;
+        }
+
+        // Fetch address history
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+          try {
+            const addrResponse = await fetch('/gamma-3/api/user/address', {
+              headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (addrResponse.ok) {
+              const addrResult = await addrResponse.json();
+              if (addrResult.data && addrResult.data.address_history) {
+                this.addressHistory = addrResult.data.address_history;
+              }
+            }
+          } catch (addrErr) {
+            console.error('Failed to load address history:', addrErr);
+          }
         }
         localStorage.setItem('cartCount', response.total_quantity ?? 0);
       } catch (error) {
@@ -320,9 +348,45 @@ export default {
               <span class="material-symbols-outlined" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none; font-size: 22px; color: var(--muted);">schedule</span>
               <input class="cart-input-field" style="padding-left: 48px;" v-model="pickupTime" type="text" placeholder="Enter Estimate Pickup Time (e.g. 6:30 PM)" required />
             </div>
-            <div v-if="orderType === 'delivery'" style="position: relative; margin-bottom: 20px;">
+            <div v-if="orderType === 'delivery'" style="position: relative; margin-bottom: 20px;" ref="addressDropdownContainer">
               <span class="material-symbols-outlined" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none; font-size: 22px; color: var(--muted);">location_on</span>
-              <input class="cart-input-field" style="padding-left: 48px;" v-model="deliveryAddress" type="text" placeholder="Enter Delivery Address (e.g. N28)" />
+              <input 
+                class="cart-input-field" 
+                style="padding-left: 48px; padding-right: 48px;" 
+                v-model="deliveryAddress" 
+                type="text" 
+                placeholder="Enter Delivery Address (e.g. N28)" 
+                @focus="showAddressDropdown = true"
+              />
+              <button 
+                v-if="addressHistory && addressHistory.length > 0"
+                type="button"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); z-index: 2; border: none; background: transparent; cursor: pointer; display: grid; place-items: center; color: var(--muted); width: 28px; height: 28px;"
+                @click="showAddressDropdown = !showAddressDropdown"
+                title="Address history"
+              >
+                <span class="material-symbols-outlined" style="font-size: 20px; transition: transform 0.2s;" :style="{ transform: showAddressDropdown ? 'rotate(180deg)' : 'none' }">keyboard_arrow_down</span>
+              </button>
+              
+              <!-- Address History Dropdown -->
+              <div 
+                v-if="showAddressDropdown && addressHistory && addressHistory.length > 0" 
+                class="cart-dropdown-menu"
+                style="position: absolute; top: 100%; left: 0; right: 0; z-index: 50; max-height: 200px; overflow-y: auto;"
+              >
+                <button 
+                  v-for="(addr, idx) in addressHistory" 
+                  :key="idx" 
+                  class="cart-dropdown-item" 
+                  :class="{ active: deliveryAddress === addr }"
+                  type="button"
+                  @click="selectAddress(addr)"
+                >
+                  <span class="material-symbols-outlined cart-dropdown-item-icon">location_on</span>
+                  <span class="cart-dropdown-item-text" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">{{ addr }}</span>
+                  <span v-if="deliveryAddress === addr" class="material-symbols-outlined cart-dropdown-item-check">check</span>
+                </button>
+              </div>
             </div>
 
             <!-- Customer Note -->

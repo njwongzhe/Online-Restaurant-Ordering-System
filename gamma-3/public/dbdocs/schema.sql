@@ -49,6 +49,7 @@ CREATE TABLE `customer_profiles` (
   `user_id` BIGINT UNSIGNED NOT NULL,
   `default_address` VARCHAR(500) NULL,
   `default_payment_method` VARCHAR(50) NULL,
+  `address_history` TEXT NULL,
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_customer_profiles_user`
     FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE

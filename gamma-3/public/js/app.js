@@ -11,10 +11,14 @@ import OrderCard from './components/order-card.js';
 import OrderTimeline from './components/order-timeline.js';
 import CartButton from './components/cart-button.js';
 import ProfilePage from './pages/profile-page.js';
+import PaymentMethodPage from './pages/payment-method-page.js';
+import DeliveryAddressPage from './pages/delivery-address-page.js';
+import ChangePhonePage from './pages/change-phone-page.js';
+import ResetPasswordPage from './pages/reset-password-page.js';
 import { logout } from './services/auth-service.js';
 
 const app = Vue.createApp({
-  components: { AuthLoginPage, AuthRegisterPage, MenuPage, OrdersPage, CartPage, ProfilePage },
+  components: { AuthLoginPage, AuthRegisterPage, MenuPage, OrdersPage, CartPage, ProfilePage, PaymentMethodPage, DeliveryAddressPage, ChangePhonePage, ResetPasswordPage },
 
   data() {
     const hasToken = !!localStorage.getItem('jwtToken');
@@ -23,7 +27,7 @@ const app = Vue.createApp({
 
   methods: {
     navigate(destination) {
-      if (destination === 'menu' || destination === 'orders' || destination === 'login' || destination === 'register' || destination === 'cart' || destination === 'profile') {
+      if (destination === 'menu' || destination === 'orders' || destination === 'login' || destination === 'register' || destination === 'cart' || destination === 'profile' || destination === 'payment-method' || destination === 'delivery-address' || destination === 'change-phone' || destination === 'reset-password') {
         this.currentPage = destination;
       }
     },
@@ -48,6 +52,10 @@ const app = Vue.createApp({
     <orders-page v-else-if="currentPage === 'orders'" @navigate="navigate" @logout="logout"></orders-page>
     <cart-page v-else-if="currentPage === 'cart'" @navigate="navigate" @logout="logout"></cart-page>
     <profile-page v-else-if="currentPage === 'profile'" @navigate="navigate" @logout="logout"></profile-page>
+    <payment-method-page v-else-if="currentPage === 'payment-method'" @navigate="navigate" @logout="logout"></payment-method-page>
+    <delivery-address-page v-else-if="currentPage === 'delivery-address'" @navigate="navigate" @logout="logout"></delivery-address-page>
+    <change-phone-page v-else-if="currentPage === 'change-phone'" @navigate="navigate" @logout="logout"></change-phone-page>
+    <reset-password-page v-else-if="currentPage === 'reset-password'" @navigate="navigate" @logout="logout"></reset-password-page>
   `,
 });
 
@@ -59,4 +67,8 @@ app.component('order-card', OrderCard);
 app.component('order-timeline', OrderTimeline);
 app.component('cart-button', CartButton);
 app.component('profile-page', ProfilePage);
+app.component('payment-method-page', PaymentMethodPage);
+app.component('delivery-address-page', DeliveryAddressPage);
+app.component('change-phone-page', ChangePhonePage);
+app.component('reset-password-page', ResetPasswordPage);
 app.mount('#app');

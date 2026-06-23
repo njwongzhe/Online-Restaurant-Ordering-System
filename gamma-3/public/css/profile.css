@@ -185,4 +185,33 @@
         background: transparent;
         font-size: 13px;
     }
+
+    /* Header display for settings pages on desktop */
+    .payment-method-page .admin-main > .global-header,
+    .delivery-address-page .admin-main > .global-header,
+    .change-phone-page .admin-main > .global-header,
+    .reset-password-page .admin-main > .global-header {
+        display: flex !important;
+        position: static;
+        height: auto;
+        border: 0;
+        background: transparent;
+        backdrop-filter: none;
+    }
+    .payment-method-page .global-header-inner,
+    .delivery-address-page .global-header-inner,
+    .change-phone-page .global-header-inner,
+    .reset-password-page .global-header-inner {
+        width: min(100%, 1180px);
+        padding: 45px 0 0 40px;
+    }
+    .payment-method-page .global-header-title,
+    .delivery-address-page .global-header-title,
+    .change-phone-page .global-header-title,
+    .reset-password-page .global-header-title {
+        color: var(--text, #111);
+        font-size: 32px;
+        line-height: 1.2;
+        font-weight: 800;
+    }
 }
