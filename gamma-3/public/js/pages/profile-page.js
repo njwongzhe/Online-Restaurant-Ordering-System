@@ -9,7 +9,9 @@ export default {
       user: {
         id: '',
         name: '',
-        phone: ''
+        phone: '',
+        defaultPaymentMethod: '',
+        defaultAddress: ''
       }
     };
   },
@@ -17,6 +19,21 @@ export default {
   computed: {
     isAdmin() {
       return (localStorage.getItem('role') || 'customer') === 'admin';
+    },
+    defaultPaymentMethodLabel() {
+      const labels = {
+        'cash': 'Cash',
+        'e_wallet': 'E-Wallet',
+        'online_banking': 'Online Banking'
+      };
+      return labels[this.user.defaultPaymentMethod] || 'Cash';
+    },
+    defaultAddressTruncated() {
+      if (!this.user.defaultAddress) return 'Not Set';
+      if (this.user.defaultAddress.length > 20) {
+        return this.user.defaultAddress.substring(0, 17) + '...';
+      }
+      return this.user.defaultAddress;
     }
   },
 
@@ -42,6 +59,8 @@ export default {
         this.user.name = result.data.display_name;
         this.user.phone = result.data.phone_number;
         this.user.id = result.data.user_id;
+        this.user.defaultPaymentMethod = result.data.default_payment_method || 'cash';
+        this.user.defaultAddress = result.data.default_address || '';
       } else {
         console.error("Database fetch failed.");
         if (response.status === 401) {
@@ -113,19 +132,25 @@ export default {
                     <div class="menu-section" v-if="!isAdmin">
                       <div class="section-divider"><span>DEFAULT</span></div>
                       <div class="menu-list">
-                        <a href="#" class="menu-item">
+                        <a href="#" class="menu-item" @click.prevent="handleNavigation('payment-method')">
                           <div class="menu-left">
                             <span class="material-symbols-outlined text-orange">payments</span>
                             <span>Default Payment Method</span>
                           </div>
-                          <span class="material-symbols-outlined text-grey">chevron_right</span>
+                          <div style="display: flex; align-items: center; gap: 8px; color: var(--muted, #888); font-size: 14px; font-weight: 500;">
+                            <span>{{ defaultPaymentMethodLabel }}</span>
+                            <span class="material-symbols-outlined text-grey">chevron_right</span>
+                          </div>
                         </a>
-                        <a href="#" class="menu-item">
+                        <a href="#" class="menu-item" @click.prevent="handleNavigation('delivery-address')">
                           <div class="menu-left">
                             <span class="material-symbols-outlined text-orange">location_on</span>
                             <span>Default Delivery Address</span>
                           </div>
-                          <span class="material-symbols-outlined text-grey">chevron_right</span>
+                          <div style="display: flex; align-items: center; gap: 8px; color: var(--muted, #888); font-size: 14px; font-weight: 500;">
+                            <span>{{ defaultAddressTruncated }}</span>
+                            <span class="material-symbols-outlined text-grey">chevron_right</span>
+                          </div>
                         </a>
                       </div>
                     </div>
@@ -133,14 +158,14 @@ export default {
                     <div class="menu-section">
                       <div class="section-divider"><span>ACCOUNT</span></div>
                       <div class="menu-list">
-                        <a href="#" class="menu-item">
+                        <a href="#" class="menu-item" @click.prevent="handleNavigation('change-phone')">
                           <div class="menu-left">
                             <span class="material-symbols-outlined text-orange">dialpad</span>
                             <span>Change Phone Number</span>
                           </div>
                           <span class="material-symbols-outlined text-grey">chevron_right</span>
                         </a>
-                        <a href="#" class="menu-item">
+                        <a href="#" class="menu-item" @click.prevent="handleNavigation('reset-password')">
                           <div class="menu-left">
                             <span class="material-symbols-outlined text-orange">history</span>
                             <span>Reset Password</span>
