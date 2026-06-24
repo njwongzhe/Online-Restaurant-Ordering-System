@@ -342,6 +342,29 @@ class UserRoutesTest extends TestCase
         $this->assertEquals('Name cannot be empty.', $body['error']);
     }
 
+    public function testGetPublicSettings(): void
+    {
+        // Insert settings
+        $this->pdo->exec("
+            INSERT INTO restaurant_settings (setting_key, setting_value, value_type, description, is_public)
+            VALUES 
+                ('restaurant_address', '123 Main St', 'string', 'Address', 1),
+                ('secret_key', 'private', 'string', 'Private', 0)
+        ");
+
+        $request = $this->createJsonRequest('GET', '/api/settings', []);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = json_decode((string)$response->getBody(), true);
+        $this->assertTrue($body['success']);
+        
+        // Should only contain the public settings
+        $this->assertArrayHasKey('restaurant_address', $body['settings']);
+        $this->assertEquals('123 Main St', $body['settings']['restaurant_address']);
+        $this->assertArrayNotHasKey('secret_key', $body['settings']);
+    }
+
     public function testAdminGetSettings(): void
     {
         // Insert admin user

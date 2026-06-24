@@ -8,7 +8,7 @@ function imageUrl(path) {
   return `../${(path || 'assets/images/No Menu Image.png').split('/').map(encodeURIComponent).join('/')}`;
 }
 
-function mapOrder(order) {
+function mapOrder(order, restaurantAddress = '') {
   const created = new Date(order.created_at.replace(' ', 'T'));
   const fees = [
     { label: 'Service Fees', amount: Number(order.service_fee) },
@@ -16,10 +16,12 @@ function mapOrder(order) {
     { label: 'Delivery Fee', amount: Number(order.delivery_fee) },
   ].filter((fee) => fee.amount > 0);
   const type = TYPE_TO_UI[order.order_type];
+  const originStr = restaurantAddress ? `Main kitchen (${restaurantAddress})` : 'Main kitchen';
+  const pickupStr = restaurantAddress ? `Collection counter (${restaurantAddress})` : 'Collection counter';
   const fulfilment = type === 'delivery'
-    ? { title: 'Delivery Details', rows: [{ icon: 'storefront', title: 'Lanita Restaurant', subtitle: 'Main kitchen' }, { icon: 'location_on', title: order.delivery_address || 'Delivery address', subtitle: order.customer_note || '' }] }
+    ? { title: 'Delivery Details', rows: [{ icon: 'storefront', title: 'Lanita Restaurant', subtitle: originStr }, { icon: 'location_on', title: order.delivery_address || 'Delivery address', subtitle: order.customer_note || '' }] }
     : type === 'pick-up'
-      ? { title: 'Pick-up Details', rows: [{ icon: 'storefront', title: 'Lanita Restaurant', subtitle: 'Collection counter' }, { icon: 'schedule', title: 'Estimated Pick-up Time', subtitle: order.pickup_at || 'As soon as possible' }] }
+      ? { title: 'Pick-up Details', rows: [{ icon: 'storefront', title: 'Lanita Restaurant', subtitle: pickupStr }, { icon: 'schedule', title: 'Estimated Pick-up Time', subtitle: order.pickup_at || 'As soon as possible' }] }
       : { title: 'Table Details', rows: [{ icon: 'table_restaurant', title: `Table ${order.table_number || '-'}`, subtitle: 'Main Dining Hall' }] };
   let addonsTotal = 0;
   const items = (order.items || []).map((item) => {
@@ -66,8 +68,20 @@ function mapOrder(order) {
 }
 
 export async function loadOrders() {
+  let restaurantAddress = '';
+  try {
+    const settingsRes = await apiRequest('/settings');
+    console.log('Fetched public settings response:', settingsRes);
+    if (settingsRes && settingsRes.settings && settingsRes.settings.restaurant_address) {
+      restaurantAddress = settingsRes.settings.restaurant_address;
+    }
+  } catch (err) {
+    console.error('Failed to load public settings:', err);
+  }
+
   const { orders } = await apiRequest('/orders');
-  return orders.map(mapOrder);
+  console.log('Mapped orders with restaurantAddress:', restaurantAddress);
+  return orders.map(order => mapOrder(order, restaurantAddress));
 }
 export const updateOrderState = (id, state) => apiRequest(`/orders/${id}/state`, { method: 'PATCH', body: JSON.stringify({ status: UI_TO_STATUS[state] }) });
 export const cancelOrder = (id, reason = '') => apiRequest(`/orders/${id}/cancel`, { method: 'POST', body: JSON.stringify({ reason }) });

@@ -424,6 +424,17 @@ final class UserRoutes
             }
         });
 
+        $app->get('/api/settings', function (Request $request, Response $response) {
+            try {
+                global $pdo;
+                $stmt = $pdo->query("SELECT setting_key, setting_value FROM restaurant_settings WHERE is_public = 1");
+                $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+                return ApiResponse::json($response, ['success' => true, 'settings' => $settings]);
+            } catch (Throwable $exception) {
+                return ApiResponse::error($response, $exception);
+            }
+        });
+
         $app->get('/api/admin/settings', function (Request $request, Response $response) {
             try {
                 require_once __DIR__ . '/../Auth/JwtUtils.php';
@@ -459,8 +470,15 @@ final class UserRoutes
                 }
 
                 global $pdo;
-                $stmt = $pdo->prepare("UPDATE restaurant_settings SET setting_value = ? WHERE setting_key = ?");
-                $stmt->execute([$value, $key]);
+                $chk = $pdo->prepare("SELECT 1 FROM restaurant_settings WHERE setting_key = ?");
+                $chk->execute([$key]);
+                if ($chk->fetch()) {
+                    $stmt = $pdo->prepare("UPDATE restaurant_settings SET setting_value = ? WHERE setting_key = ?");
+                    $stmt->execute([$value, $key]);
+                } else {
+                    $stmt = $pdo->prepare("INSERT INTO restaurant_settings (setting_key, setting_value, is_public) VALUES (?, ?, 1)");
+                    $stmt->execute([$key, $value]);
+                }
 
                 return ApiResponse::json($response, ['success' => true, 'message' => 'Setting updated successfully.']);
             } catch (Throwable $exception) {
