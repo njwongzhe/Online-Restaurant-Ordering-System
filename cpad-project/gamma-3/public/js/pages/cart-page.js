@@ -163,7 +163,7 @@ export default {
         });
       }
       if (item.special_instructions && item.special_instructions.trim() !== '') {
-        parts.push(`Note: "${item.special_instructions}"`);
+        parts.push(`Note: ${item.special_instructions}`);
       }
       return parts.join('\n');
     },

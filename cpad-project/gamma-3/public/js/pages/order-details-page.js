@@ -70,8 +70,29 @@ export default {
       else this.$emit('navigate', destination);
     },
 
+    setOrderStateFromTimeline(state) {
+      if (this.order.state !== state) {
+        this.$emit('state-change', { orderId: this.order.id, state });
+      }
+    },
+
     money(value) {
       return `$${Number(value).toFixed(2)}`;
+    },
+
+    getItemCustomizations(item) {
+      const parts = [];
+      if (item.addons && item.addons.length > 0) {
+        item.addons.forEach(addon => {
+          const addonQty = Number(addon.quantity);
+          if (addonQty > 0) {
+            const perItemQty = Math.round(addonQty / (item.quantity || 1));
+            const qtyStr = perItemQty > 1 ? ` (x${perItemQty})` : '';
+            parts.push(`${addon.name}${qtyStr}`);
+          }
+        });
+      }
+      return parts.join(', ');
     },
   },
 
@@ -97,7 +118,13 @@ export default {
             </div>
           </section>
 
-          <order-timeline v-else :steps="timeline"></order-timeline>
+          <order-timeline
+            v-else
+            :steps="timeline"
+            :active-index="stateIndex"
+            :interactive="isAdmin"
+            @select-state="setOrderStateFromTimeline"
+          ></order-timeline>
 
           <section class="order-summary-section">
             <h2 class="order-detail-section-title">Order Summary</h2>
@@ -106,7 +133,10 @@ export default {
                 <img :src="item.image" :alt="item.name" />
                 <div>
                   <h3>{{ item.quantity }}&times; {{ item.name }}</h3>
-                  <p>{{ item.note }}</p>
+                  <div v-if="getItemCustomizations(item)" class="order-item-customizations">
+                    {{ getItemCustomizations(item) }}
+                  </div>
+                  <p v-if="item.note" class="order-item-note">Note: {{ item.note }}</p>
                 </div>
                 <strong>{{ money(item.price) }}</strong>
               </div>

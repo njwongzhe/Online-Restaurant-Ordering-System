@@ -108,6 +108,19 @@
   display: grid;
   grid-template-columns: 35px minmax(0, 1fr);
   gap: 14px;
+  padding: 8px 12px;
+  margin: 0 -12px;
+  border-radius: 8px;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.order-timeline-row.interactive {
+  cursor: pointer;
+}
+
+.order-timeline-row.interactive:hover {
+  background-color: #fbfaf9;
+  transform: translateX(4px);
 }
 
 .order-step-icon {
@@ -118,6 +131,7 @@
   display: grid;
   place-items: center;
   color: var(--orange);
+  transition: color 0.4s ease, border-color 0.4s ease;
 }
 
 .order-step-icon.circle { border: 2px solid currentColor; border-radius: 50%; }
@@ -133,6 +147,35 @@
   height: 24px;
   transform: translateX(-50%);
   background: var(--orange);
+  transition: background-color 0.4s ease;
+  transform-origin: top center;
+}
+
+/* Pending step line: static light gray */
+.order-timeline-row.pending:not(:last-child) .order-step-icon::after {
+  background: #ebebeb;
+  transform: translateX(-50%) scaleY(1);
+}
+
+/* Completed step line (already passed): static orange */
+.order-timeline-row.completed:not(:last-child) .order-step-icon::after {
+  background: var(--orange);
+  transform: translateX(-50%) scaleY(1);
+}
+
+/* Active step line (currently growing): animating orange */
+.order-timeline-row.active:not(:last-child) .order-step-icon::after {
+  background: var(--orange);
+  animation: line-grow-repeat 1.5s infinite linear;
+}
+
+@keyframes line-grow-repeat {
+  0% {
+    transform: translateX(-50%) scaleY(0);
+  }
+  100% {
+    transform: translateX(-50%) scaleY(1);
+  }
 }
 
 .order-timeline-row h2 {
@@ -142,9 +185,17 @@
   font-size: 16px;
   line-height: 21px;
   font-weight: 800;
+  transition: color 0.4s ease;
 }
 
-.order-timeline-row p { margin: 0; color: var(--muted); font-size: 14px; font-weight: 600; }
+.order-timeline-row p { 
+  margin: 0; 
+  color: var(--muted); 
+  font-size: 14px; 
+  font-weight: 600; 
+  transition: color 0.4s ease;
+}
+
 .order-timeline-row.pending .order-step-icon,
 .order-timeline-row.pending h2,
 .order-timeline-row.pending p { color: #c7c7c7; }
@@ -201,6 +252,16 @@
   font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.order-item-customizations,
+.order-item-note {
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.4;
+  white-space: pre-line;
 }
 
 .order-summary-item > strong { font-size: 16px; white-space: nowrap; }

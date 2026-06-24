@@ -18,9 +18,15 @@ final class OrderRepository
     {
         $orders = $this->pdo->query('SELECT o.*, u.display_name FROM orders o JOIN users u ON u.user_id = o.user_id ORDER BY o.created_at DESC, o.order_id DESC')->fetchAll();
         $items = $this->pdo->prepare('SELECT oi.order_item_id, oi.item_name, oi.quantity, oi.unit_price, oi.line_total, oi.special_instructions, COALESCE(mi.image_path, ?) image_path FROM order_items oi LEFT JOIN menu_items mi ON mi.menu_item_id = oi.menu_item_id WHERE oi.order_id = ? ORDER BY oi.order_item_id');
+        $addons = $this->pdo->prepare('SELECT order_item_addon_id, addon_id, addon_name, unit_price, quantity FROM order_item_addons WHERE order_item_id = ? ORDER BY order_item_addon_id');
         foreach ($orders as &$order) {
             $items->execute([ImageStorage::DEFAULT_IMAGE_PATH, $order['order_id']]);
-            $order['items'] = $items->fetchAll();
+            $orderItems = $items->fetchAll();
+            foreach ($orderItems as &$item) {
+                $addons->execute([$item['order_item_id']]);
+                $item['addons'] = $addons->fetchAll();
+            }
+            $order['items'] = $orderItems;
         }
         return $orders;
     }
@@ -32,9 +38,15 @@ final class OrderRepository
         $orders = $stmt->fetchAll();
 
         $items = $this->pdo->prepare('SELECT oi.order_item_id, oi.item_name, oi.quantity, oi.unit_price, oi.line_total, oi.special_instructions, COALESCE(mi.image_path, ?) image_path FROM order_items oi LEFT JOIN menu_items mi ON mi.menu_item_id = oi.menu_item_id WHERE oi.order_id = ? ORDER BY oi.order_item_id');
+        $addons = $this->pdo->prepare('SELECT order_item_addon_id, addon_id, addon_name, unit_price, quantity FROM order_item_addons WHERE order_item_id = ? ORDER BY order_item_addon_id');
         foreach ($orders as &$order) {
             $items->execute([ImageStorage::DEFAULT_IMAGE_PATH, $order['order_id']]);
-            $order['items'] = $items->fetchAll();
+            $orderItems = $items->fetchAll();
+            foreach ($orderItems as &$item) {
+                $addons->execute([$item['order_item_id']]);
+                $item['addons'] = $addons->fetchAll();
+            }
+            $order['items'] = $orderItems;
         }
         return $orders;
     }

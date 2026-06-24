@@ -64,6 +64,11 @@ export default {
 
   async mounted() {
     await this.refreshOrders();
+    this.startPolling();
+  },
+
+  beforeUnmount() {
+    this.stopPolling();
   },
 
   computed: {
@@ -119,6 +124,38 @@ export default {
       try { this.orders = await loadOrders(); this.errorMessage = ''; }
       catch (error) { this.errorMessage = error.message; }
       finally { this.loading = false; }
+    },
+
+    async refreshOrdersSilent() {
+      try {
+        const newOrders = await loadOrders();
+        this.orders = newOrders;
+        if (this.selectedOrder) {
+          const updated = this.orders.find(o => o.databaseId === this.selectedOrder.databaseId);
+          if (updated) {
+            this.selectedOrder = updated;
+          }
+        }
+        this.errorMessage = '';
+      } catch (error) {
+        console.error('Silent refresh failed:', error);
+      }
+    },
+
+    startPolling() {
+      this.pollingInterval = setInterval(async () => {
+        const hasActive = this.orders.some(o => o.state !== 'Completed' && o.state !== 'Cancelled');
+        if (hasActive || (this.selectedOrder && this.selectedOrder.state !== 'Completed' && this.selectedOrder.state !== 'Cancelled')) {
+          await this.refreshOrdersSilent();
+        }
+      }, 8000);
+    },
+
+    stopPolling() {
+      if (this.pollingInterval) {
+        clearInterval(this.pollingInterval);
+        this.pollingInterval = null;
+      }
     },
 
     async changeState(order, direction) {

@@ -15,10 +15,11 @@ import PaymentMethodPage from './pages/payment-method-page.js';
 import DeliveryAddressPage from './pages/delivery-address-page.js';
 import ChangePhonePage from './pages/change-phone-page.js';
 import ResetPasswordPage from './pages/reset-password-page.js';
+import AdminPage from './pages/admin-page.js';
 import { logout } from './services/auth-service.js';
 
 const app = Vue.createApp({
-  components: { AuthLoginPage, AuthRegisterPage, MenuPage, OrdersPage, CartPage, ProfilePage, PaymentMethodPage, DeliveryAddressPage, ChangePhonePage, ResetPasswordPage },
+  components: { AuthLoginPage, AuthRegisterPage, MenuPage, OrdersPage, CartPage, ProfilePage, PaymentMethodPage, DeliveryAddressPage, ChangePhonePage, ResetPasswordPage, AdminPage },
 
   data() {
     const hasToken = !!localStorage.getItem('jwtToken');
@@ -27,7 +28,7 @@ const app = Vue.createApp({
 
   methods: {
     navigate(destination) {
-      if (destination === 'menu' || destination === 'orders' || destination === 'login' || destination === 'register' || destination === 'cart' || destination === 'profile' || destination === 'payment-method' || destination === 'delivery-address' || destination === 'change-phone' || destination === 'reset-password') {
+      if (destination === 'menu' || destination === 'orders' || destination === 'login' || destination === 'register' || destination === 'cart' || destination === 'profile' || destination === 'payment-method' || destination === 'delivery-address' || destination === 'change-phone' || destination === 'reset-password' || destination === 'admin') {
         this.currentPage = destination;
       }
     },
@@ -56,6 +57,7 @@ const app = Vue.createApp({
     <delivery-address-page v-else-if="currentPage === 'delivery-address'" @navigate="navigate" @logout="logout"></delivery-address-page>
     <change-phone-page v-else-if="currentPage === 'change-phone'" @navigate="navigate" @logout="logout"></change-phone-page>
     <reset-password-page v-else-if="currentPage === 'reset-password'" @navigate="navigate" @logout="logout"></reset-password-page>
+    <admin-page v-else-if="currentPage === 'admin'" @navigate="navigate" @logout="logout"></admin-page>
   `,
 });
 
@@ -71,4 +73,5 @@ app.component('payment-method-page', PaymentMethodPage);
 app.component('delivery-address-page', DeliveryAddressPage);
 app.component('change-phone-page', ChangePhonePage);
 app.component('reset-password-page', ResetPasswordPage);
+app.component('admin-page', AdminPage);
 app.mount('#app');
