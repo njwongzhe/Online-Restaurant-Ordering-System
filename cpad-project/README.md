@@ -30,7 +30,7 @@ The backend is built using the high-performance **Slim Framework 4 Skeleton Appl
 4. [Directory Structure](#-directory-structure)
 5. [Database Schema Overview](#-database-schema-overview)
 6. [Setup & Local Deployment](#-setup--local-deployment)
-7. [Production Deployment](#-production-deployment)
+   - [Default Demo Accounts](#-default-accounts-demo-credentials)
 
 <br />
 
