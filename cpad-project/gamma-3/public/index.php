@@ -31,7 +31,7 @@ $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 
 // Add error middleware LAST
-$app->addErrorMiddleware(true, true, true); 
+$app->addErrorMiddleware(true, true, true);
 
 $app->get('/', function (Request $request, Response $response, $args) use ($app) {
     return $response

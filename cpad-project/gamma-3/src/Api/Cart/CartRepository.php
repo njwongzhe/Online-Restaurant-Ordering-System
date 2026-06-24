@@ -209,6 +209,15 @@ final class CartRepository
     ): string {
         $this->pdo->beginTransaction();
         try {
+            // Check if restaurant is open
+            $stmt = $this->pdo->prepare("SELECT setting_value FROM restaurant_settings WHERE setting_key = 'restaurant_open'");
+            $stmt->execute();
+            $isOpenRow = $stmt->fetch();
+            $isOpen = $isOpenRow ? ($isOpenRow['setting_value'] === 'true' || $isOpenRow['setting_value'] === '1') : false;
+            if (!$isOpen) {
+                throw new \InvalidArgumentException('The restaurant is currently closed. We cannot accept new orders.');
+            }
+
             // Get the cart
             $stmt = $this->pdo->prepare('SELECT cart_id FROM carts WHERE user_id = ?');
             $stmt->execute([$userId]);
