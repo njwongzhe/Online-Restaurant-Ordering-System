@@ -336,7 +336,7 @@ export default {
                 
                 <a href="#" class="admin-menu-item" @click.prevent="openSettingModal('service_fee', service_fee)">
                   <div class="admin-menu-left">
-                    <span class="material-symbols-outlined">soup_kitchen</span>
+                    <span class="material-symbols-outlined">skillet</span>
                     <span>Service Fee Rates (% Per Subtotal)</span>
                   </div>
                   <span class="material-symbols-outlined">chevron_right</span>
@@ -352,7 +352,7 @@ export default {
 
                 <a href="#" class="admin-menu-item" @click.prevent="openSettingModal('delivery_fee', delivery_fee)">
                   <div class="admin-menu-left">
-                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span class="material-symbols-outlined">delivery_dining</span>
                     <span>Delivery Fee (Per Order)</span>
                   </div>
                   <span class="material-symbols-outlined">chevron_right</span>

@@ -45,7 +45,7 @@ export default {
         </div>
         
         <div class="stats-card-column">
-          <span class="material-symbols-outlined stats-card-col-icon">local_shipping</span>
+          <span class="material-symbols-outlined stats-card-col-icon">delivery_dining</span>
           <span class="stats-card-col-label">Delivery</span>
           <span class="stats-card-col-value">{{ delivery }}</span>
         </div>
