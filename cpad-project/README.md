@@ -233,6 +233,30 @@ Before launching the server, provision the database:
    ```
    *Note: If your local database is configured with a different host, user, or password, update the variables in this file.*
 
+#### 🔑 Default Accounts (Demo Credentials)
+After running the database seed script, you can use the following default credentials to log in:
+
+##### Administrative Accounts
+All admin accounts use the password **`adminPass`**:
+
+| Display Name | Phone Number | Role | Position |
+| :--- | :--- | :--- | :--- |
+| Admin | `0111000000` | admin | Initial Admin |
+| Aina Rahman | `0111000001` | admin | Restaurant Manager |
+| Daniel Lee | `0111000002` | admin | Kitchen Supervisor |
+
+##### Customer Accounts
+All customer accounts use the password **`customer_pass`**:
+
+| Display Name | Phone Number | Role | Default Address |
+| :--- | :--- | :--- | :--- |
+| Ali Ahmad | `0122000001` | customer | Kolej Tun Dr Ismail, UTM |
+| Siti Aminah | `0122000002` | customer | Kolej Datin Seri Endon, UTM |
+| Muthu Raj | `0122000003` | customer | Kolej Rahman Putra, UTM |
+| Nur Izzati | `0122000004` | customer | Kolej Tun Fatimah, UTM |
+| Jason Wong | `0122000005` | customer | Kolej Perdana, UTM |
+
+
 ---
 
 ### 4. Fetching Dependencies
@@ -320,14 +344,3 @@ The project contains modular testing suites verifying API route handling and car
    ```
    *(Alternatively, run the PHPUnit binary directly: `./vendor/bin/phpunit`)*
 3. Review the test assertions and coverage analysis printouts.
-
-<br />
-
----
-
-<br />
-
-## 🚀 Production Deployment
-
-> [!NOTE]
-> Since this project is still in active development, details regarding production hosting (e.g., container deployments, cloud database integrations, SSL configuration) will be added here once deployment targets are finalized. Refer to the local setup instructions above for current testing procedures.
