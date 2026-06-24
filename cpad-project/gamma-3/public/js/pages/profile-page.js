@@ -1,7 +1,7 @@
 export default {
   name: 'ProfilePage',
   
-  emits: ['navigate'], 
+  emits: ['navigate', 'logout'], 
 
   data() {
     return {
@@ -79,19 +79,14 @@ export default {
       this.$emit('navigate', destination);
     },
     logout() {
-      localStorage.removeItem('jwtToken');
-      localStorage.removeItem('displayName');
-      localStorage.removeItem('role');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('phoneNumber');
-      this.$emit('navigate', 'login'); 
+      this.$emit('logout'); 
     }
   },
 
   template: /*HTML*/ `
     <main class="profile-page admin-shell" aria-label="User Profile">
       
-      <app-sidebar active="profile" @navigate="handleNavigation"></app-sidebar>
+      <app-sidebar active="profile" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main profile-main">
         <app-header title="User Profile" variant="page"></app-header>

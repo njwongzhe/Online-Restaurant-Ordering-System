@@ -238,6 +238,7 @@ export default {
       @state-change="setOrderState"
       @cancel="cancelSelectedOrder"
       @navigate="$emit('navigate', $event)"
+      @logout="$emit('logout')"
     ></order-details-page>
 
     <main v-else class="orders-page admin-shell" aria-label="Live orders">

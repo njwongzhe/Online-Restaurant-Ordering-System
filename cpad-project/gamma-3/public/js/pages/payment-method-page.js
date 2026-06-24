@@ -1,7 +1,7 @@
 export default {
   name: 'PaymentMethodPage',
 
-  emits: ['navigate', 'back'],
+  emits: ['navigate', 'back', 'logout'],
 
   data() {
     return {
@@ -93,7 +93,7 @@ export default {
   template: /*HTML*/ `
     <main class="profile-page payment-method-page admin-shell" aria-label="Payment Method">
       
-      <app-sidebar active="profile" @navigate="handleNavigation"></app-sidebar>
+      <app-sidebar active="profile" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main profile-main">
         

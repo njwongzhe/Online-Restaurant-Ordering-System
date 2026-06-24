@@ -27,7 +27,7 @@ export default {
     order: { type: Object, required: true },
   },
 
-  emits: ['back', 'state-change', 'cancel', 'navigate'],
+  emits: ['back', 'state-change', 'cancel', 'navigate', 'logout'],
 
   computed: {
     stateIndex() {
@@ -77,7 +77,7 @@ export default {
 
   template: /*HTML*/ `
     <main class="order-details-page admin-shell" aria-label="Order details">
-      <app-sidebar active="orders" @navigate="handleNavigation"></app-sidebar>
+      <app-sidebar active="orders" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main order-details-main">
         <app-header title="Order Status" variant="page" show-back @back="$emit('back')"></app-header>

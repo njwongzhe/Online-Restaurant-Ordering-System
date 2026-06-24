@@ -13,7 +13,7 @@ export default {
     serverError: { type: String, default: '' },
   },
 
-  emits: ['back', 'save', 'delete', 'navigate'],
+  emits: ['back', 'save', 'delete', 'navigate', 'logout'],
 
   data() {
     const sourceAddons = Array.isArray(this.item?.addons)
@@ -182,7 +182,7 @@ export default {
 
   template: /*HTML*/`
     <main class="item-details-page admin-shell" :aria-label="pageTitle">
-      <app-sidebar active="menu" @navigate="handleNavigation"></app-sidebar>
+      <app-sidebar active="menu" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
 
       <div class="item-details-main">
         <app-header :title="pageTitle" variant="page" show-back @back="$emit('back')"></app-header>

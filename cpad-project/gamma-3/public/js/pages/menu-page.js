@@ -248,6 +248,7 @@ export default {
       @save="saveItemDetails"
       @delete="deleteItem"
       @navigate="$emit('navigate', $event)"
+      @logout="$emit('logout')"
     ></menu-item-details-page>
 
     <main v-else class="phone admin-shell" aria-label="Lanita Restaurant Admin menu page">

@@ -1,7 +1,7 @@
 export default {
   name: 'ChangePhonePage',
 
-  emits: ['navigate', 'back'],
+  emits: ['navigate', 'back', 'logout'],
 
   data() {
     return {
@@ -72,7 +72,7 @@ export default {
   template: /*HTML*/ `
     <main class="profile-page change-phone-page admin-shell" aria-label="Change Phone Number">
       
-      <app-sidebar active="profile" @navigate="handleNavigation"></app-sidebar>
+      <app-sidebar active="profile" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main profile-main">
         

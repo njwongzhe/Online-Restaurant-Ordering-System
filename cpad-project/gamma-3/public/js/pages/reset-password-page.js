@@ -1,7 +1,7 @@
 export default {
   name: 'ResetPasswordPage',
 
-  emits: ['navigate', 'back'],
+  emits: ['navigate', 'back', 'logout'],
 
   data() {
     return {
@@ -83,7 +83,7 @@ export default {
   template: /*HTML*/ `
     <main class="profile-page reset-password-page admin-shell" aria-label="Reset Password">
       
-      <app-sidebar active="profile" @navigate="handleNavigation"></app-sidebar>
+      <app-sidebar active="profile" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main profile-main">
         
