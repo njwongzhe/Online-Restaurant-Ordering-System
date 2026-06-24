@@ -21,6 +21,37 @@ function mapOrder(order) {
     : type === 'pick-up'
       ? { title: 'Pick-up Details', rows: [{ icon: 'storefront', title: 'Lanita Restaurant', subtitle: 'Collection counter' }, { icon: 'schedule', title: 'Estimated Pick-up Time', subtitle: order.pickup_at || 'As soon as possible' }] }
       : { title: 'Table Details', rows: [{ icon: 'table_restaurant', title: `Table ${order.table_number || '-'}`, subtitle: 'Main Dining Hall' }] };
+  let addonsTotal = 0;
+  const items = (order.items || []).map((item) => {
+    const itemAddons = (item.addons || []).map((addon) => {
+      const addonPrice = Number(addon.unit_price);
+      const addonQty = Number(addon.quantity);
+      addonsTotal += addonPrice * addonQty;
+      return {
+        id: Number(addon.order_item_addon_id),
+        name: addon.addon_name,
+        price: addonPrice,
+        quantity: addonQty,
+      };
+    });
+
+    const itemBasePrice = Number(item.line_total);
+    const itemAddonsPrice = itemAddons.reduce((sum, a) => sum + (a.price * a.quantity), 0);
+
+    return {
+      id: Number(item.order_item_id),
+      name: item.item_name,
+      note: item.special_instructions || '',
+      quantity: Number(item.quantity),
+      price: itemBasePrice + itemAddonsPrice,
+      image: imageUrl(item.image_path),
+      addons: itemAddons,
+    };
+  });
+
+  const baseSubtotal = Number(order.subtotal);
+  const displaySubtotal = baseSubtotal + addonsTotal;
+
   return {
     databaseId: Number(order.order_id), id: `#${order.order_number}`, type,
     state: STATUS_TO_UI[order.order_status], cancelled: order.order_status === 'cancelled',
@@ -29,8 +60,8 @@ function mapOrder(order) {
     date: created.toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' }),
     time: created.toLocaleTimeString('en-MY', { hour: 'numeric', minute: '2-digit' }),
     amount: `$${Number(order.total_amount).toFixed(2)}`, customer: order.display_name,
-    items: (order.items || []).map((item) => ({ id: Number(item.order_item_id), name: item.item_name, note: item.special_instructions || '', quantity: Number(item.quantity), price: Number(item.line_total), image: imageUrl(item.image_path) })),
-    subtotal: Number(order.subtotal), fees, total: Number(order.total_amount), fulfilment,
+    items,
+    subtotal: displaySubtotal, fees, total: Number(order.total_amount), fulfilment,
   };
 }
 

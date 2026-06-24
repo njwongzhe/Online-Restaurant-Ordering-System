@@ -203,6 +203,16 @@
   white-space: nowrap;
 }
 
+.order-item-customizations,
+.order-item-note {
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
 .order-summary-item > strong { font-size: 16px; white-space: nowrap; }
 
 .order-detail-totals { padding: 18px; border-top: 1px solid #e5e2e1; }

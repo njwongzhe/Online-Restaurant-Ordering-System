@@ -73,6 +73,21 @@ export default {
     money(value) {
       return `$${Number(value).toFixed(2)}`;
     },
+
+    getItemCustomizations(item) {
+      const parts = [];
+      if (item.addons && item.addons.length > 0) {
+        item.addons.forEach(addon => {
+          const addonQty = Number(addon.quantity);
+          if (addonQty > 0) {
+            const perItemQty = Math.round(addonQty / (item.quantity || 1));
+            const qtyStr = perItemQty > 1 ? ` (x${perItemQty})` : '';
+            parts.push(`${addon.name}${qtyStr}`);
+          }
+        });
+      }
+      return parts.join(', ');
+    },
   },
 
   template: /*HTML*/ `
@@ -106,7 +121,10 @@ export default {
                 <img :src="item.image" :alt="item.name" />
                 <div>
                   <h3>{{ item.quantity }}&times; {{ item.name }}</h3>
-                  <p>{{ item.note }}</p>
+                  <div v-if="getItemCustomizations(item)" class="order-item-customizations">
+                    {{ getItemCustomizations(item) }}
+                  </div>
+                  <p v-if="item.note" class="order-item-note">Note: {{ item.note }}</p>
                 </div>
                 <strong>{{ money(item.price) }}</strong>
               </div>
