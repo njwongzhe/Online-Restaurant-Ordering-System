@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="gamma-3/public/assets/logo.svg" alt="Lanita Restaurant Logo" width="120" height="120" />
+<img src="cpad-project/gamma-3/public/assets/logo.svg" alt="Lanita Restaurant Logo" width="120" height="120" />
 
 # Online Restaurant Ordering System
 Comprehensive Food & Drink Ordering Platform for Restaurants
