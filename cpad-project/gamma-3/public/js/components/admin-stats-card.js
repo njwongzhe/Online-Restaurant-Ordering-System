@@ -28,7 +28,7 @@ export default {
         </div>
       </div>
       
-      <h2 class="stats-card-amount">$ {{ revenue.toFixed(2) }}</h2>
+      <h2 class="stats-card-amount">RM {{ revenue.toFixed(2) }}</h2>
       <hr class="stats-card-divider" />
       
       <div class="stats-card-columns">

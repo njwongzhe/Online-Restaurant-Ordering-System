@@ -77,7 +77,7 @@ export default {
     },
 
     money(value) {
-      return `$${Number(value).toFixed(2)}`;
+      return `RM${Number(value).toFixed(2)}`;
     },
 
     getItemCustomizations(item) {

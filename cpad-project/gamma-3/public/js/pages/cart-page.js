@@ -154,7 +154,7 @@ export default {
     },
 
     formatPrice(val) {
-      return `$${Number(val).toFixed(2)}`;
+      return `RM${Number(val).toFixed(2)}`;
     },
 
     getItemCustomizations(item) {
@@ -163,7 +163,7 @@ export default {
         item.addons.forEach(addon => {
           const addonQty = Number(addon.quantity);
           if (addonQty > 0) {
-            const priceStr = Number(addon.unit_price) > 0 ? ` (+$${(addon.unit_price * addonQty).toFixed(2)})` : '';
+            const priceStr = Number(addon.unit_price) > 0 ? ` (+RM${(addon.unit_price * addonQty).toFixed(2)})` : '';
             const qtyStr = addonQty > 1 ? ` (x${addonQty})` : '';
             parts.push(`+ ${addon.addon_name}${qtyStr}${priceStr}`);
           }

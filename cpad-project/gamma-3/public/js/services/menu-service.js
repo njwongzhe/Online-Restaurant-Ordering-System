@@ -11,7 +11,7 @@ function mapItem(item) {
     id: Number(item.menu_item_id),
     name: item.name,
     description: item.description || '',
-    price: `$${Number(item.price).toFixed(2)}`,
+    price: `RM${Number(item.price).toFixed(2)}`,
     image: imageUrl(item.image_path),
     isAvailable: Boolean(Number(item.is_available)),
     addons: (item.addons || []).map((addon) => ({ id: Number(addon.addon_id), name: addon.name, price: Number(addon.price) })),

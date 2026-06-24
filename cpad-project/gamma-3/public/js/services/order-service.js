@@ -61,7 +61,7 @@ function mapOrder(order, restaurantAddress = '') {
     createdDate: order.created_at.slice(0, 10),
     date: created.toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' }),
     time: created.toLocaleTimeString('en-MY', { hour: 'numeric', minute: '2-digit' }),
-    amount: `$${Number(order.total_amount).toFixed(2)}`, customer: order.display_name,
+    amount: `RM${Number(order.total_amount).toFixed(2)}`, customer: order.display_name,
     items,
     subtotal: displaySubtotal, fees, total: Number(order.total_amount), fulfilment,
   };

@@ -207,7 +207,7 @@ export default {
                 </div>
 
                 <div class="admin-details-field">
-                  <label for="admin-base-price">Base Price ($)</label>
+                  <label for="admin-base-price">Base Price (RM)</label>
                   <input id="admin-base-price" v-model="form.basePrice" type="number" min="0" step="0.01" inputmode="decimal" :disabled="!isAdmin" placeholder="0.00" />
                 </div>
 
@@ -233,7 +233,7 @@ export default {
                     <template v-if="editingAddonId === addon.id">
                       <input v-model="addonDraft.name" class="admin-addon-name-input" :data-addon-input="addon.id" type="text" placeholder="Add-on name" />
                       <div class="admin-addon-price-input-wrap">
-                        <span>+$</span>
+                        <span>+RM</span>
                         <input v-model="addonDraft.price" type="number" min="0" step="0.01" inputmode="decimal" />
                       </div>
                       <div class="admin-addon-edit-actions">
@@ -247,7 +247,7 @@ export default {
                       </button>
                       <span v-else></span>
                       <span class="admin-addon-name">{{ addon.name }}</span>
-                      <strong class="admin-addon-price">+&#36;{{ Number(addon.price).toFixed(2) }}</strong>
+                      <strong class="admin-addon-price">+RM{{ Number(addon.price).toFixed(2) }}</strong>
                       <button class="admin-addon-remove-button" type="button" :aria-label="'Remove ' + addon.name" @click="removeAddon(addon)">
                         <span class="material-symbols-outlined">delete</span>
                       </button>
@@ -264,7 +264,7 @@ export default {
               <div v-if="!isAdmin">
                 <div class="customer-item-details">
                   <p class="customer-item-name">{{ form.name }}</p>
-                  <p class="customer-item-price">&#36;{{ form.basePrice }}</p>
+                  <p class="customer-item-price">RM{{ form.basePrice }}</p>
                   <p class="customer-item-description">{{ form.description }}</p>
                 </div>
 
@@ -281,7 +281,7 @@ export default {
                   <div v-for="addon in addons" :key="addon.id" class="customer-details-addon-row">
                     <div class="customer-addon-info">
                       <span class="customer-addon-name">{{ addon.name }}</span>
-                      <span class="customer-addon-price">+&#36;{{ Number(addon.price).toFixed(2) }}</span>
+                      <span class="customer-addon-price">+RM{{ Number(addon.price).toFixed(2) }}</span>
                     </div>
                     <div class="customer-addon-quantity-selector">
                       <button type="button" class="customer-quantity-btn" @click="addon.quantity = Math.max(0, addon.quantity - 1)" :disabled="addon.quantity <= 0">
