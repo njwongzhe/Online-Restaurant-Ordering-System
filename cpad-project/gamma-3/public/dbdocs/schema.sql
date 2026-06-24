@@ -251,3 +251,33 @@ CREATE TABLE `order_status_history` (
 ) ENGINE=InnoDB;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+        // Setup tables
+        $this->pdo->exec("
+            CREATE TABLE users (
+                user_id INTEGER PRIMARY KEY,
+                phone_number TEXT UNIQUE,
+                display_name TEXT,
+                role TEXT,
+                password_hash TEXT,
+                is_active INTEGER DEFAULT 1
+            );
+            CREATE TABLE customer_profiles (
+                user_id INTEGER PRIMARY KEY,
+                default_payment_method TEXT,
+                default_address TEXT,
+                address_history TEXT
+            );
+            CREATE TABLE admin_profiles (
+                user_id INTEGER PRIMARY KEY,
+                position TEXT
+            );
+            CREATE TABLE restaurant_settings (
+                setting_key TEXT PRIMARY KEY,
+                setting_value TEXT,
+                value_type TEXT DEFAULT 'string',
+                description TEXT,
+                is_public INTEGER DEFAULT 0
+            );
+        ");

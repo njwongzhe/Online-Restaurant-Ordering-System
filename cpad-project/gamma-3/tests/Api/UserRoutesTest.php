@@ -39,6 +39,17 @@ class UserRoutesTest extends TestCase
                 default_address TEXT,
                 address_history TEXT
             );
+            CREATE TABLE admin_profiles (
+                user_id INTEGER PRIMARY KEY,
+                position TEXT
+            );
+            CREATE TABLE restaurant_settings (
+                setting_key TEXT PRIMARY KEY,
+                setting_value TEXT,
+                value_type TEXT DEFAULT 'string',
+                description TEXT,
+                is_public INTEGER DEFAULT 0
+            );
         ");
 
         $GLOBALS['pdo'] = $this->pdo;
@@ -331,9 +342,201 @@ class UserRoutesTest extends TestCase
         $this->assertEquals('Name cannot be empty.', $body['error']);
     }
 
+    public function testAdminGetSettings(): void
+    {
+        // Insert admin user
+        $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("
+            INSERT INTO users (user_id, phone_number, display_name, role, password_hash, is_active)
+            VALUES (1, '0123456789', 'Admin User', 'admin', :hash, 1)
+        ");
+        $stmt->execute(['hash' => $passwordHash]);
+
+        // Insert settings
+        $this->pdo->exec("
+            INSERT INTO restaurant_settings (setting_key, setting_value, value_type, description, is_public)
+            VALUES ('restaurant_address', '123 Main St', 'string', 'Address', 1)
+        ");
+
+        // Mock JWT
+        require_once __DIR__ . '/../../src/Api/Auth/JwtUtils.php';
+        $payload = [
+            "userId" => 1,
+            "phoneNumber" => "0123456789",
+            "displayName" => "Admin User",
+            "role" => "admin",
+            "exp" => time() + 3600
+        ];
+        $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
+
+        $request = $this->createJsonRequest('GET', '/api/admin/settings', []);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = json_decode((string)$response->getBody(), true);
+        $this->assertTrue($body['success']);
+        $this->assertCount(1, $body['settings']);
+        $this->assertEquals('restaurant_address', $body['settings'][0]['setting_key']);
+    }
+
+    public function testAdminGetSettingsForbidden(): void
+    {
+        // Insert customer user
+        $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("
+            INSERT INTO users (user_id, phone_number, display_name, role, password_hash, is_active)
+            VALUES (1, '0123456789', 'Customer User', 'customer', :hash, 1)
+        ");
+        $stmt->execute(['hash' => $passwordHash]);
+
+        // Mock JWT
+        require_once __DIR__ . '/../../src/Api/Auth/JwtUtils.php';
+        $payload = [
+            "userId" => 1,
+            "phoneNumber" => "0123456789",
+            "displayName" => "Customer User",
+            "role" => "customer",
+            "exp" => time() + 3600
+        ];
+        $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
+
+        $request = $this->createJsonRequest('GET', '/api/admin/settings', []);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAdminPutSetting(): void
+    {
+        // Insert admin user
+        $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("
+            INSERT INTO users (user_id, phone_number, display_name, role, password_hash, is_active)
+            VALUES (1, '0123456789', 'Admin User', 'admin', :hash, 1)
+        ");
+        $stmt->execute(['hash' => $passwordHash]);
+
+        // Insert setting
+        $this->pdo->exec("
+            INSERT INTO restaurant_settings (setting_key, setting_value, value_type, description, is_public)
+            VALUES ('restaurant_address', '123 Main St', 'string', 'Address', 1)
+        ");
+
+        // Mock JWT
+        require_once __DIR__ . '/../../src/Api/Auth/JwtUtils.php';
+        $payload = [
+            "userId" => 1,
+            "phoneNumber" => "0123456789",
+            "displayName" => "Admin User",
+            "role" => "admin",
+            "exp" => time() + 3600
+        ];
+        $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
+
+        $request = $this->createJsonRequest('PUT', '/api/admin/settings', [
+            'key' => 'restaurant_address',
+            'value' => '456 Oak Ave'
+        ]);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        
+        // Verify in DB
+        $stmt = $this->pdo->query("SELECT setting_value FROM restaurant_settings WHERE setting_key = 'restaurant_address'");
+        $val = $stmt->fetchColumn();
+        $this->assertEquals('456 Oak Ave', $val);
+    }
+
+    public function testAdminGetUsers(): void
+    {
+        // Insert admin user and two other users
+        $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("
+            INSERT INTO users (user_id, phone_number, display_name, role, password_hash, is_active)
+            VALUES 
+                (1, '0123456789', 'Admin User', 'admin', :hash, 1),
+                (2, '1111111111', 'Alice Smith', 'customer', :hash, 1),
+                (3, '2222222222', 'Bob Jones', 'customer', :hash, 1)
+        ");
+        $stmt->execute(['hash' => $passwordHash]);
+
+        // Mock JWT
+        require_once __DIR__ . '/../../src/Api/Auth/JwtUtils.php';
+        $payload = [
+            "userId" => 1,
+            "phoneNumber" => "0123456789",
+            "displayName" => "Admin User",
+            "role" => "admin",
+            "exp" => time() + 3600
+        ];
+        $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
+
+        // Get all users
+        $request = $this->createJsonRequest('GET', '/api/admin/users', []);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = json_decode((string)$response->getBody(), true);
+        $this->assertTrue($body['success']);
+        $this->assertCount(3, $body['users']);
+
+        // Search for 'Alice'
+        $request = $this->createJsonRequest('GET', '/api/admin/users?search=Alice', []);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = json_decode((string)$response->getBody(), true);
+        $this->assertCount(1, $body['users']);
+        $this->assertEquals('Alice Smith', $body['users'][0]['display_name']);
+    }
+
+    public function testAdminPutUserRole(): void
+    {
+        // Insert admin user and a customer user
+        $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("
+            INSERT INTO users (user_id, phone_number, display_name, role, password_hash, is_active)
+            VALUES 
+                (1, '0123456789', 'Admin User', 'admin', :hash, 1),
+                (2, '1111111111', 'Alice Smith', 'customer', :hash, 1)
+        ");
+        $stmt->execute(['hash' => $passwordHash]);
+
+        // Mock JWT
+        require_once __DIR__ . '/../../src/Api/Auth/JwtUtils.php';
+        $payload = [
+            "userId" => 1,
+            "phoneNumber" => "0123456789",
+            "displayName" => "Admin User",
+            "role" => "admin",
+            "exp" => time() + 3600
+        ];
+        $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
+
+        // Change Alice's role to admin
+        $request = $this->createJsonRequest('PUT', '/api/admin/users/2/role', [
+            'role' => 'admin'
+        ]);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // Verify role in DB
+        $stmt = $this->pdo->query("SELECT role FROM users WHERE user_id = 2");
+        $this->assertEquals('admin', $stmt->fetchColumn());
+
+        // Verify admin_profile exists
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM admin_profiles WHERE user_id = 2");
+        $this->assertEquals(1, $stmt->fetchColumn());
+    }
+
     private function createJsonRequest(string $method, string $path, array $data): Request
     {
-        $uri = new \Slim\Psr7\Uri('', '', 80, $path);
+        $parsed = parse_url($path);
+        $uriPath = $parsed['path'] ?? '/';
+        $query = $parsed['query'] ?? '';
+
+        $uri = new \Slim\Psr7\Uri('', '', 80, $uriPath, $query);
         $handle = fopen('php://temp', 'w+');
         $stream = (new StreamFactory())->createStreamFromResource($handle);
         $stream->write(json_encode($data));
@@ -342,6 +545,13 @@ class UserRoutesTest extends TestCase
         $headers->addHeader('Content-Type', 'application/json');
         $headers->addHeader('Accept', 'application/json');
 
-        return new Request($method, $uri, $headers, $_COOKIE, [], $stream);
+        $request = new Request($method, $uri, $headers, $_COOKIE, [], $stream);
+
+        if ($query) {
+            parse_str($query, $queryParams);
+            $request = $request->withQueryParams($queryParams);
+        }
+
+        return $request;
     }
 }

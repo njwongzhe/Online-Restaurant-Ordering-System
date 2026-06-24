@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Throwable;
+use PDO;
 
 final class UserRoutes
 {
@@ -419,6 +420,150 @@ final class UserRoutes
                 ]);
 
             } catch (Throwable $exception) {
+                return ApiResponse::error($response, $exception);
+            }
+        });
+
+        $app->get('/api/admin/settings', function (Request $request, Response $response) {
+            try {
+                require_once __DIR__ . '/../Auth/JwtUtils.php';
+                $user = getAuthenticatedUser();
+                if (!$user || ($user['role'] ?? '') !== 'admin') {
+                    return ApiResponse::json($response, ['error' => 'Forbidden.'], 403);
+                }
+
+                global $pdo;
+                $stmt = $pdo->query("SELECT setting_key, setting_value, value_type FROM restaurant_settings");
+                $settings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                return ApiResponse::json($response, ['success' => true, 'settings' => $settings]);
+            } catch (Throwable $exception) {
+                return ApiResponse::error($response, $exception);
+            }
+        });
+
+        $app->put('/api/admin/settings', function (Request $request, Response $response) {
+            try {
+                require_once __DIR__ . '/../Auth/JwtUtils.php';
+                $user = getAuthenticatedUser();
+                if (!$user || ($user['role'] ?? '') !== 'admin') {
+                    return ApiResponse::json($response, ['error' => 'Forbidden.'], 403);
+                }
+
+                $data = (array) $request->getParsedBody();
+                $key = $data['key'] ?? '';
+                $value = $data['value'] ?? '';
+
+                if (empty($key)) {
+                    throw new \InvalidArgumentException('Setting key is required.');
+                }
+
+                global $pdo;
+                $stmt = $pdo->prepare("UPDATE restaurant_settings SET setting_value = ? WHERE setting_key = ?");
+                $stmt->execute([$value, $key]);
+
+                return ApiResponse::json($response, ['success' => true, 'message' => 'Setting updated successfully.']);
+            } catch (Throwable $exception) {
+                return ApiResponse::error($response, $exception);
+            }
+        });
+
+        $app->get('/api/admin/users', function (Request $request, Response $response) {
+            try {
+                require_once __DIR__ . '/../Auth/JwtUtils.php';
+                $user = getAuthenticatedUser();
+                if (!$user || ($user['role'] ?? '') !== 'admin') {
+                    return ApiResponse::json($response, ['error' => 'Forbidden.'], 403);
+                }
+
+                $params = $request->getQueryParams();
+                $search = trim($params['search'] ?? '');
+
+                global $pdo;
+                $query = "SELECT user_id, display_name, phone_number, role, is_active FROM users";
+                $bindings = [];
+
+                if ($search !== '') {
+                    $query .= " WHERE display_name LIKE ? OR user_id LIKE ? OR phone_number LIKE ?";
+                    $searchTerm = '%' . $search . '%';
+                    $bindings = [$searchTerm, $searchTerm, $searchTerm];
+                }
+
+                $query .= " ORDER BY user_id ASC";
+                $stmt = $pdo->prepare($query);
+                $stmt->execute($bindings);
+                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                return ApiResponse::json($response, ['success' => true, 'users' => $users]);
+            } catch (Throwable $exception) {
+                return ApiResponse::error($response, $exception);
+            }
+        });
+
+        $app->put('/api/admin/users/{id}/role', function (Request $request, Response $response, array $args) {
+            try {
+                require_once __DIR__ . '/../Auth/JwtUtils.php';
+                $user = getAuthenticatedUser();
+                if (!$user || ($user['role'] ?? '') !== 'admin') {
+                    return ApiResponse::json($response, ['error' => 'Forbidden.'], 403);
+                }
+
+                $targetUserId = (int)$args['id'];
+                $data = (array) $request->getParsedBody();
+                $newRole = $data['role'] ?? '';
+
+                if (!in_array($newRole, ['customer', 'admin'], true)) {
+                    throw new \InvalidArgumentException('Invalid role.');
+                }
+
+                global $pdo;
+                
+                // Verify user exists
+                $stmt = $pdo->prepare("SELECT user_id, role FROM users WHERE user_id = ?");
+                $stmt->execute([$targetUserId]);
+                $targetUser = $stmt->fetch();
+                if (!$targetUser) {
+                    return ApiResponse::json($response, ['error' => 'User not found.'], 404);
+                }
+
+                $pdo->beginTransaction();
+                
+                // Update users role
+                $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE user_id = ?");
+                $stmt->execute([$newRole, $targetUserId]);
+
+                // Insert blank profile record in customer_profiles or admin_profiles if missing
+                if ($newRole === 'admin') {
+                    $chk = $pdo->prepare("SELECT 1 FROM admin_profiles WHERE user_id = ?");
+                    $chk->execute([$targetUserId]);
+                    if (!$chk->fetch()) {
+                        $stmt = $pdo->prepare("INSERT INTO admin_profiles (user_id, position) VALUES (?, 'Staff')");
+                        $stmt->execute([$targetUserId]);
+                    }
+                } else {
+                    $chk = $pdo->prepare("SELECT 1 FROM customer_profiles WHERE user_id = ?");
+                    $chk->execute([$targetUserId]);
+                    if (!$chk->fetch()) {
+                        $stmt = $pdo->prepare("INSERT INTO customer_profiles (user_id) VALUES (?)");
+                        $stmt->execute([$targetUserId]);
+                    }
+                }
+
+                $pdo->commit();
+
+                return ApiResponse::json($response, [
+                    'success' => true,
+                    'message' => 'User role updated successfully.',
+                    'data' => [
+                        'user_id' => $targetUserId,
+                        'role' => $newRole
+                    ]
+                ]);
+            } catch (Throwable $exception) {
+                global $pdo;
+                if (isset($pdo) && $pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
                 return ApiResponse::error($response, $exception);
             }
         });
