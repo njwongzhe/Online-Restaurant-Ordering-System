@@ -70,6 +70,12 @@ export default {
       else this.$emit('navigate', destination);
     },
 
+    setOrderStateFromTimeline(state) {
+      if (this.order.state !== state) {
+        this.$emit('state-change', { orderId: this.order.id, state });
+      }
+    },
+
     money(value) {
       return `$${Number(value).toFixed(2)}`;
     },
@@ -112,7 +118,13 @@ export default {
             </div>
           </section>
 
-          <order-timeline v-else :steps="timeline"></order-timeline>
+          <order-timeline
+            v-else
+            :steps="timeline"
+            :active-index="stateIndex"
+            :interactive="isAdmin"
+            @select-state="setOrderStateFromTimeline"
+          ></order-timeline>
 
           <section class="order-summary-section">
             <h2 class="order-detail-section-title">Order Summary</h2>

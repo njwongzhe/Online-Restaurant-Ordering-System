@@ -383,5 +383,44 @@ final class UserRoutes
                 return ApiResponse::error($response, $exception);
             }
         });
+
+        $app->put('/api/user/profile/name', function (Request $request, Response $response) {
+            try {
+                $userId = getAuthenticatedUserId();
+                
+                if (!$userId) {
+                    return ApiResponse::json($response, ['error' => 'Unauthorized. Please log in.'], 401);
+                }
+
+                $data = (array) $request->getParsedBody();
+                $name = trim((string)($data['displayName'] ?? $data['display_name'] ?? $data['name'] ?? ''));
+
+                if (empty($name)) {
+                    throw new \InvalidArgumentException('Name cannot be empty.');
+                }
+                
+                if (mb_strlen($name) > 100) {
+                    throw new \InvalidArgumentException('Name cannot exceed 100 characters.');
+                }
+
+                global $pdo;
+                $stmt = $pdo->prepare("UPDATE users SET display_name = :display_name WHERE user_id = :user_id");
+                $stmt->execute([
+                    'display_name' => $name,
+                    'user_id' => $userId
+                ]);
+
+                return ApiResponse::json($response, [
+                    'success' => true,
+                    'message' => 'Profile name updated successfully.',
+                    'data' => [
+                        'display_name' => $name
+                    ]
+                ]);
+
+            } catch (Throwable $exception) {
+                return ApiResponse::error($response, $exception);
+            }
+        });
     }
 }

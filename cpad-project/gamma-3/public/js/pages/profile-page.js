@@ -6,6 +6,9 @@ export default {
   data() {
     return {
       isLoading: true,
+      isEditingName: false,
+      nameDraft: '',
+      sidebarKey: 0,
       user: {
         id: '',
         name: '',
@@ -80,13 +83,69 @@ export default {
     },
     logout() {
       this.$emit('logout'); 
+    },
+    toggleEditName() {
+      if (this.isEditingName) {
+        this.saveName();
+      } else {
+        this.startEditingName();
+      }
+    },
+    startEditingName() {
+      this.nameDraft = this.user.name;
+      this.isEditingName = true;
+      this.$nextTick(() => {
+        this.$refs.nameInput?.focus();
+      });
+    },
+    async saveName() {
+      const name = this.nameDraft.trim();
+      if (!name) {
+        this.isEditingName = false;
+        return;
+      }
+      
+      const token = localStorage.getItem('jwtToken');
+      if (!token) return;
+
+      try {
+        const response = await fetch('../api/user/profile/name', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ displayName: name })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          this.user.name = result.data.display_name;
+          localStorage.setItem('displayName', this.user.name);
+          this.sidebarKey++;
+        }
+      } catch (err) {
+        console.error('Failed to update name:', err);
+      } finally {
+        this.isEditingName = false;
+      }
+    },
+    cancelEditName() {
+      this.isEditingName = false;
+    },
+    handleInputBlur() {
+      setTimeout(() => {
+        if (this.isEditingName) {
+          this.saveName();
+        }
+      }, 200);
     }
   },
 
   template: /*HTML*/ `
     <main class="profile-page admin-shell" aria-label="User Profile">
       
-      <app-sidebar active="profile" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
+      <app-sidebar :key="sidebarKey" active="profile" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main profile-main">
         <app-header title="User Profile" variant="page"></app-header>
@@ -108,11 +167,27 @@ export default {
                         <span class="user-id" v-if="isLoading">#Loading...</span>
                         <span class="user-id" v-else>#{{ user.id }}</span>
                         
-                        <span class="material-symbols-outlined edit-icon">edit</span>
+                        <button 
+                          v-if="!isLoading" 
+                          type="button"
+                          class="material-symbols-outlined edit-icon"
+                          @click.stop="toggleEditName"
+                          aria-label="Edit Name"
+                        >{{ isEditingName ? 'check' : 'edit' }}</button>
                       </div>
                       
                       <h2 class="user-name" v-if="isLoading">Loading...</h2>
-                      <h2 class="user-name" v-else>{{ user.name }}</h2>
+                      <template v-else>
+                        <input 
+                          v-if="isEditingName" 
+                          v-model="nameDraft" 
+                          ref="nameInput" 
+                          class="user-name-input"
+                          @keyup.enter="saveName"
+                          @keyup.esc="cancelEditName"
+                        />
+                        <h2 v-else class="user-name" @click="startEditingName" style="cursor: pointer;">{{ user.name }}</h2>
+                      </template>
                       
                       <div class="user-phone">
                         <span class="material-symbols-outlined icon-small">call</span>

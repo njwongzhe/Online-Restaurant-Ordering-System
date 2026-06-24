@@ -262,6 +262,75 @@ class UserRoutesTest extends TestCase
         $this->assertEquals('New password must be at least 8 characters long.', $body['error']);
     }
 
+    public function testPutProfileNameSuccess(): void
+    {
+        // Insert a user
+        $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("
+            INSERT INTO users (user_id, phone_number, display_name, role, password_hash, is_active)
+            VALUES (1, '0123456789', 'John Doe', 'customer', :hash, 1)
+        ");
+        $stmt->execute(['hash' => $passwordHash]);
+
+        // Mock JWT
+        require_once __DIR__ . '/../../src/Api/Auth/JwtUtils.php';
+        $payload = [
+            "userId" => 1,
+            "phoneNumber" => "0123456789",
+            "displayName" => "John Doe",
+            "role" => "customer",
+            "exp" => time() + 3600
+        ];
+        $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
+
+        $request = $this->createJsonRequest('PUT', '/api/user/profile/name', [
+            'displayName' => 'Jane Smith'
+        ]);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = json_decode((string)$response->getBody(), true);
+        $this->assertTrue($body['success']);
+        $this->assertEquals('Jane Smith', $body['data']['display_name']);
+
+        // Verify in DB
+        $stmt = $this->pdo->prepare("SELECT display_name FROM users WHERE user_id = 1");
+        $stmt->execute();
+        $user = $stmt->fetch();
+        $this->assertEquals('Jane Smith', $user['display_name']);
+    }
+
+    public function testPutProfileNameEmpty(): void
+    {
+        // Insert a user
+        $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("
+            INSERT INTO users (user_id, phone_number, display_name, role, password_hash, is_active)
+            VALUES (1, '0123456789', 'John Doe', 'customer', :hash, 1)
+        ");
+        $stmt->execute(['hash' => $passwordHash]);
+
+        // Mock JWT
+        require_once __DIR__ . '/../../src/Api/Auth/JwtUtils.php';
+        $payload = [
+            "userId" => 1,
+            "phoneNumber" => "0123456789",
+            "displayName" => "John Doe",
+            "role" => "customer",
+            "exp" => time() + 3600
+        ];
+        $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
+
+        $request = $this->createJsonRequest('PUT', '/api/user/profile/name', [
+            'displayName' => ''
+        ]);
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(422, $response->getStatusCode());
+        $body = json_decode((string)$response->getBody(), true);
+        $this->assertEquals('Name cannot be empty.', $body['error']);
+    }
+
     private function createJsonRequest(string $method, string $path, array $data): Request
     {
         $uri = new \Slim\Psr7\Uri('', '', 80, $path);
