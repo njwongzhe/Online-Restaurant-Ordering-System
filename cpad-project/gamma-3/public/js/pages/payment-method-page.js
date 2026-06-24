@@ -26,7 +26,7 @@ export default {
     }
 
     try {
-      const response = await fetch('/gamma-3/api/user/payment-method', {
+      const response = await fetch('../api/user/payment-method', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
 
@@ -67,7 +67,7 @@ export default {
       const token = localStorage.getItem('jwtToken');
 
       try {
-        const response = await fetch('/gamma-3/api/user/payment-method', {
+        const response = await fetch('../api/user/payment-method', {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',

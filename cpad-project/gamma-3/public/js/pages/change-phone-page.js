@@ -38,7 +38,7 @@ export default {
       const token = localStorage.getItem('jwtToken');
 
       try {
-        const response = await fetch('/gamma-3/api/user/phone-number', {
+        const response = await fetch('../api/user/phone-number', {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',

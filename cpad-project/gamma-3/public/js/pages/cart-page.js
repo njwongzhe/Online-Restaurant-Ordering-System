@@ -195,7 +195,7 @@ export default {
         const token = localStorage.getItem('jwtToken');
         if (token) {
           try {
-            const addrResponse = await fetch('/gamma-3/api/user/address', {
+            const addrResponse = await fetch('../api/user/address', {
               headers: { 'Authorization': 'Bearer ' + token }
             });
             if (addrResponse.ok) {

@@ -45,7 +45,7 @@ export default {
     }
     
     try {
-      const response = await fetch('/gamma-3/api/user/profile', {
+      const response = await fetch('../api/user/profile', {
         method: 'GET',
         headers: { 
           'Content-Type': 'application/json',

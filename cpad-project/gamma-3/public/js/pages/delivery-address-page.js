@@ -22,7 +22,7 @@ export default {
     }
 
     try {
-      const response = await fetch('/gamma-3/api/user/address', {
+      const response = await fetch('../api/user/address', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
 
@@ -62,7 +62,7 @@ export default {
       
       const token = localStorage.getItem('jwtToken');
       try {
-        const response = await fetch('/gamma-3/api/user/address/history', {
+        const response = await fetch('../api/user/address/history', {
           method: 'DELETE',
           headers: { 
             'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ export default {
       const token = localStorage.getItem('jwtToken');
 
       try {
-        const response = await fetch('/gamma-3/api/user/address', {
+        const response = await fetch('../api/user/address', {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',
