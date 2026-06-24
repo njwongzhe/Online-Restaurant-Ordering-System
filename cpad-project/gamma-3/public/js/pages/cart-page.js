@@ -95,7 +95,14 @@ export default {
       ];
     },
 
+    isStoreOpen() {
+      return this.settings.restaurant_open === 'true' || this.settings.restaurant_open === '1';
+    },
+
     canCheckout() {
+      if (!this.isStoreOpen) {
+        return false;
+      }
       if (this.loading || this.submitting || this.cartItems.length === 0) {
         return false;
       }
@@ -179,6 +186,7 @@ export default {
             delivery_fee: Number(response.settings.delivery_fee ?? response.settings.delivery_fee_flat ?? 5.00),
             packaging_fee_takeaway: Number(response.settings.packaging_fee_takeaway ?? response.settings.packaging_fee ?? response.settings.packaging_fee_per_item ?? 0.50),
             packaging_fee_delivery: Number(response.settings.packaging_fee_delivery ?? response.settings.packaging_fee ?? response.settings.packaging_fee_per_item ?? 0.50),
+            restaurant_open: response.settings.restaurant_open ?? 'true',
           };
         }
         if (response.profile && !this.profileLoaded) {
@@ -456,7 +464,7 @@ export default {
 
             <!-- Checkout Button -->
             <button class="cart-checkout-btn" type="button" :disabled="!canCheckout" @click="handleCheckout">
-              {{ submitting ? 'Processing...' : 'Checkout' }}
+              {{ !isStoreOpen ? 'Restaurant Closed' : (submitting ? 'Processing...' : 'Checkout') }}
             </button>
           </div>
         </div>
