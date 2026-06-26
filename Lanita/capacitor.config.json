@@ -1,0 +1,9 @@
+{
+  "appId": "com.example.app",
+  "appName": "Lanita",
+  "webDir": "www",
+  "server": {
+    "url": "https://online-restaurant-ordering-system.onrender.com",
+    "cleartext": true
+  }
+}

@@ -29,8 +29,9 @@ The backend is built using the high-performance **Slim Framework 4 Skeleton Appl
 3. [Technology Stack](#-technology-stack)
 4. [Directory Structure](#-directory-structure)
 5. [Database Schema Overview](#-database-schema-overview)
-6. [Setup & Local Deployment](#-setup--local-deployment)
-   - [Default Demo Accounts](#-default-accounts-demo-credentials)
+6. [Order Processing & History Workflow](#-order-processing--history-workflow)
+7. [Setup & Local Deployment](#-setup--local-deployment)
+8. [Production Deployment](#-production-deployment)
 
 <br />
 
@@ -57,7 +58,7 @@ The backend is built using the high-performance **Slim Framework 4 Skeleton Appl
 The application implements a classic decoupled service model consisting of:
 *   **Backend Application API Layer**: Built on Slim Framework 4 utilizing PHP-DI container injection and PSR-7 request/response messaging standards to process frontend requests, check parameters, and handle DB queries.
 *   **Database Management System (DBMS)**: Backed by a local MySQL/MariaDB database instance providing strong relational integrity, foreign key checks, and structured transaction data storage.
-*   **Mobile Web UI**: Located under the public web-accessible directory (`/mobile/`) featuring dynamic web components, styles, and order interfaces interacting with API endpoints.
+*   **Mobile Web UI / Lanita Client**: Located under the public web-accessible directory (`/mobile/`) or native builds, featuring dynamic web components, styles, and order interfaces interacting with API endpoints.
 
 *(Diagrams and graphs are excluded per documentation instructions.)*
 
@@ -93,58 +94,65 @@ The application implements a classic decoupled service model consisting of:
 
 ## 📂 Directory Structure
 
-Below is an overview of the primary files and directories within this project:
+Below is an overview of the primary files and directories within this repository workspace:
 
 ```txt
 /
-├── README.md               # Root documentation file
-└── gamma-3/                # Core application workspace folder
-    ├── .coveralls.yml      # Coveralls configuration for test coverage
-    ├── .gitignore          # Git exclusion patterns
-    ├── .htaccess           # Apache configuration rules for redirection
-    ├── composer.json       # PHP dependencies list and startup scripts
-    ├── composer.lock       # Locked versions of vendor dependencies
-    ├── phpcs.xml           # PHP CodeSniffer style configuration rules
-    ├── phpstan.neon.dist   # PHPStan analysis levels and custom rules
-    ├── phpunit.xml         # PHPUnit testing target directories and environment
-    ├── app/                # Application bootstrapping configurations
-    │   ├── dependencies.php   # Dependency Injection container container definitions
-    │   ├── middleware.php     # Global routing middlewares configuration
-    │   ├── repositories.php   # Model repository mappings mapping interfaces
-    │   ├── routes.php         # Main application endpoint mapping routes
-    │   └── settings.php       # Environment configuration parameters (Logger, debugging, etc.)
-    ├── logs/               # Local file logs directory (Monolog storage)
-    ├── public/             # Public server DocumentRoot files
-    │   ├── .htaccess          # Apache URL rewriting rules for index.php routing
-    │   ├── index.php          # Main execution file and app entry point
-    │   ├── assets/            # Static image assets, illustrations, and logos
-    │   ├── css/               # Stylesheets for web frontend pages
-    │   ├── js/                # Javascript modules and interactive component logic
-    │   ├── libs/              # External library files and local DB connector
-    │   │   └── db_connect_PDO_SLIM.php # Relational database connection file
-    │   ├── mobile/            # Client mobile ordering portal frontend
-    │   │   └── index.html         # Mobile browser landing interface
-    │   ├── uploads/           # User/Admin uploaded media files (e.g. food images)
-    │   └── dbdocs/            # Database schema models and script backups
-    │       ├── README.md          # Database documentation guide
-    │       ├── schema.sql         # Main database schema setup file
-    │       └── seed.sql           # Database initial demo data seeding script
-    ├── src/                # Backend source code files
-    │   ├── Api/               # API Router Handlers & repositories
-    │   │   ├── Auth/              # Registration and JWT login authentication API
-    │   │   ├── Cart/              # Cart management logic
-    │   │   ├── Menu/              # Item listings and menu parameters
-    │   │   ├── Orders/            # Checkout flows and order state handlers
-    │   │   ├── Shared/            # Reusable helper mechanisms
-    │   │   └── routes.php         # API modular endpoint registrations
-    │   ├── Application/       # Core app controllers and action schemas
-    │   ├── Domain/            # Business models and entity domains
-    │   └── Infrastructure/    # Data repositories and hardware mappings
-    └── tests/              # PHPUnit testing suites
-        ├── Api/               # REST API endpoints unit test suites
-        ├── Application/       # Application routing layer tests
-        ├── TestCase.php       # Master TestCase parent class
-        └── bootstrap.php      # Test run bootstrap loader script
+├── README.md  # Repository root documentation.
+├── .gitignore # Git exclusion patterns for the repository.
+├── Lanita/                 # Mobile Client App (Capacitor hybrid app for Android).
+│   ├── README.md           # Mobile app setup & build guide.
+│   ├── .gitignore          # Git exclusion patterns for mobile app.
+│   ├── capacitor.config.json # Capacitor static configuration.
+│   ├── package.json        # Node dependencies & project scripts.
+│   ├── vite.config.ts      # Vite asset compilation config.
+│   ├── src/                # Mobile app Vue/JS source code.
+│   ├── www/                # Built web assets folder.
+│   └── android/            # Native Android Studio compilation folder.
+└── cpad-project/                           # Parent directory containing the backend workspace.
+    └── gamma-3/                            # Core backend Slim API workspace.
+        ├── .env                            # Database connection environment configuration.
+        ├── .coveralls.yml                  # Coveralls configuration for test coverage.
+        ├── .gitignore                      # Git exclusion patterns.
+        ├── .htaccess                       # Apache configuration rules for redirection.
+        ├── composer.json                   # PHP dependencies list and startup scripts.
+        ├── composer.lock                   # Locked versions of PHP package dependencies.
+        ├── docker-compose.yml              # Docker compose configuration for local development.
+        ├── Dockerfile                      # Docker configuration for production deployment.
+        ├── phpcs.xml                       # PHP CodeSniffer style configuration rules.
+        ├── phpstan.neon.dist               # PHPStan analysis levels and custom rules.
+        ├── phpunit.xml                     # PHPUnit testing target directories and environment.
+        ├── README.md                       # Slim API setup & local deployment details.
+        ├── .github/                        # GitHub Actions configuration and workflows.
+        ├── app/                            # Application bootstrapping configurations.
+        ├── logs/                           # Local file logs directory (Monolog storage).
+        ├── public/                         # Public server DocumentRoot files.
+        │   ├── .htaccess                   # Apache URL rewriting rules for index.php routing.
+        │   ├── index.php                   # Main execution file and app entry point with dynamic path resolver.
+        │   ├── assets/                     # Static image assets, illustrations, and logos.
+        │   ├── css/                        # Stylesheets for web frontend pages.
+        │   ├── js/                         # Javascript modules and interactive component logic.
+        │   ├── libs/                       # External library files and local DB connector.
+        │   │   └── db_connect_PDO_SLIM.php # Relational database connection file.
+        │   ├── mobile/                     # Client mobile ordering portal frontend.
+        │   │   └── index.html              # Mobile browser landing interface.
+        │   ├── uploads/                    # User/Admin uploaded media files (e.g. food images).
+        │   └── dbdocs/                     # Database schema models and script backups.
+        │       ├── README.md               # Database documentation guide.
+        │       ├── schema.sql              # Main database schema setup file.
+        │       └── seed.sql                # Database initial demo data seeding script.
+        ├── src/                            # Backend source code files.
+        │   ├── Api/                        # API Router Handlers & repositories.
+        │   │   ├── Auth/                   # Registration and JWT login authentication API.
+        │   │   ├── Cart/                   # Cart management logic.
+        │   │   ├── Menu/                   # Item listings and menu parameters.
+        │   │   ├── Orders/                 # Checkout flows and order state handlers.
+        │   │   ├── Shared/                 # Reusable helper mechanisms.
+        │   │   └── routes.php              # API modular endpoint registrations.
+        │   ├── Application/                # Core app controllers and action schemas.
+        │   ├── Domain/                     # Business models and entity domains.
+        │   └── Infrastructure/             # Data repositories and hardware mappings.
+        └── tests/                          # PHPUnit testing suites.
 ```
 
 <br />
@@ -174,6 +182,27 @@ The relational MySQL/MariaDB database consists of **15 tables** designed to supp
 | `order_items` | Historical item snapshots linked to a confirmed order, logging frozen unit pricing. |
 | `order_item_addons` | Snapshotted records of addon selections linked to order items, preserving historical transactions. |
 | `order_status_history` | Audit log recording step-by-step updates of order states (e.g., preparing, ready, completed). |
+
+<br />
+
+---
+
+<br />
+
+## 🔄 Order Processing & History Workflow
+
+The system manages customer ordering and administrative tracking using a transaction-safe state machine. Below is the sequential request-response pipeline for order configuration, submission, and status transitions:
+
+1. **Menu Selection**: The customer browses the menu and configures custom addon choices (e.g., extra toppings or sizes).
+2. **Cart Checkout**: The customer selects their dining format (Dine-in, Take-away, or Delivery) and submits the checkout request.
+3. **API Ingestion**: The Lanita mobile client sends a checkout request containing active cart items to the Slim backend API along with their JWT authorization token.
+4. **Validation**: The backend API validates item stock, price configurations, and cart integrity against the MySQL database.
+5. **Database Transaction**: The backend executes a transaction to insert records into the `orders`, `order_items`, and `order_item_addons` tables, logs the starting tracking state into `order_status_history` (`pending`), and clears the user's active cart items.
+6. **Order Confirmation**: The backend returns a tracking code and confirmation payload to the customer app.
+7. **Administrative View**: The order becomes visible in real-time in the restaurant administrator dashboard.
+8. **Status Transition**: The restaurant admin updates the order status (e.g. from `pending` to `preparing`, then `ready`, and finally `completed` or `cancelled`), which updates the order records and appends audit logs to the `order_status_history` table.
+
+*(Diagrams and graphs are excluded per documentation instructions.)*
 
 <br />
 
@@ -214,17 +243,17 @@ To ensure Composer can build Slim framework skeletons and fetch dependencies suc
 Before launching the server, provision the database:
 
 1. Open your database command-line utility or web administration dashboard (such as **phpMyAdmin** or **MySQL Workbench**).
-2. Open the schema setup files from the directory:
-   - [schema.sql](file:///e:/GitHub/cpad-project/gamma-3/public/dbdocs/schema.sql)
-   - [seed.sql](file:///e:/GitHub/cpad-project/gamma-3/public/dbdocs/seed.sql)
-3. Execute the SQL queries inside [schema.sql](file:///e:/GitHub/cpad-project/gamma-3/public/dbdocs/schema.sql). This will:
+2. Open the schema setup files from the directory `cpad-project/gamma-3/public/dbdocs`:
+   - `schema.sql`
+   - `seed.sql`
+3. Execute the SQL queries inside `schema.sql`. This will:
    - Create the target database: `cpad_03_gamma`
    - Setup the default database credentials:
      * **Username**: `cpad`
      * **Password**: `cpadPassword`
    - Create all 15 relational tables.
-4. Execute the SQL queries inside [seed.sql](file:///e:/GitHub/cpad-project/gamma-3/public/dbdocs/seed.sql) to load initial seed information (default accounts, categories, items, and addon lists).
-5. The local application establishes DB connectivity using the configuration stored in [db_connect_PDO_SLIM.php](file:///e:/GitHub/cpad-project/gamma-3/public/libs/db_connect_PDO_SLIM.php):
+4. Execute the SQL queries inside `seed.sql` to load initial seed information (default accounts, categories, items, and addon lists).
+5. The local application establishes DB connectivity using the configuration stored in `db_connect_PDO_SLIM.php` (located in `cpad-project/gamma-3/public/libs/db_connect_PDO_SLIM.php`):
    ```php
    $host = "localhost";
    $username = "cpad";
@@ -236,40 +265,34 @@ Before launching the server, provision the database:
 #### 🔑 Default Accounts (Demo Credentials)
 After running the database seed script, you can use the following default credentials to log in:
 
-##### Administrative Accounts
-All admin accounts use the password **`adminPass`**:
-
 | Display Name | Phone Number | Role | Position |
 | :--- | :--- | :--- | :--- |
 | Admin | `0111000000` | admin | Initial Admin |
 | Aina Rahman | `0111000001` | admin | Restaurant Manager |
 | Daniel Lee | `0111000002` | admin | Kitchen Supervisor |
-
-##### Customer Accounts
-All customer accounts use the password **`customer_pass`**:
-
-| Display Name | Phone Number | Role | Default Address |
-| :--- | :--- | :--- | :--- |
 | Ali Ahmad | `0122000001` | customer | Kolej Tun Dr Ismail, UTM |
 | Siti Aminah | `0122000002` | customer | Kolej Datin Seri Endon, UTM |
 | Muthu Raj | `0122000003` | customer | Kolej Rahman Putra, UTM |
 | Nur Izzati | `0122000004` | customer | Kolej Tun Fatimah, UTM |
 | Jason Wong | `0122000005` | customer | Kolej Perdana, UTM |
 
+All admin accounts use the password **`adminPass`**.
+All customer accounts use the password **`customerPass`**.
+
 ---
 
 ### 4. Fetching Dependencies
 Initialize packages using Composer:
 1. Open a command prompt or terminal.
-2. Navigate to the `gamma-3` subdirectory:
+2. Navigate to the `cpad-project/gamma-3` subdirectory:
    ```bash
-   cd gamma-3
+   cd cpad-project/gamma-3
    ```
 3. Run the installation instruction:
    ```bash
    composer install
    ```
-   *This command parses the [composer.json](file:///e:/GitHub/cpad-project/gamma-3/composer.json) file and pulls all framework modules into the `vendor` folder.*
+   *This command parses the `composer.json` file and pulls all framework modules into the `vendor` folder.*
 
 ---
 
@@ -278,7 +301,7 @@ Initialize packages using Composer:
 #### Option A: PHP Built-in Web Server (Recommended for Fast Local Development)
 This option allows you to quickly run the server from the command line without configuring extra web server packages.
 
-1. Navigate to the `gamma-3` directory in your terminal.
+1. Navigate to the `cpad-project/gamma-3` directory in your terminal.
 2. Start the application using the predefined Composer script:
    ```bash
    composer start
@@ -293,8 +316,6 @@ To run on an alternative port (such as `8000`), issue the manual CLI instruction
 php -S localhost:8000 -t public
 ```
 Then visit [http://localhost:8000/mobile/](http://localhost:8000/mobile/).
-
----
 
 #### Option B: XAMPP Apache Web Server Setup
 To run the Slim 4 project properly under an Apache web server (XAMPP), you need to configure Apache to route requests to the `/public` directory of the project, while keeping the folder in your custom path directory.
@@ -318,28 +339,127 @@ To run the Slim 4 project properly under an Apache web server (XAMPP), you need 
 ##### Configuration Example:
 If your project is saved in `C:/cpad-project`, the configuration would look like:
 ```apache
-Alias /cpad-project/gamma-3 C:/cpad-project/gamma-3/public
-
 <Directory "C:/cpad-project/gamma-3/public">
     Options Indexes FollowSymLinks Includes ExecCGI
     AllowOverride All
     Require all granted
 </Directory>
+
+Alias /cpad-project/gamma-3 C:/cpad-project/gamma-3/public
 ```
 
 3. Save the `httpd.conf` file and restart your Apache server from the XAMPP Control Panel.
 4. Access the web client in your browser:
    [http://localhost/gamma-3/mobile/](http://localhost/gamma-3/mobile/) (or the corresponding alias path).
 
+<br />
+
 ---
 
-### 6. Executing Tests
-The project contains modular testing suites verifying API route handling and cart repositories.
+<br />
 
-1. Navigate to the `gamma-3` root directory.
-2. Run the test commands using Composer:
-   ```bash
-   composer test
+## 🚀 Production Deployment
+
+### 1. Environment Configurations (.env)
+Create a `.env` file in the `cpad-project/gamma-3` directory to store database connection configurations:
+
+```ini
+# --------- Database Configuration ---------
+# Database connection URI (MySQL Server format, e.g., from Railway)
+DATABASE_URL="mysql://username:password@host:port/database"
+```
+
+---
+
+### 2. Render Cloud Container Deployment (PHP-Slim Backend API)
+To deploy the Slim API to production on [Render](https://render.com) using the custom Docker configuration, follow these instructions:
+
+#### A. Create a New Web Service
+1. Log in to the [Render Dashboard](https://dashboard.render.com).
+2. Click **New +** (top-right) and select **Web Service**.
+3. Connect the GitHub repository containing this project.
+
+#### B. Service Configuration
+During the setup of the Web Service, apply the following configuration parameters:
+*   **Name**: `online-restaurant-ordering-system`
+*   **Environment**: `Docker`
+*   **Region**: Select a region closest to your MySQL database instance (e.g., `Singapore` for Southeast Asia).
+*   **Branch**: `master` (Or your preferred deployment branch).
+*   **Root Directory**: `cpad-project/gamma-3` *(This is critical since the Dockerfile sits in the backend subdirectory)*.
+
+#### C. Environment Variables Configuration
+Navigate to the **Environment** tab of the newly created Render service and add the following variables:
+*   **`DATABASE_URL`**: Your MySQL production database connection URI (e.g., from Railway).
+
+---
+
+### 3. cron-job.org (Optional for Render Free Plan)
+If you deploy the PHP-Slim backend API on a **Render Free Plan**, Render automatically spins down the web service container after 15 minutes of inactivity. The next incoming request (e.g., from the mobile app) will experience a "cold start" delay of 50 seconds or more while the instance spins back up.
+
+To keep the Render container active and prevent it from sleeping, you can set up a free pinging service on [cron-job.org](https://cron-job.org/):
+
+#### Steps to Configure:
+1. Register a free account or log in at [cron-job.org](https://cron-job.org/).
+2. Navigate to the **Cronjobs** tab and click **Create Cronjob**.
+3. Set the following details:
+   - **Title**: `RENDER SERVER KEEP ACTIVE CRON` (Or your preferred name.)
+   - **Address (URL)**: `https://Your-Render-Service-Domain.onrender.com/` *(Replace with your actual Render service domain, e.g., `https://online-restaurant-ordering-system.onrender.com/`)*
+   - **Request Method**: `GET`
+   - **Schedule**: Choose **Every 10 minutes** (this runs frequently enough to beat Render's 15-minute inactivity limit).
+4. Save the cron job. It will ping the base URL every 10 minutes to ensure the server remains active.
+
+---
+
+### 4. Railway MySQL Database Provisioning
+To host the production MySQL database on [Railway](https://railway.app):
+1. Sign in to your Railway dashboard and create a new project.
+2. Select **Provision MySQL**.
+3. Retrieve your connection variables from the **Variables** tab of the MySQL service.
+4. Construct your `DATABASE_URL` in the standard format:
+   ```ini
+   DATABASE_URL="mysql://[user]:[password]@[host]:[port]/[database]"
    ```
-   *(Alternatively, run the PHPUnit binary directly: `./vendor/bin/phpunit`)*
-3. Review the test assertions and coverage analysis printouts.
+5. Open your local terminal and navigate to the directory `cpad-project/gamma-3/public/dbdocs/railwaySQL`:
+   ```bash
+   cd cpad-project/gamma-3/public/dbdocs/railwaySQL
+   ```
+6. Run the following command to quickly load the prepared schema and seed data directly into the Railway database:
+   ```bash
+   mysql -h <host> -u <user> -p<password> --port <port> <database> < railway_schema_seed.sql
+   ```
+   
+   ##### Command Example:
+   ```bash
+   mysql -h reseau.proxy.rlwy.net -u root -peUuUxoRhieerxFrbfyTZZJTZGwzOjBut --port 26489 railway < railway_schema_seed.sql
+   ```
+
+   > [!IMPORTANT]
+   > The database host, port, username, and password used in the Railway command are completely different from your local database configuration (which uses `localhost`, `cpad`, and `cpadPassword`). Make sure to refer to the exact production credentials listed in your Railway MySQL service variables, and ensure there is no space between `-p` and the password value.
+
+---
+
+### 5. Capacitor Mobile App Build & Compilation (Android)
+To compile and build the **Lanita** mobile application:
+1. Navigate to the `Lanita` directory.
+2. Ensure `capacitor.config.json` points to your backend web service URL (e.g., `https://online-restaurant-ordering-system.onrender.com` or your local development IP) under the `"server.url"` key if remote server hosting is desired.
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. If you haven't add the `android` folder, run this command:
+   ```bash
+   npx cap add android
+   ```
+5. Sync the compiled assets to the native platforms:
+   ```bash
+   npx cap sync
+   ```
+6. Open the native platform workspace in Android Studio:
+   ```bash
+   npx cap open android
+   ```
+7. Resolve Potential Gradle/JDK Errors (First Time Only)
+   Once Android Studio opens the project and starts indexing, if you see an "Invalid Gradle JDK configuration found" error popup in the bottom right corner:
+   *   Click the blue link in the popup that says `Use Embedded JDK (.../jbr)`.
+   *   Click the Sync Project with Gradle Files button (the Elephant 🐘 icon) in the top-right toolbar to re-sync.
+8. Inside Android Studio, build, sign, and compile the final production APK or bundle for deployment.

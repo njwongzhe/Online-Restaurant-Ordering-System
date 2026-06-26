@@ -1,6 +1,12 @@
 <?php
 // Load .env if it exists.
-foreach ([__DIR__ . '/../../.env', __DIR__ . '/../.env', __DIR__ . '/.env'] as $path) {
+foreach ([
+    __DIR__ . '/../../../../.env',
+    __DIR__ . '/../../../.env',
+    __DIR__ . '/../../.env',
+    __DIR__ . '/../.env',
+    __DIR__ . '/.env'
+] as $path) {
     if (file_exists($path)) {
         foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
             $line = trim($line);
