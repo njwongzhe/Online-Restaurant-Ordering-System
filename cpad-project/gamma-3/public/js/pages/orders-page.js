@@ -318,7 +318,7 @@ export default {
               >
                 <span class="material-symbols-outlined">{{ activeExpanded ? 'keyboard_arrow_down' : 'chevron_right' }}</span>
               </button>
-              <h2>Active Orders</h2>
+              <h2>Active</h2>
             </div>
             <span class="orders-count">{{ activeOrders.length }} active</span>
           </div>
@@ -351,7 +351,7 @@ export default {
               >
                 <span class="material-symbols-outlined">{{ historyExpanded ? 'keyboard_arrow_down' : 'chevron_right' }}</span>
               </button>
-              <h2>Order History</h2>
+              <h2>History</h2>
             </div>
 
             <div class="history-period-control">

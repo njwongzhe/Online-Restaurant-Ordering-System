@@ -117,7 +117,7 @@
     background-color: transparent;
     font-size: 14px;
     font-weight: 500;
-    cursor: pointer;
+    cursor: text;
 }
 
 /* --- Button --- */
@@ -191,4 +191,38 @@
     font-weight: 500;
     text-align: center;
     margin: -10px 0;
+}
+
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-input-container .input-box {
+    padding-right: 40px;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: grey;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+    color: #AB3600;
+}
+
+.password-toggle-btn .material-symbols-outlined {
+    font-size: 20px;
 }

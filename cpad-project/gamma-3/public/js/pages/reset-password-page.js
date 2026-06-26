@@ -7,9 +7,12 @@ export default {
     return {
       isLoading: false,
       isSaving: false,
-      isExpanded: false,
+      oldPassword: '',
       newPassword: '',
       confirmPassword: '',
+      showOldPassword: false,
+      showNewPassword: false,
+      showConfirmPassword: false,
       successMessage: '',
       errorMessage: ''
     };
@@ -35,7 +38,7 @@ export default {
       this.errorMessage = '';
       this.successMessage = '';
 
-      if (!this.newPassword || !this.confirmPassword) {
+      if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
         this.errorMessage = 'All fields are required.';
         return;
       }
@@ -61,6 +64,7 @@ export default {
             'Authorization': 'Bearer ' + token 
           },
           body: JSON.stringify({ 
+            old_password: this.oldPassword,
             new_password: this.newPassword
           })
         });
@@ -99,53 +103,69 @@ export default {
                 <div class="profile-settings">
                     <form @submit.prevent="savePassword" class="menu-section">
                         <p style="color: var(--muted, #888); margin-bottom: 24px; font-size: 15px; font-weight: 500;">Change your password to secure your account.</p>
-                        
-                        <button 
-                            v-if="!isExpanded"
-                            type="button"
-                            @click="isExpanded = true" 
-                            style="width: 100%; padding: 16px; border-radius: 12px; background: #d32f2f; color: white; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: background-color 0.2s;"
-                        >
-                            Reset Password
-                        </button>
 
-                        <p v-if="errorMessage" style="color: #d32f2f; text-align: center; font-weight: 600; margin-top: 16px; margin-bottom: 16px;">{{ errorMessage }}</p>
-                        <p v-if="successMessage" style="color: #2e7d32; text-align: center; font-weight: 600; margin-top: 16px; margin-bottom: 16px;">{{ successMessage }}</p>
+                        <div class="input-field" style="margin-bottom: 20px;">
+                            <label class="input-box-label" for="old-password-input">Old Password</label>
+                            <div class="password-input-container">
+                                <input 
+                                    id="old-password-input"
+                                    class="input-box" 
+                                    v-model="oldPassword" 
+                                    :type="showOldPassword ? 'text' : 'password'"
+                                    placeholder="********" 
+                                    style="width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--line, #e0e0e0); font-family: inherit; font-size: 15px; padding-right: 48px;"
+                                />
+                                <button type="button" class="password-toggle-btn" @click="showOldPassword = !showOldPassword" style="top: 50%; transform: translateY(-50%); right: 10px;" :aria-label="showOldPassword ? 'Hide password' : 'Show password'">
+                                    <span class="material-symbols-outlined">{{ showOldPassword ? 'visibility' : 'visibility_off' }}</span>
+                                </button>
+                            </div>
+                        </div>
 
-                        <div v-if="isExpanded" style="margin-top: 12px; border-top: 1px solid var(--line, #e0e0e0); padding-top: 24px;">
-                            <div class="input-field" style="margin-bottom: 20px;">
-                                <label class="input-box-label" for="new-password-input">New Password</label>
+                        <div class="input-field" style="margin-bottom: 20px;">
+                            <label class="input-box-label" for="new-password-input">New Password</label>
+                            <div class="password-input-container">
                                 <input 
                                     id="new-password-input"
                                     class="input-box" 
                                     v-model="newPassword" 
-                                    type="password"
+                                    :type="showNewPassword ? 'text' : 'password'"
                                     placeholder="********" 
-                                    style="width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--line, #e0e0e0); font-family: inherit; font-size: 15px;"
+                                    style="width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--line, #e0e0e0); font-family: inherit; font-size: 15px; padding-right: 48px;"
                                 />
+                                <button type="button" class="password-toggle-btn" @click="showNewPassword = !showNewPassword" style="top: 50%; transform: translateY(-50%); right: 10px;" :aria-label="showNewPassword ? 'Hide password' : 'Show password'">
+                                    <span class="material-symbols-outlined">{{ showNewPassword ? 'visibility' : 'visibility_off' }}</span>
+                                </button>
                             </div>
+                        </div>
 
-                            <div class="input-field" style="margin-bottom: 24px;">
-                                <label class="input-box-label" for="confirm-password-input">Confirm New Password</label>
+                        <div class="input-field" style="margin-bottom: 24px;">
+                            <label class="input-box-label" for="confirm-password-input">Confirm New Password</label>
+                            <div class="password-input-container">
                                 <input 
                                     id="confirm-password-input"
                                     class="input-box" 
                                     v-model="confirmPassword" 
-                                    type="password"
+                                    :type="showConfirmPassword ? 'text' : 'password'"
                                     placeholder="********" 
-                                    style="width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--line, #e0e0e0); font-family: inherit; font-size: 15px;"
+                                    style="width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--line, #e0e0e0); font-family: inherit; font-size: 15px; padding-right: 48px;"
                                 />
+                                <button type="button" class="password-toggle-btn" @click="showConfirmPassword = !showConfirmPassword" style="top: 50%; transform: translateY(-50%); right: 10px;" :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
+                                    <span class="material-symbols-outlined">{{ showConfirmPassword ? 'visibility' : 'visibility_off' }}</span>
+                                </button>
                             </div>
-
-                            <button 
-                                type="submit" 
-                                :disabled="isSaving"
-                                style="width: 100%; padding: 16px; border-radius: 12px; background: var(--orange, #f25c05); color: white; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: opacity 0.2s;"
-                                :style="{ opacity: isSaving ? 0.7 : 1 }"
-                            >
-                                {{ isSaving ? 'Saving...' : 'Save Changes' }}
-                            </button>
                         </div>
+
+                        <p v-if="errorMessage" style="color: #d32f2f; text-align: center; font-weight: 600; margin-top: 16px; margin-bottom: 16px;">{{ errorMessage }}</p>
+                        <p v-if="successMessage" style="color: #2e7d32; text-align: center; font-weight: 600; margin-top: 16px; margin-bottom: 16px;">{{ successMessage }}</p>
+
+                        <button 
+                            type="submit" 
+                            :disabled="isSaving"
+                            style="width: 100%; padding: 16px; border-radius: 12px; background: var(--orange, #f25c05); color: white; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: opacity 0.2s;"
+                            :style="{ opacity: isSaving ? 0.7 : 1 }"
+                        >
+                            {{ isSaving ? 'Saving...' : 'Save Changes' }}
+                        </button>
                     </form>
                 </div>
             </div>

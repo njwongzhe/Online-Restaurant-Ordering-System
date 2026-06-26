@@ -9,6 +9,8 @@ export default {
             phoneNumber: '',
             password: '',
             confirmPassword: '',
+            showPassword: false,
+            showConfirmPassword: false,
             loading: false,
             errorMessage: '',
             successMessage: '',
@@ -16,6 +18,11 @@ export default {
     },
 
     methods: {
+        handlePhoneInput(event) {
+            const cleaned = event.target.value.replace(/\D/g, '');
+            this.phoneNumber = cleaned;
+            event.target.value = cleaned;
+        },
         async handleRegister() {   
             this.errorMessage = '';
             this.successMessage = '';
@@ -79,15 +86,25 @@ export default {
                         </div>
                         <div class="input-field">
                             <label class="input-box-label" for="phoneNumber">Phone Number</label>
-                            <input class="input-box" id="phoneNumber" v-model="phoneNumber" type="text" placeholder="0123456789" />
+                            <input class="input-box" id="phoneNumber" :value="phoneNumber" type="tel" @input="handlePhoneInput" placeholder="0123456789" />
                         </div>
                         <div class="input-field">
                             <label class="input-box-label" for="password">Password</label>
-                            <input class="input-box" id="password" v-model="password" type="password" placeholder="********" />
+                            <div class="password-input-container">
+                                <input class="input-box" id="password" v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="********" />
+                                <button type="button" class="password-toggle-btn" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+                                    <span class="material-symbols-outlined">{{ showPassword ? 'visibility' : 'visibility_off' }}</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="input-field">
                             <label class="input-box-label" for="confirmPassword">Confirm Password</label>
-                            <input class="input-box" id="confirmPassword" v-model="confirmPassword" type="password" placeholder="********" />
+                            <div class="password-input-container">
+                                <input class="input-box" id="confirmPassword" v-model="confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" placeholder="********" />
+                                <button type="button" class="password-toggle-btn" @click="showConfirmPassword = !showConfirmPassword" :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
+                                    <span class="material-symbols-outlined">{{ showConfirmPassword ? 'visibility' : 'visibility_off' }}</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     

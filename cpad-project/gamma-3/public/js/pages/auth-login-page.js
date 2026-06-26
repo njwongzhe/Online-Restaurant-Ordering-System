@@ -7,12 +7,18 @@ export default {
         return {
             phoneNumber: '',
             password: '',
+            showPassword: false,
             loading: false,
             errorMessage: '',
         };
     },
 
     methods: {
+        handlePhoneInput(event) {
+            const cleaned = event.target.value.replace(/\D/g, '');
+            this.phoneNumber = cleaned;
+            event.target.value = cleaned;
+        },
         async handleLogin() {   
             this.errorMessage = '';
 
@@ -64,11 +70,16 @@ export default {
                     <div class="input-field-container">
                         <div class="input-field">
                             <label class="input-box-label" for="phoneNumber">Phone Number</label>
-                            <input class="input-box" id="phoneNumber" v-model="phoneNumber" type="text" placeholder="0123456789" />
+                            <input class="input-box" id="phoneNumber" :value="phoneNumber" type="tel" @input="handlePhoneInput" placeholder="0123456789" />
                         </div>
                         <div class="input-field">
                             <label class="input-box-label" for="password">Password</label>
-                            <input class="input-box" id="password" v-model="password" type="password" placeholder="********" />
+                            <div class="password-input-container">
+                                <input class="input-box" id="password" v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="********" />
+                                <button type="button" class="password-toggle-btn" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+                                    <span class="material-symbols-outlined">{{ showPassword ? 'visibility' : 'visibility_off' }}</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     

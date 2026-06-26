@@ -144,7 +144,7 @@ export default {
                                 id="address-textarea"
                                 class="input-box" 
                                 v-model="address" 
-                                placeholder="E.g., No. 12, Lorong 4, Taman Indah..." 
+                                placeholder="Input your address here (e.g. N28)..." 
                                 rows="4"
                                 style="width: 100%; min-height: 120px; padding: 16px; border-radius: 12px; border: 1px solid var(--line, #e0e0e0); font-family: inherit; font-size: 15px; resize: vertical;"
                                 maxlength="500"

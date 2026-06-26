@@ -22,6 +22,11 @@ export default {
   },
 
   methods: {
+    handlePhoneInput(event) {
+      const cleaned = event.target.value.replace(/\D/g, '');
+      this.newPhone = cleaned;
+      event.target.value = cleaned;
+    },
     handleNavigation(destination) {
       this.$emit('navigate', destination);
     },
@@ -94,9 +99,10 @@ export default {
                             <input 
                                 id="new-phone-input"
                                 class="input-box" 
-                                v-model="newPhone" 
-                                type="text"
-                                placeholder="E.g., 0123456789" 
+                                :value="newPhone" 
+                                type="tel"
+                                @input="handlePhoneInput"
+                                placeholder="0123456789" 
                                 style="width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--line, #e0e0e0); font-family: inherit; font-size: 15px;"
                             />
                         </div>

@@ -384,7 +384,7 @@ export default {
                   type="text" 
                   v-model="userSearchQuery" 
                   class="user-search-input" 
-                  placeholder="Search users by name or ID..."
+                  placeholder="Search users by ID, name or phone..."
                   @keyup.enter="searchUsers"
                 />
               </form>

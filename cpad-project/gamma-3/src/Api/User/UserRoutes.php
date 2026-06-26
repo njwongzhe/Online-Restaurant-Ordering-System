@@ -355,10 +355,11 @@ final class UserRoutes
                 }
 
                 $data = (array) $request->getParsedBody();
+                $oldPassword = $data['old_password'] ?? '';
                 $newPassword = $data['new_password'] ?? '';
 
-                if (empty($newPassword)) {
-                    throw new \InvalidArgumentException('New password is required.');
+                if (empty($oldPassword) || empty($newPassword)) {
+                    throw new \InvalidArgumentException('Old password and new password are required.');
                 }
 
                 if (strlen($newPassword) < 8) {
@@ -367,7 +368,16 @@ final class UserRoutes
 
                 global $pdo;
 
-                // Hash new password and update directly
+                // Verify old password
+                $stmt = $pdo->prepare("SELECT password_hash FROM users WHERE user_id = :user_id AND is_active = 1");
+                $stmt->execute(['user_id' => $userId]);
+                $user = $stmt->fetch();
+
+                if (!$user || !password_verify($oldPassword, $user['password_hash'])) {
+                    throw new \InvalidArgumentException('Incorrect old password.');
+                }
+
+                // Hash new password and update
                 $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare("UPDATE users SET password_hash = :password_hash WHERE user_id = :user_id");
                 $stmt->execute([

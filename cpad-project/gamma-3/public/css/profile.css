@@ -5,8 +5,22 @@
 }
 
 .profile-content {
-    padding: 2%;
+    width: min(100% - 32px, 1180px);
     margin: 0 auto;
+    padding: 24px 0 34px;
+}
+
+@media (max-width: 389px) {
+    .profile-content {
+        width: calc(100% - 24px);
+    }
+}
+
+@media (min-width: 700px) {
+    .profile-content {
+        width: min(100% - 64px, 1180px);
+        padding-top: 38px;
+    }
 }
 
 .desktop-header {
@@ -164,7 +178,8 @@
 
 @media (min-width: 900px) {
     .profile-content {
-        padding: 40px;
+        padding: 40px 0;
+        width: min(100%, 1180px);
         max-width: 100%; 
         margin: 0;
     }
@@ -227,7 +242,7 @@
     .change-phone-page .global-header-inner,
     .reset-password-page .global-header-inner {
         width: min(100%, 1180px);
-        padding: 45px 0 0 40px;
+        padding: 45px 0 0 0;
     }
     .payment-method-page .global-header-title,
     .delivery-address-page .global-header-title,
@@ -238,4 +253,38 @@
         line-height: 1.2;
         font-weight: 800;
     }
+}
+
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-input-container .input-box {
+    padding-right: 40px;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: grey;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+    color: var(--orange, #f25c05);
+}
+
+.password-toggle-btn .material-symbols-outlined {
+    font-size: 20px;
 }

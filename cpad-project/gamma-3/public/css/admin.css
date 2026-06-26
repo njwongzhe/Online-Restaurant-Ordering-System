@@ -5,14 +5,28 @@
 }
 
 .admin-content {
-    padding: 20px;
+    width: min(100% - 32px, 1180px);
     margin: 0 auto;
+    padding: 24px 0 34px;
+}
+
+@media (max-width: 389px) {
+    .admin-content {
+        width: calc(100% - 24px);
+    }
+}
+
+@media (min-width: 700px) {
+    .admin-content {
+        width: min(100% - 64px, 1180px);
+        padding-top: 38px;
+    }
 }
 
 /* Stats Card Styling */
 .admin-stats-card {
     background: linear-gradient(135deg, #FF5F1F, #d64300);
-    border: 1px solid #AB3600;
+    border: none;
     border-radius: 16px;
     padding: 24px 20px;
     color: #ffffff;
@@ -57,11 +71,6 @@
     font-family: inherit;
 }
 
-.stats-card-select option {
-    background-color: #d64300;
-    color: #ffffff;
-}
-
 .stats-card-select:hover {
     background: rgba(255, 255, 255, 0.25);
 }
@@ -71,6 +80,60 @@
     right: 8px;
     pointer-events: none;
     font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+/* Custom Dropdown Menu for Stats Card */
+.stats-card-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 120px;
+    background: #d64300;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+    overflow: hidden;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stats-card-dropdown-item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    transition: background-color 0.2s, color 0.2s;
+    font-family: inherit;
+}
+
+.stats-card-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.stats-card-dropdown-item.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+.stats-card-dropdown-item-check {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
 }
 
 .stats-card-amount {
@@ -471,8 +534,9 @@
 /* Desktop Responsiveness */
 @media (min-width: 900px) {
     .admin-content {
-        padding: 40px;
-        max-width: min(100%, 1000px);
+        padding: 40px 0;
+        width: min(100%, 1180px);
+        max-width: 100%;
         margin: 0;
     }
 
