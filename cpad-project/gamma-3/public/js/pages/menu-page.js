@@ -277,59 +277,63 @@ export default {
           </div>
 
           <p v-if="errorMessage" class="details-validation" role="alert">{{ errorMessage }}</p>
-          <p v-if="loading" class="empty-category">Loading menu...</p>
+          <div v-if="loading" class="menu-empty">Loading menu...</div>
 
-          <div class="menu-sections">
-            <section v-for="category in visibleCategories" :key="category.id" class="category">
-              <div class="category-head" :aria-label="category.name + ' controls'">
-                <input
-                  v-if="editingCategoryId === category.id"
-                  v-model="categoryNameDraft"
-                  class="section-title category-name-input"
-                  :data-category-input="category.id"
-                  type="text"
-                  aria-label="Category name"
-                  placeholder="Category name"
-                  @blur="saveCategoryName(category)"
-                  @keydown.enter.prevent="$event.target.blur()"
-                />
-                <h2 v-else class="section-title">{{ category.name }}</h2>
-                <template v-if="isAdmin">
-                  <button
-                    class="mini-toggle"
-                    :class="{ off: !category.isAvailable }"
-                    type="button"
-                    :title="category.name + (category.isAvailable ? ' available' : ' unavailable')"
-                    :aria-pressed="category.isAvailable"
-                    @click="toggleCategory(category)"
-                  ></button>
-                  <button class="section-edit" type="button" :title="'Edit ' + category.name" @click="editCategory(category)">
-                    <span class="material-symbols-outlined">edit</span>
-                  </button>
-                  <button class="section-edit" type="button" :title="'Delete ' + category.name" @click="removeCategory(category)">
-                    <span class="material-symbols-outlined">delete</span>
-                  </button>
-                </template>
-                <span class="section-rule"></span>
-                <button v-if="isAdmin" class="section-add" type="button" :title="'Add item to ' + category.name" @click="addItem(category)">
-                  <span class="material-symbols-outlined">add</span>
-                </button>
-              </div>
+          <template v-else>
+            <div v-if="visibleCategories.length === 0" class="menu-empty">No menu items found</div>
 
-              <div class="category-list">
-                <menu-item-card
-                  v-for="item in category.visibleItems"
-                  :key="item.id"
-                  :item="item"
-                  :category-available="category.isAvailable"
-                  :is-admin="isAdmin"
-                  @toggle="toggleItem(category, item)"
-                  @edit="editItem(category, item)"
-                ></menu-item-card>
-                <p v-if="category.visibleItems.length === 0" class="empty-category">No menu items in this category.</p>
-              </div>
-            </section>
-          </div>
+            <div v-else class="menu-sections">
+              <section v-for="category in visibleCategories" :key="category.id" class="category">
+                <div class="category-head" :aria-label="category.name + ' controls'">
+                  <input
+                    v-if="editingCategoryId === category.id"
+                    v-model="categoryNameDraft"
+                    class="section-title category-name-input"
+                    :data-category-input="category.id"
+                    type="text"
+                    aria-label="Category name"
+                    placeholder="Category name"
+                    @blur="saveCategoryName(category)"
+                    @keydown.enter.prevent="$event.target.blur()"
+                  />
+                  <h2 v-else class="section-title">{{ category.name }}</h2>
+                  <template v-if="isAdmin">
+                    <button
+                      class="mini-toggle"
+                      :class="{ off: !category.isAvailable }"
+                      type="button"
+                      :title="category.name + (category.isAvailable ? ' available' : ' unavailable')"
+                      :aria-pressed="category.isAvailable"
+                      @click="toggleCategory(category)"
+                    ></button>
+                    <button class="section-edit" type="button" :title="'Edit ' + category.name" @click="editCategory(category)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="section-edit" type="button" :title="'Delete ' + category.name" @click="removeCategory(category)">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </template>
+                  <span class="section-rule"></span>
+                  <button v-if="isAdmin" class="section-add" type="button" :title="'Add item to ' + category.name" @click="addItem(category)">
+                    <span class="material-symbols-outlined">add</span>
+                  </button>
+                </div>
+
+                <div class="category-list">
+                  <menu-item-card
+                    v-for="item in category.visibleItems"
+                    :key="item.id"
+                    :item="item"
+                    :category-available="category.isAvailable"
+                    :is-admin="isAdmin"
+                    @toggle="toggleItem(category, item)"
+                    @edit="editItem(category, item)"
+                  ></menu-item-card>
+                  <p v-if="category.visibleItems.length === 0" class="empty-category">No menu items in this category.</p>
+                </div>
+              </section>
+            </div>
+          </template>
         </div>
       </div>
 

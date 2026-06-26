@@ -617,9 +617,9 @@
 @media (min-width: 900px) {
   .orders-page { padding-bottom: 0; }
   .orders-container { width: min(100%, 1180px); padding-top: 45px; }
-  .orders-heading { display: block; margin-bottom: 28px; }
-  .orders-heading h1 { margin: 0; font-size: 38px; line-height: 1.18; font-weight: 800; letter-spacing: -.035em; }
-  .orders-heading p { max-width: 680px; margin: 9px 0 0; color: var(--muted); font-size: 16px; line-height: 1.5; }
+  .orders-heading { display: block; margin-bottom: 40px; }
+  .orders-heading h1 { margin: 0 0 8px 0; font-size: 32px; line-height: 1.18; font-weight: 800; letter-spacing: -1px; }
+  .orders-heading p { max-width: 680px; margin: 0; color: var(--muted); font-size: 16px; line-height: 1.5; }
   .orders-search { max-width: none; }
   .orders-section-head { margin-top: 40px; }
 }

@@ -326,17 +326,19 @@ export default {
           <div v-if="errorMessage" class="orders-empty" role="alert">{{ errorMessage }}</div>
           <div v-if="loading" class="orders-empty">Loading orders...</div>
 
-          <div v-if="activeExpanded && activeOrders.length" id="active-orders-section" class="orders-list active-orders-list">
-            <order-card
-              v-for="order in activeOrders"
-              :key="order.id"
-              :order="order"
-              @open="openOrder(order)"
-              @cancel="requestCancel(order)"
-              @state-change="changeState(order, $event)"
-            ></order-card>
-          </div>
-          <div v-else-if="activeExpanded" id="active-orders-section" class="orders-empty">No active orders found</div>
+          <template v-else>
+            <div v-if="activeExpanded && activeOrders.length" id="active-orders-section" class="orders-list active-orders-list">
+              <order-card
+                v-for="order in activeOrders"
+                :key="order.id"
+                :order="order"
+                @open="openOrder(order)"
+                @cancel="requestCancel(order)"
+                @state-change="changeState(order, $event)"
+              ></order-card>
+            </div>
+            <div v-else-if="activeExpanded" id="active-orders-section" class="orders-empty">No active orders found.</div>
+          </template>
 
           <div class="history-section-controls">
           <div class="orders-section-head history-section-head">
@@ -425,16 +427,20 @@ export default {
           </div>
           </div>
 
-          <div v-if="historyExpanded && historyOrders.length" id="history-orders-section" class="orders-list history-orders-list">
-            <order-card
-              v-for="order in historyOrders"
-              :key="order.id"
-              :order="order"
-              history
-              @open="openOrder(order)"
-            ></order-card>
-          </div>
-          <div v-else-if="historyExpanded" id="history-orders-section" class="orders-empty">No history orders found for this period</div>
+          <div v-if="loading" class="orders-empty">Loading history...</div>
+
+          <template v-else>
+            <div v-if="historyExpanded && historyOrders.length" id="history-orders-section" class="orders-list history-orders-list">
+              <order-card
+                v-for="order in historyOrders"
+                :key="order.id"
+                :order="order"
+                history
+                @open="openOrder(order)"
+              ></order-card>
+            </div>
+            <div v-else-if="historyExpanded" id="history-orders-section" class="orders-empty">No history orders found for this period</div>
+          </template>
         </div>
       </div>
 

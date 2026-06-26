@@ -6,7 +6,8 @@ export default {
     dineIn: { type: Number, required: true },
     takeaway: { type: Number, required: true },
     delivery: { type: Number, required: true },
-    period: { type: String, default: 'today' }
+    period: { type: String, default: 'today' },
+    loading: { type: Boolean, default: false }
   },
 
   emits: ['period-change'],
@@ -60,6 +61,7 @@ export default {
             type="button"
             class="stats-card-select" 
             @click="showDropdown = !showDropdown"
+            :disabled="loading"
             style="display: flex; align-items: center; justify-content: space-between; text-align: left;"
           >
             <span>{{ periodLabel }}</span>
@@ -68,7 +70,7 @@ export default {
           
           <!-- Custom Dropdown Menu -->
           <div 
-            v-if="showDropdown" 
+            v-if="showDropdown && !loading" 
             class="stats-card-dropdown-menu"
           >
             <button 
@@ -86,26 +88,38 @@ export default {
         </div>
       </div>
       
-      <h2 class="stats-card-amount">RM {{ revenue.toFixed(2) }}</h2>
+      <h2 class="stats-card-amount">
+        <template v-if="loading">Loading...</template>
+        <template v-else>RM {{ revenue.toFixed(2) }}</template>
+      </h2>
       <hr class="stats-card-divider" />
       
       <div class="stats-card-columns">
         <div class="stats-card-column">
           <span class="material-symbols-outlined stats-card-col-icon">restaurant</span>
           <span class="stats-card-col-label">Dine-In</span>
-          <span class="stats-card-col-value">{{ dineIn }}</span>
+          <span class="stats-card-col-value">
+            <template v-if="loading">Loading...</template>
+            <template v-else>{{ dineIn }}</template>
+          </span>
         </div>
         
         <div class="stats-card-column">
           <span class="material-symbols-outlined stats-card-col-icon">shopping_bag</span>
           <span class="stats-card-col-label">Takeaway</span>
-          <span class="stats-card-col-value">{{ takeaway }}</span>
+          <span class="stats-card-col-value">
+            <template v-if="loading">Loading...</template>
+            <template v-else>{{ takeaway }}</template>
+          </span>
         </div>
         
         <div class="stats-card-column">
           <span class="material-symbols-outlined stats-card-col-icon">delivery_dining</span>
           <span class="stats-card-col-label">Delivery</span>
-          <span class="stats-card-col-value">{{ delivery }}</span>
+          <span class="stats-card-col-value">
+            <template v-if="loading">Loading...</template>
+            <template v-else>{{ delivery }}</template>
+          </span>
         </div>
       </div>
     </div>

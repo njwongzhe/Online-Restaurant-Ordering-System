@@ -44,6 +44,7 @@
       word-wrap: normal;
       direction: ltr;
       -webkit-font-feature-settings: "liga";
+      font-feature-settings: "liga";
       -webkit-font-smoothing: antialiased;
       font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
     }
@@ -707,7 +708,8 @@ body {
 
   .page-container { width: min(100%, 1180px); }
   .hero { padding-top: 45px; }
-  .hero-title { font-size: 38px; line-height: 1.18; }
+  .hero-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; line-height: 1.18; }
+  .hero-copy { font-size: 16px; margin: 0; color: var(--muted, #888); }
   .search-box { max-width: none; }
   .filters { margin-top: 18px; }
   .menu-sections { margin-top: 45px; }
@@ -809,4 +811,17 @@ body {
 @media (min-width: 1280px) {
   .desktop-sidebar { width: 270px; }
   .admin-main { margin-left: 270px; padding-inline: 54px; }
+}
+
+.menu-empty {
+  min-height: 180px;
+  margin-top: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #d5d7d8;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
 }

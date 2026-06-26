@@ -165,6 +165,7 @@ export default {
 
     // Settings management
     openSettingModal(key, currentVal) {
+      if (this.loading) return;
       this.activeModal = key;
       this.modalValue = currentVal;
       this.modalError = '';
@@ -218,6 +219,7 @@ export default {
     },
 
     async toggleRestaurantOpen() {
+      if (this.loading) return;
       const token = localStorage.getItem('jwtToken');
       if (!token) return;
 
@@ -307,135 +309,131 @@ export default {
             <p>Monitor metrics and manage global settings.</p>
           </div>
           
-          <div v-if="loading" style="padding: 40px; text-align: center; color: var(--muted, #888);">
-            <span>Loading workspace metrics...</span>
-          </div>
           
-          <template v-else>
-            <admin-stats-card
-              :revenue="stats.revenue"
-              :dine-in="stats.dineIn"
-              :takeaway="stats.takeaway"
-              :delivery="stats.delivery"
-              :period="filterPeriod"
-              @period-change="handlePeriodChange"
-            ></admin-stats-card>
+          <admin-stats-card
+            :revenue="stats.revenue"
+            :dine-in="stats.dineIn"
+            :takeaway="stats.takeaway"
+            :delivery="stats.delivery"
+            :period="filterPeriod"
+            :loading="loading"
+            @period-change="handlePeriodChange"
+          ></admin-stats-card>
+          
+          <!-- GLOBAL SETTINGS -->
+          <div class="admin-menu-section">
+            <div class="section-divider"><span>GLOBAL</span></div>
             
-            <!-- GLOBAL SETTINGS -->
-            <div class="admin-menu-section">
-              <div class="section-divider"><span>GLOBAL</span></div>
-              
-              <div class="admin-menu-list">
-                <a href="#" class="admin-menu-item" @click.prevent="openSettingModal('restaurant_address', restaurant_address)">
-                  <div class="admin-menu-left">
-                    <span class="material-symbols-outlined">storefront</span>
-                    <span>Current Restaurant Address</span>
-                  </div>
-                  <span class="material-symbols-outlined">chevron_right</span>
-                </a>
-                
-                <a href="#" class="admin-menu-item" @click.prevent="openSettingModal('service_fee', service_fee)">
-                  <div class="admin-menu-left">
-                    <span class="material-symbols-outlined">skillet</span>
-                    <span>Service Fee Rates (% Per Subtotal)</span>
-                  </div>
-                  <span class="material-symbols-outlined">chevron_right</span>
-                </a>
-                
-                <a href="#" class="admin-menu-item" @click.prevent="openSettingModal('packaging_fee', packaging_fee)">
-                  <div class="admin-menu-left">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                    <span>Packaging Fee (Per Item)</span>
-                  </div>
-                  <span class="material-symbols-outlined">chevron_right</span>
-                </a>
-
-                <a href="#" class="admin-menu-item" @click.prevent="openSettingModal('delivery_fee', delivery_fee)">
-                  <div class="admin-menu-left">
-                    <span class="material-symbols-outlined">delivery_dining</span>
-                    <span>Delivery Fee (Per Order)</span>
-                  </div>
-                  <span class="material-symbols-outlined">chevron_right</span>
-                </a>
-
-                <div class="admin-menu-item" style="cursor: default;">
-                  <div class="admin-menu-left">
-                    <span class="material-symbols-outlined">power_settings_new</span>
-                    <div>
-                      <div style="font-weight: 600;">Restaurant Status</div>
-                      <div style="font-size: 12px; color: var(--muted, #888); font-weight: 500;">Set the store to Open or Closed</div>
-                    </div>
-                  </div>
-                  <label class="status-switch">
-                    <input type="checkbox" :checked="restaurant_open" @change="toggleRestaurantOpen">
-                    <span class="status-slider"></span>
-                  </label>
+            <div class="admin-menu-list">
+              <a href="#" class="admin-menu-item" :class="{ disabled: loading }" @click.prevent="openSettingModal('restaurant_address', restaurant_address)">
+                <div class="admin-menu-left">
+                  <span class="material-symbols-outlined">storefront</span>
+                  <span>Current Restaurant Address</span>
                 </div>
+                <span class="material-symbols-outlined">chevron_right</span>
+              </a>
+              
+              <a href="#" class="admin-menu-item" :class="{ disabled: loading }" @click.prevent="openSettingModal('service_fee', service_fee)">
+                <div class="admin-menu-left">
+                  <span class="material-symbols-outlined">skillet</span>
+                  <span>Service Fee Rates (% Per Subtotal)</span>
+                </div>
+                <span class="material-symbols-outlined">chevron_right</span>
+              </a>
+              
+              <a href="#" class="admin-menu-item" :class="{ disabled: loading }" @click.prevent="openSettingModal('packaging_fee', packaging_fee)">
+                <div class="admin-menu-left">
+                  <span class="material-symbols-outlined">inventory_2</span>
+                  <span>Packaging Fee (Per Item)</span>
+                </div>
+                <span class="material-symbols-outlined">chevron_right</span>
+              </a>
+
+              <a href="#" class="admin-menu-item" :class="{ disabled: loading }" @click.prevent="openSettingModal('delivery_fee', delivery_fee)">
+                <div class="admin-menu-left">
+                  <span class="material-symbols-outlined">delivery_dining</span>
+                  <span>Delivery Fee (Per Order)</span>
+                </div>
+                <span class="material-symbols-outlined">chevron_right</span>
+              </a>
+
+              <div class="admin-menu-item" :class="{ disabled: loading }" style="cursor: default;">
+                <div class="admin-menu-left">
+                  <span class="material-symbols-outlined">power_settings_new</span>
+                  <div>
+                    <div style="font-weight: 600;">Restaurant Status</div>
+                    <div style="font-size: 12px; color: var(--muted, #888); font-weight: 500;">Set the store to Open or Closed</div>
+                  </div>
+                </div>
+                <label class="status-switch">
+                  <input type="checkbox" :checked="restaurant_open" @change="toggleRestaurantOpen" :disabled="loading">
+                  <span class="status-slider"></span>
+                </label>
               </div>
             </div>
+          </div>
 
-            <!-- USER MANAGEMENT -->
-            <div class="admin-menu-section">
-              <div class="section-divider"><span>USER MANAGEMENT</span></div>
+          <!-- USER MANAGEMENT -->
+          <div class="admin-menu-section">
+            <div class="section-divider"><span>USER MANAGEMENT</span></div>
+            
+            <form class="user-search-wrapper" @submit.prevent="searchUsers">
+              <span class="material-symbols-outlined search-icon">search</span>
+              <input 
+                type="text" 
+                v-model="userSearchQuery" 
+                class="user-search-input" 
+                placeholder="Search users by ID, name or phone..."
+                @keyup.enter="searchUsers"
+              />
+            </form>
+
+            <div v-if="loading || loadingUsers" class="admin-empty">
+              Loading users...
+            </div>
+
+            <template v-else>
+              <div v-if="usersList.length > 0" class="admin-menu-list" style="margin-bottom: 24px;">
+                <div 
+                  v-for="user in visibleUsers" 
+                  :key="user.user_id" 
+                  class="user-item-row"
+                  :class="{ 'user-item-admin': user.role === 'admin' }"
+                >
+                  <div class="user-info-left">
+                    <div class="user-meta">#{{ user.user_id }} • <span style="text-transform: capitalize;">{{ user.role }}</span></div>
+                    <div class="user-display-name">{{ user.display_name }}</div>
+                    <div class="user-phone-num">{{ user.phone_number }}</div>
+                  </div>
+                  <button 
+                    type="button" 
+                    class="role-change-btn" 
+                    :class="user.role === 'admin' ? 'btn-solid' : 'btn-outline'"
+                    @click="toggleUserRole(user)"
+                  >
+                    Change Role
+                  </button>
+                </div>
+              </div>
               
-              <form class="user-search-wrapper" @submit.prevent="searchUsers">
-                <span class="material-symbols-outlined search-icon">search</span>
-                <input 
-                  type="text" 
-                  v-model="userSearchQuery" 
-                  class="user-search-input" 
-                  placeholder="Search users by ID, name or phone..."
-                  @keyup.enter="searchUsers"
-                />
-              </form>
-
-              <div v-if="loadingUsers" style="padding: 24px; text-align: center; color: var(--muted, #888);">
-                <span>Loading users...</span>
+              <div v-else class="admin-empty">
+                No users found matching query.
               </div>
 
-              <template v-else>
-                <div class="admin-menu-list" style="margin-bottom: 24px;">
-                  <div 
-                    v-for="user in visibleUsers" 
-                    :key="user.user_id" 
-                    class="user-item-row"
-                    :class="{ 'user-item-admin': user.role === 'admin' }"
-                  >
-                    <div class="user-info-left">
-                      <div class="user-meta">#{{ user.user_id }} • <span style="text-transform: capitalize;">{{ user.role }}</span></div>
-                      <div class="user-display-name">{{ user.display_name }}</div>
-                      <div class="user-phone-num">{{ user.phone_number }}</div>
-                    </div>
-                    <button 
-                      type="button" 
-                      class="role-change-btn" 
-                      :class="user.role === 'admin' ? 'btn-solid' : 'btn-outline'"
-                      @click="toggleUserRole(user)"
-                    >
-                      Change Role
-                    </button>
-                  </div>
-                  
-                  <div v-if="usersList.length === 0" style="padding: 24px; text-align: center; color: var(--muted, #888); font-weight: 500;">
-                    No users found matching query.
-                  </div>
-                </div>
-
-                <div style="text-align: center;" v-if="usersList.length > 4">
-                  <a 
-                    href="#" 
-                    class="display-all-link" 
-                    @click.prevent="displayAllUsers = !displayAllUsers"
-                  >
-                    {{ displayAllUsers ? 'Show Less Users' : 'Display All Users' }}
-                    <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">
-                      {{ displayAllUsers ? 'arrow_upward' : 'arrow_forward' }}
-                    </span>
-                  </a>
-                </div>
-              </template>
-            </div>
-          </template>
+              <div style="text-align: center;" v-if="usersList.length > 4">
+                <a 
+                  href="#" 
+                  class="display-all-link" 
+                  @click.prevent="displayAllUsers = !displayAllUsers"
+                >
+                  {{ displayAllUsers ? 'Show Less Users' : 'Display All Users' }}
+                  <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">
+                    {{ displayAllUsers ? 'arrow_upward' : 'arrow_forward' }}
+                  </span>
+                </a>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
 

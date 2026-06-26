@@ -227,6 +227,7 @@ class UserRoutesTest extends TestCase
         $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
 
         $request = $this->createJsonRequest('PUT', '/api/user/password', [
+            'old_password' => 'password123',
             'new_password' => 'newpassword456'
         ]);
         $response = $this->app->handle($request);
@@ -264,6 +265,7 @@ class UserRoutesTest extends TestCase
         $_COOKIE['jwt'] = JWT::encode($payload, JWT_KEY, ALGORITHM);
 
         $request = $this->createJsonRequest('PUT', '/api/user/password', [
+            'old_password' => 'password123',
             'new_password' => 'short'
         ]);
         $response = $this->app->handle($request);
