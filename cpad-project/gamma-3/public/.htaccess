@@ -27,12 +27,11 @@ Options All -Indexes
     # ==========================================
     # If it is a local request (No cloud proxy header present),
     # enforce the native RewriteBase to support XAMPP subdirectory alias routing.
+    RewriteBase /cpad-project/gamma-3/
     RewriteCond %{HTTP:X-Forwarded-Proto} ^$
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    
-    # Restore the exact local base path required by your XAMPP folder structure
-    RewriteBase /cpad-project/gamma-3/public/
     RewriteRule ^ index.php [QSA,L]
 
 </IfModule>
