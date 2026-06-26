@@ -1,30 +1,38 @@
+# Disable directory browsing for security reasons
 Options All -Indexes
 
+# Protect the .htaccess file from direct public access
 <Files .htaccess>
-order allow,deny
-deny from all
+    order allow,deny
+    deny from all
 </Files>
 
 <IfModule mod_rewrite.c>
-  RewriteEngine On
+    RewriteEngine On
 
-  # Core fix for Render: Prevent 10 times internal redirect loop
-  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    # ==========================================
+    # 1. PRODUCTION ENVIRONMENT (Render Cloud)
+    # ==========================================
+    # If the request comes from a cloud proxy (Render uses X-Forwarded-Proto),
+    # apply root-level rewrite rules and prevent internal 10-time redirection loop.
+    RewriteCond %{HTTP:X-Forwarded-Proto} !^$
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [QSA,L]
 
-  # Redirect to HTTPS
-  # RewriteEngine On
-  # RewriteCond %{HTTPS} off
-  # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-  # COMMENTED OUT FOR CLOUD DEPLOYMENT COMPATIBILITY (XAMPP ONLY)
-  # RewriteBase /cpad-project/gamma-3/
-  
-  # Fallback for Local XAMPP environment without RewriteBase
-  RewriteCond %{REQUEST_URI} ^/cpad-project/gamma-3/ [NC]
-  RewriteRule ^(.*)$ /cpad-project/gamma-3/public/index.php [QSA,L]
+    # ==========================================
+    # 2. LOCAL DEVELOPMENT ENVIRONMENT (XAMPP)
+    # ==========================================
+    # If it is a local request (No cloud proxy header present),
+    # enforce the native RewriteBase to support XAMPP subdirectory alias routing.
+    RewriteCond %{HTTP:X-Forwarded-Proto} ^$
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    
+    # Restore the exact local base path required by your XAMPP folder structure
+    RewriteBase /cpad-project/gamma-3/public/
+    RewriteRule ^ index.php [QSA,L]
 
-  # Standard Slim Router rewrite rule for Production (Render)
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^ index.php [QSA,L]
 </IfModule>

@@ -148,7 +148,7 @@ export default {
       <app-sidebar :key="sidebarKey" active="profile" @navigate="handleNavigation" @logout="$emit('logout')"></app-sidebar>
 
       <div class="admin-main profile-main">
-        <app-header title="User Profile" variant="page"></app-header>
+        <app-header title="User Profile" variant="page" show-logout @logout="logout"></app-header>
 
         <div class="profile-content">
             
