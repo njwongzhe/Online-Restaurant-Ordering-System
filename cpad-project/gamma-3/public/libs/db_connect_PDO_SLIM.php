@@ -1,24 +1,16 @@
 <?php
-// Load .env if it exists.
-foreach ([
-    __DIR__ . '/../../../../.env',
-    __DIR__ . '/../../../.env',
-    __DIR__ . '/../../.env',
-    __DIR__ . '/../.env',
-    __DIR__ . '/.env'
-] as $path) {
-    if (file_exists($path)) {
-        foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-            $line = trim($line);
-            if (strpos($line, '#') !== 0 && strpos($line, '=') !== false) {
-                list($key, $val) = explode('=', $line, 2);
-                $key = trim($key);
-                $val = trim(trim($val), '"\'');
-                $_ENV[$key] = $val;
-                putenv("$key=$val");
-            }
+// Load .env from gamma-3 root (two levels up from public/libs/).
+$envPath = __DIR__ . '/../../.env';
+if (file_exists($envPath)) {
+    foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if (strpos($line, '#') !== 0 && strpos($line, '=') !== false) {
+            list($key, $val) = explode('=', $line, 2);
+            $key = trim($key);
+            $val = trim(trim($val), '"\'');
+            $_ENV[$key] = $val;
+            putenv("$key=$val");
         }
-        break;
     }
 }
 
