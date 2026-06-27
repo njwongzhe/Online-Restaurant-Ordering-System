@@ -31,8 +31,9 @@ Options All -Indexes
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     
-    # Restore the exact local base path required by your XAMPP folder structure
-    RewriteBase /cpad-project/gamma-3/public/
+    # Apache aliases /cpad-project/gamma-3 directly to this public folder.
+    # The browser URL does not include /public, so the RewriteBase should not either.
+    RewriteBase /cpad-project/gamma-3/
     RewriteRule ^ index.php [QSA,L]
 
 </IfModule>
