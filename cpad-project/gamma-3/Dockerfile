@@ -22,7 +22,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 
 # 4. Run Composer installation (add --ignore-platform-reqs to force ignore potential local version platform conflicts).
-RUN composer install --no-interaction --optimize-autoloader --ignore-platform-reqs
+RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # 5. Modify the port to adapt to Render environment.
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf
