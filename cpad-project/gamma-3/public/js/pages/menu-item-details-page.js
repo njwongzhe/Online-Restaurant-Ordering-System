@@ -245,13 +245,11 @@ export default {
                       <button class="admin-addon-edit-button" type="button" :aria-label="'Edit ' + addon.name" @click="editAddon(addon)">
                         <span class="material-symbols-outlined">edit</span>
                       </button>
-                      <span v-else></span>
                       <span class="admin-addon-name">{{ addon.name }}</span>
                       <strong class="admin-addon-price">+RM{{ Number(addon.price).toFixed(2) }}</strong>
                       <button class="admin-addon-remove-button" type="button" :aria-label="'Remove ' + addon.name" @click="removeAddon(addon)">
                         <span class="material-symbols-outlined">delete</span>
                       </button>
-                      <span v-else></span>
                     </template>
                   </div>
                 </div>
