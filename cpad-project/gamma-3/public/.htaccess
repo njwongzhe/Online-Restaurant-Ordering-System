@@ -20,7 +20,7 @@ Options All -Indexes
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     # 🎯 FORCE EXPLICIT ROUTING VIA RELATIVE PATH FOR CLOUD CONTAINER
-    RewriteRule ^(.*)$ index.php [QSA,L]
+    RewriteRule ^(.*)$ /index.php [QSA,L]
 
 
     # ==========================================
