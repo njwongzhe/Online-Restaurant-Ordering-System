@@ -21,7 +21,12 @@ COPY . .
 # 4. Run Composer installation (add --ignore-platform-reqs to force ignore potential local version platform conflicts).
 RUN composer install --no-interaction --optimize-autoloader --ignore-platform-reqs
 
-# 5. Modify the port to adapt to Render environment.
+# 5. Ensure AllowOverride is enabled so .htaccess rewrite rules work.
+RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+
+# 6. Modify the port to adapt to Render environment.
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf
 
 EXPOSE ${PORT}
+
+CMD ["apache2-foreground"]

@@ -14,8 +14,8 @@ if (file_exists($envPath)) {
     }
 }
 
-// Get database URL or fallback to local connection.
-$dbUrl = $_ENV['DATABASE_URL'] ?? getenv('DATABASE_URL');
+// Get database URL: prioritize system env (Render Dashboard) over .env file.
+$dbUrl = getenv('DATABASE_URL') ?: ($_ENV['DATABASE_URL'] ?? '');
 
 if ($dbUrl && strpos($dbUrl, 'mysql://') === 0) {
     $url = parse_url($dbUrl);
@@ -33,5 +33,22 @@ if ($dbUrl && strpos($dbUrl, 'mysql://') === 0) {
     $database = 'cpad_03_gamma';
 }
 
-$pdo = new PDO("mysql:host=$host;port=$port;dbname=$database;charset=utf8mb4", $username, $password);
+try {
+    $dsn = "mysql:host=$host;port=$port;dbname=$database;charset=utf8mb4";
+    $pdo = new PDO($dsn, $username, $password);
+} catch (PDOException $e) {
+    // Log the real error so it shows up in Render logs.
+    error_log('[DB CONNECTION ERROR] ' . $e->getMessage());
+    error_log('[DB CONNECTION INFO] host=' . $host . ' port=' . $port . ' db=' . $database . ' user=' . $username);
+    error_log('[DB CONNECTION INFO] DATABASE_URL from env: ' . (empty($dbUrl) ? '(NOT SET)' : '(SET, length=' . strlen($dbUrl) . ')'));
+
+    // Return a JSON error response instead of letting Apache show a 404.
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'error' => 'Database connection failed. Check server logs for details.'
+    ]);
+    exit;
+}
 ?>
