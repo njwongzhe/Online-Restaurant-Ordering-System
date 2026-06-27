@@ -13,25 +13,26 @@ Options All -Indexes
     # ==========================================
     # 1. PRODUCTION ENVIRONMENT (Render Cloud)
     # ==========================================
-    # If the request comes from a cloud proxy (Render uses X-Forwarded-Proto),
-    # apply root-level rewrite rules and prevent internal 10-time redirection loop.
+    # If it is a cloud proxy environment, route the complete path cleanly.
+    # The [L] flag will stop processing immediately and pass it to Slim.
     RewriteCond %{HTTP:X-Forwarded-Proto} !^$
     RewriteCond %{ENV:REDIRECT_STATUS} ^$
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [QSA,L]
+    # 🎯 FORCE EXPLICIT ROUTING VIA RELATIVE PATH FOR CLOUD CONTAINER
+    RewriteRule ^(.*)$ index.php [QSA,L]
 
 
     # ==========================================
     # 2. LOCAL DEVELOPMENT ENVIRONMENT (XAMPP)
     # ==========================================
-    # If it is a local request (No cloud proxy header present),
-    # enforce the native RewriteBase to support XAMPP subdirectory alias routing.
-    RewriteBase /cpad-project/gamma-3/
+    # If it is a local request, enforce native RewriteBase for XAMPP subdirectory layout.
     RewriteCond %{HTTP:X-Forwarded-Proto} ^$
-    RewriteCond %{ENV:REDIRECT_STATUS} ^$
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
+    
+    # Restore the exact local base path required by your XAMPP folder structure
+    RewriteBase /cpad-project/gamma-3/public/
     RewriteRule ^ index.php [QSA,L]
 
 </IfModule>
