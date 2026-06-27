@@ -25,16 +25,15 @@ $app = AppFactory::create();
 // DYNAMIC BASE PATH RESOLUTION (XAMPP & RENDER COMPATIBLE)
 // ==========================================
 if (PHP_SAPI !== 'cli-server') {
-    // Use REQUEST_URI as a reliable signal: on XAMPP the URI starts with the
-    // full subdirectory path; on Render (Docker) public/ is the document root
-    // so the URI starts directly at '/'.
-    $requestUri = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
 
-    if (strpos($requestUri, '/cpad-project/gamma-3') === 0) {
-        // Running under XAMPP subdirectory alias.
-        $app->setBasePath('/cpad-project/gamma-3/public');
-    } else {
-        // Running on Render/Docker where public/ is mounted at '/'.
+    // If running under standard XAMPP subdirectory alias
+    if (strpos($scriptName, '/cpad-project/gamma-3') === 0) {
+        $app->setBasePath('/cpad-project/gamma-3');
+    }
+    // If running under Render/Docker container where 'public' is directly bound to root '/'
+    else if (dirname($scriptName) === '/' || $scriptName === '/index.php') {
+        // Enforce an explicit empty base path to clear any routing fallback bugs
         $app->setBasePath('');
     }
 }
