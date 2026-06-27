@@ -21,10 +21,20 @@ $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 $app = AppFactory::create();
 
-// Explicitly set the base path to match your Apache Alias exactly
+// ==========================================
+// DYNAMIC BASE PATH RESOLUTION (XAMPP & RENDER COMPATIBLE)
+// ==========================================
 if (PHP_SAPI !== 'cli-server') {
-    if (isset($_SERVER['SCRIPT_NAME']) && strpos($_SERVER['SCRIPT_NAME'], '/cpad-project/gamma-3') === 0) {
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+    
+    // If running under standard XAMPP subdirectory alias
+    if (strpos($scriptName, '/cpad-project/gamma-3') === 0) {
         $app->setBasePath('/cpad-project/gamma-3');
+    } 
+    // If running under Render/Docker container where 'public' is directly bound to root '/'
+    else if (dirname($scriptName) === '/' || $scriptName === '/index.php') {
+        // Enforce an explicit empty base path to clear any routing fallback bugs
+        $app->setBasePath('');
     }
 }
 
