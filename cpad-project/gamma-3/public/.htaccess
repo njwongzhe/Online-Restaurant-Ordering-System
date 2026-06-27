@@ -11,28 +11,27 @@ Options All -Indexes
     RewriteEngine On
 
     # ==========================================
-    # 1. PRODUCTION ENVIRONMENT (Render Cloud)
+    # UNIVERSAL ROUTING (XAMPP + Render Cloud)
     # ==========================================
-    # If it is a cloud proxy environment, route the complete path cleanly.
-    # The [L] flag will stop processing immediately and pass it to Slim.
-    RewriteCond %{HTTP:X-Forwarded-Proto} !^$
-    RewriteCond %{ENV:REDIRECT_STATUS} ^$
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    # 🎯 FORCE EXPLICIT ROUTING VIA RELATIVE PATH FOR CLOUD CONTAINER
-    RewriteRule ^(.*)$ index.php [QSA,L]
-
+    # Skip rewrite for real files and directories.
+    RewriteCond %{REQUEST_FILENAME} -d [OR]
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
 
     # ==========================================
-    # 2. LOCAL DEVELOPMENT ENVIRONMENT (XAMPP)
+    # LOCAL DEVELOPMENT (XAMPP subdirectory)
     # ==========================================
-    # If it is a local request, enforce native RewriteBase for XAMPP subdirectory layout.
-    RewriteCond %{HTTP:X-Forwarded-Proto} ^$
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    
-    # Restore the exact local base path required by your XAMPP folder structure
+    # When accessed via XAMPP subdirectory path, strip the base prefix
+    # before handing off to Slim so Slim sees only the route segment.
+    RewriteCond %{REQUEST_URI} ^/cpad-project/gamma-3/public(/.*)?$
     RewriteBase /cpad-project/gamma-3/public/
+    RewriteRule ^ index.php [QSA,L]
+
+    # ==========================================
+    # PRODUCTION / ROOT-MOUNTED (Render Cloud)
+    # ==========================================
+    # When public/ is the document root (Render Docker), simply forward
+    # every non-file, non-directory request to index.php.
     RewriteRule ^ index.php [QSA,L]
 
 </IfModule>
