@@ -19,7 +19,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 
 # 4. Run Composer installation (add --ignore-platform-reqs to force ignore potential local version platform conflicts).
-RUN composer install --no-interaction --optimize-autoloader --ignore-platform-reqs
+RUN composer install --no-interaction --optimize-autoloader --no-dev --ignore-platform-reqs
 
 # 5. Ensure AllowOverride is enabled so .htaccess rewrite rules work.
 RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
