@@ -328,14 +328,15 @@ To run the Slim 4 project properly under an Apache web server (XAMPP), you need 
 
 ```apache
 <Directory "<pathToFolder>/public">
-    Options Indexes FollowSymLinks Includes ExecCGI
-    AllowOverride All
-    Require all granted
+   Options Indexes FollowSymLinks Includes ExecCGI
+   AllowOverride All
+   Require all granted
 </Directory>
 
 <IfModule alias_module>
-    # Alias /<folderName> "<pathToFolder>/public"
-    Alias /cpad-project/gamma-3 "C:/cpad-project/gamma-3/public"
+   ...
+   Alias /<folderName> "<pathToFolder>/public"
+   ...
 </IfModule>
 ```
 
@@ -343,12 +344,16 @@ To run the Slim 4 project properly under an Apache web server (XAMPP), you need 
 If your project is saved in `C:/cpad-project`, the configuration would look like:
 ```apache
 <Directory "C:/cpad-project/gamma-3/public">
-    Options Indexes FollowSymLinks Includes ExecCGI
-    AllowOverride All
-    Require all granted
+   Options Indexes FollowSymLinks Includes ExecCGI
+   AllowOverride All
+   Require all granted
 </Directory>
 
-Alias /cpad-project/gamma-3 C:/cpad-project/gamma-3/public
+<IfModule alias_module>
+   ...
+   Alias /cpad-project/gamma-3 C:/cpad-project/gamma-3/public
+   ...
+</IfModule>
 ```
 
 3. Save the `httpd.conf` file and restart your Apache server from the XAMPP Control Panel.
