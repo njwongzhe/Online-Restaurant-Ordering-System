@@ -105,13 +105,13 @@ Below is an overview of the primary files and directories within this repository
 ├── Lanita/                   # Mobile Client App (Capacitor hybrid app for Android).
 │   ├── .gitignore            # Git exclusion patterns for mobile app.
 │   ├── capacitor.config.json # Capacitor static configuration.
-|   |—— package-lock.json     # Node dependencies lock file.
+│   |—— package-lock.json     # Node dependencies lock file.
 │   ├── package.json          # Node dependencies & project scripts.
 │   ├── README.md             # Mobile app setup & build guide.
 │   ├── vite.config.ts        # Vite asset compilation config.
-|   |── android/              # Native Android Studio compilation folder.
-|   |── assets/               # Stored assets for mobile app.
-|   |── node_modules/         # Node dependencies for mobile app.
+│   |── android/              # Native Android Studio compilation folder.
+│   |── assets/               # Stored assets for mobile app.
+│   |── node_modules/         # Node dependencies for mobile app.
 │   ├── src/                  # Mobile app source code (HTML/JS/CSS).
 │   └── www/                  # Built web assets folder.
 └── cpad-project/                           # Parent directory containing the backend workspace.
