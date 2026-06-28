@@ -62,8 +62,6 @@ The application implements a classic decoupled service model consisting of:
 *   **Database Management System (DBMS)**: Backed by a local MySQL/MariaDB database instance providing strong relational integrity, foreign key checks, and structured transaction data storage.
 *   **Mobile Web UI / Lanita Client**: Located under the public web-accessible directory (`/mobile/`) or native builds, featuring dynamic web components, styles, and order interfaces interacting with API endpoints.
 
-*(Diagrams and graphs are excluded per documentation instructions.)*
-
 <br />
 
 ---
@@ -208,8 +206,6 @@ The system manages customer ordering and administrative tracking using a transac
 6. **Order Confirmation**: The backend returns a tracking code and confirmation payload to the customer app.
 7. **Administrative View**: The order becomes visible in real-time in the restaurant administrator dashboard.
 8. **Status Transition**: The restaurant admin updates the order status (e.g. from `pending` to `preparing`, then `ready`, and finally `completed` or `cancelled`), which updates the order records and appends audit logs to the `order_status_history` table.
-
-*(Diagrams and graphs are excluded per documentation instructions.)*
 
 <br />
 
