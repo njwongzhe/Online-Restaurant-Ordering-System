@@ -1,4 +1,19 @@
+<div align="center">
+
+<img src="../cpad-project/gamma-3/public/assets/logo.svg" alt="Lanita Restaurant Logo" width="120" height="120" />
+
 # Lanita Mobile Ordering Application
+Hybrid Mobile App Client for the Online Restaurant Ordering System
+
+[![Platform - Mobile (Android)](https://img.shields.io/badge/Platform-Mobile%20(Android)-blue?logo=android)](#)
+[![Mobile - Capacitor](https://img.shields.io/badge/Mobile-Capacitor-119EFF?logo=capacitor&logoColor=white)](#)
+[![Frontend - HTML5/CSS3/JS](https://img.shields.io/badge/Frontend-HTML5%20%7C%20CSS3%20%7C%20JS-yellow?logo=javascript)](#)
+[![Build Tool - Vite](https://img.shields.io/badge/Build%20Tool-Vite-646CFF?logo=vite&logoColor=white)](#)
+[![Environment - Node.js](https://img.shields.io/badge/Environment-Node.js-339933?logo=nodedotjs&logoColor=white)](#)
+[![License - MIT](https://img.shields.io/badge/license-MIT-green)](#)
+
+---
+</div>
 
 This directory contains the **Lanita Mobile App** client frontend, packaged as a hybrid mobile application using **Capacitor** for deployment to the **Android** platform.
 

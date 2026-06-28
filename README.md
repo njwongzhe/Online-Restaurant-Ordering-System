@@ -5,9 +5,11 @@
 # Online Restaurant Ordering System
 Comprehensive Food & Drink Ordering Platform for Restaurants
 
-[![Platform - Web](https://img.shields.io/badge/platform-Web-blue?logo=html5)](#)
-[![Slim Framework - 4.10](https://img.shields.io/badge/Slim%20Framework-4.10.0-black?logo=slim&logoColor=white)](#)
-[![PHP - 7.4/8.0](https://img.shields.io/badge/PHP-%5E7.4%20%7C%7C%20%5E8.0-777bb4?logo=php&logoColor=white)](#)
+[![Platform - Web & Mobile](https://img.shields.io/badge/Platform-Web%20%7C%20Mobile-blue?logo=html5)](#)
+[![Frontend - Vue.js 3](https://img.shields.io/badge/Frontend-Vue.js%203-4FC08D?logo=vuedotjs&logoColor=white)](#)
+[![Mobile - Capacitor](https://img.shields.io/badge/Mobile-Capacitor-119EFF?logo=capacitor&logoColor=white)](#)
+[![Backend - Slim 4.10](https://img.shields.io/badge/Backend-Slim%204.10-black?logo=slim&logoColor=white)](#)
+[![Language - PHP 8.1+](https://img.shields.io/badge/Language-PHP%208.1+-777bb4?logo=php&logoColor=white)](#)
 [![Database - MySQL/MariaDB](https://img.shields.io/badge/Database-MySQL%2FMariaDB-4479a1?logo=mysql&logoColor=white)](#)
 [![Auth - JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)](#)
 [![License - MIT](https://img.shields.io/badge/license-MIT-green)](#)
@@ -70,21 +72,23 @@ The application implements a classic decoupled service model consisting of:
 
 ## 🛠 Technology Stack
 
+### Frontend
+*   **Framework**: Vue.js 3 (CDN)
+*   **Core**: HTML5, CSS3, JavaScript
+*   **Architecture**: Responsive Web Design
+
 ### Backend API
 *   **Framework**: Slim Framework v4.10 (Microframework)
-*   **Dependency Container**: PHP-DI v6.4 (Dependency injection container)
-*   **PSR-7 Implementation**: Slim PSR-7 v1.5
 *   **Token Authentication**: Firebase PHP-JWT v7.1
-*   **Logging Utility**: Monolog Logger v2.8 (with console and file outputs)
 
-### Database System
+### Database
 *   **Engine**: MySQL 5.7+ / MariaDB 10.3+
-*   **Database Driver**: PHP Data Objects (PDO) with error exception modes and associative fetching.
 
-### Development, Testing & QA
-*   **Testing Library**: PHPUnit v9.5 (Unit & Endpoint Integration testing)
-*   **Static Code Analysis**: PHPStan v1.8 (including PHPStan extension installer)
-*   **Formatting/Linting**: PHP CodeSniffer v3.7
+### Mobile Client
+*   **Core**: Vanilla JavaScript (HTML/JS/CSS)
+*   **Build Tool**: Vite v7.3
+*   **Cross-Platform Engine**: Capacitor v8.4 (for Android native build)
+*   **Environment**: Node.js & npm
 
 <br />
 
@@ -100,15 +104,18 @@ Below is an overview of the primary files and directories within this repository
 /
 ├── README.md  # Repository root documentation.
 ├── .gitignore # Git exclusion patterns for the repository.
-├── Lanita/                 # Mobile Client App (Capacitor hybrid app for Android).
-│   ├── README.md           # Mobile app setup & build guide.
-│   ├── .gitignore          # Git exclusion patterns for mobile app.
+├── Lanita/                   # Mobile Client App (Capacitor hybrid app for Android).
+│   ├── .gitignore            # Git exclusion patterns for mobile app.
 │   ├── capacitor.config.json # Capacitor static configuration.
-│   ├── package.json        # Node dependencies & project scripts.
-│   ├── vite.config.ts      # Vite asset compilation config.
-│   ├── src/                # Mobile app Vue/JS source code.
-│   ├── www/                # Built web assets folder.
-│   └── android/            # Native Android Studio compilation folder.
+|   |—— package-lock.json     # Node dependencies lock file.
+│   ├── package.json          # Node dependencies & project scripts.
+│   ├── README.md             # Mobile app setup & build guide.
+│   ├── vite.config.ts        # Vite asset compilation config.
+|   |── android/              # Native Android Studio compilation folder.
+|   |── assets/               # Stored assets for mobile app.
+|   |── node_modules/         # Node dependencies for mobile app.
+│   ├── src/                  # Mobile app source code (HTML/JS/CSS).
+│   └── www/                  # Built web assets folder.
 └── cpad-project/                           # Parent directory containing the backend workspace.
     └── gamma-3/                            # Core backend Slim API workspace.
         ├── .env                            # Database connection environment configuration.
@@ -216,7 +223,7 @@ This guide outlines the workflows for setting up your local development environm
 
 ### 1. Prerequisites & Environment Setup
 Ensure you have the following installed and configured:
-*   **PHP** (version `7.4` or `8.0+` required)
+*   **PHP** (version `8.1+` required)
 *   **Composer** (PHP Package dependency manager) - [Download & Install Composer](https://getcomposer.org/download/)
 *   **MySQL Server** or **MariaDB** database service (included in XAMPP)
 *   **XAMPP** or similar local server environment package
